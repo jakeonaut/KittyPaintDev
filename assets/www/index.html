@@ -1,0 +1,203 @@
+<html><head>
+    <title>KittyPaint!</title>
+    
+    <!-- cool -->
+    <meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+    
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+            //overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            //border:1px solid black;
+            border: 0px;
+        }
+        .drawr_ui {
+            padding: 5px;
+            border: solid black;
+            border-width: 1px;
+            margin: 1px;
+            background: #DEDECE;
+            
+            position: absolute;
+            opacity: 0.8;
+            filter:alpha(opacity:80);
+            
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            
+            //border-width: 0px 0px 1px 0px;
+            //top: 0px;
+            //left: 0px;
+            //right: 0px;
+        }
+        .drawr_ui:hover {
+            opacity: 1.0;
+            filter:alpha(opacity:100);
+        }
+        .server_box {
+            background-color: #FFFFFF;
+            border: 1px solid black;
+            padding: 1px;
+        }
+        .server_box:focus {
+            background-color: #D7EFFF;
+        }
+        .button_holder {
+            float:left;
+            margin: 0px 10px;
+        }
+        
+        canvas {
+            image-rendering: optimizeSpeed;             // Older versions of FF
+            image-rendering: -moz-crisp-edges;          // FF 6.0+
+            image-rendering: -webkit-optimize-contrast; // Webkit
+                                                        //  (Safari now, Chrome soon)
+            image-rendering: -o-crisp-edges;            // OS X & Windows Opera (12.02+)
+            image-rendering: optimize-contrast;         // Possible future browsers.
+            -ms-interpolation-mode: nearest-neighbor;   // IE
+        }
+    </style>
+</head>
+<body>
+
+    <center>
+    
+        <div class="drawr_ui">
+            <!-- hide into small box in topleft screen, if small screen? toggle on click/timeout -->
+            <div class="button_holder">
+                <!--input type="button" value="hello" onClick="showAndroidToast('Welcome 2 DRAWR!');" / -->
+                <input type="button" value="add obj" onClick="add_one();" /> | 
+                <input type="button" value="update: on" id="toggle_update" onClick="toggle_update();" disabled /> | 
+                <input type="button" value="update" onClick="update();" disabled /> | 
+                <input type="button" value="clear" onClick="clear_drawr();"/>
+                <br/>
+                <select id="brush_list" onchange="select_brush();">
+                    <option>Default</option>
+                </select>
+            </div>
+            <div class="button_holder">
+                Drawr Server: <input type="text" id="server_url" class="server_box" value="http://127.0.0.1:27182"/>
+                <!--br/>
+                Room: <input type="text" id="room" class="server_box" value="testroom"/-->
+            </div>
+            <div class="button_holder" style="overflow-y:scroll;height:3em;border: 1px solid black;">
+                <div id="debug">-<br/>-<br/>-</div>
+            </div>
+        </div>
+
+        <canvas id="kittycanvas">
+            Pls upgrade browser
+        </canvas>
+    
+    </center>
+
+</body>
+
+<script type="text/javascript" src="utils.js"></script>
+<script type="text/javascript" src="drawobject.js"></script>
+<script type="text/javascript" src="drawr_brushes.js"></script>
+<script type="text/javascript" src="drawr_map.js"></script>
+<script type="text/javascript" src="network.js"></script>
+<script type="text/javascript" src="drawr.js"></script>
+
+<script type="text/javascript">
+    
+    var brushes = new DrawrBrushes(function(){  // maybe we need a loading screen for this
+        var brush_list_select = document.getElementById("brush_list");
+        var brush_list = brushes.getBrushes();
+        for(var i=0; i<brush_list.length; ++i){
+            var opt = document.createElement("option");
+            opt.text = brush_list[i].name;
+            brush_list_select.add(opt);
+        }
+    });
+    
+    var drawr = new KittyDrawr("kittycanvas", brushes, "debug");
+    
+
+    function showAndroidToast(toast) {
+        Android.showToast(toast);
+    }
+    
+    function select_brush(){
+        brushes.selectBrush(document.getElementById("brush_list").value);
+    }
+    
+    function get_server(){
+        server = document.getElementById("server_url").value;
+        if(!server.match(/^http:\/\//)) server = "http://" + server;
+        document.getElementById("server_url").value = server;
+        return server;
+    }
+    
+    function get_room(){
+        return document.getElementById("room").value.replace(/\&/, "");
+    }
+    
+    
+    
+    
+    
+    
+    
+    var newest_id = -1;
+    
+    function makeobjo(){
+        r = function(){ return Math.floor(Math.random()*10 - 5); }
+        objo = new DrawrPath();
+        objo.addPoint(25+r(),25+r(),100,100);
+        objo.addPoint(34+r(),30+r(),100,100);
+        objo.addPoint(87+r(),54+r(),100,100);
+        objo.addPoint(10+r(),54+r(),100,100);
+        objo.addPoint(90+r(),78+r(),100,100);
+        return objo;//.serialize();
+    }
+    function add_one(){
+        /*url_post = get_server() + "/post?" + get_room() + "&" + makeobjo();
+        loadJSON(url_post, function(jsonObj){
+            newest_id = 1 * jsonObj;
+            debug.innerHTML += "id: " + newest_id + ",";
+        });*/
+        drawrObjects.push(makeobjo());
+    }
+    
+    var do_updatingu = 1;
+    function toggle_update(){
+        do_updatingu = !do_updatingu;
+        document.getElementById("toggle_update").value = "update: " + (do_updatingu ? "on" : "off");
+    }
+    
+    function update(){
+        if(!do_updatingu) return;
+        loadJSON(get_server() + "/get?" + get_room() + "&-1", function(jsonObj){
+            debug.innerHTML = JSON.stringify(jsonObj);
+            
+            // since requesting from -1
+            drawrObjects = [];
+            for(var i=0; i<jsonObj.length; ++i){
+                drawrObjects.push(DrawrPath.fromJSON(jsonObj[i]));
+            }
+        });
+    }
+    
+    function clear_drawr(){
+        url_post = get_server() + "/clear?" + get_room();
+        loadJSON(url_post, function(jsonObj){
+            if(jsonObj*1 == 0){
+                drawrObjects = [];
+                debug.innerHTML = "";
+            }
+        });
+    }
+    
+    //////////////////////////////////////////setInterval(update, 500);
+</script>
+</html>
