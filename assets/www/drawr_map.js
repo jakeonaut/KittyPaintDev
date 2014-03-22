@@ -9,6 +9,11 @@ function DrawrChunk(){
     this.canvas.width = this.width = CHUNK_BLOCK_SIZE;
     this.canvas.height = this.height = CHUNK_BLOCK_SIZE;
     this.ctx = this.canvas.getContext("2d");
+    
+    drawLine(this.ctx, "yellow", 1, 1, CHUNK_BLOCK_SIZE - 1, 1, 1);
+    drawLine(this.ctx, "red", CHUNK_BLOCK_SIZE-1, CHUNK_BLOCK_SIZE-1, CHUNK_BLOCK_SIZE-1, 1, 1);
+    drawLine(this.ctx, "green", 1, 1, 1, CHUNK_BLOCK_SIZE-1, 1);
+    drawLine(this.ctx, "purple", 1, CHUNK_BLOCK_SIZE-1, CHUNK_BLOCK_SIZE-1, CHUNK_BLOCK_SIZE-1, 1);
 }
 DrawrChunk.prototype.addPoint = function(local_x,local_y,brush){
     var brush_img = brush.img;
@@ -34,6 +39,14 @@ function DrawrMap(){
     }
 }
 
+DrawrMap.prototype.moveX = function(dist){
+    this.offsetX += dist;
+}
+
+DrawrMap.prototype.moveY = function(dist){
+    this.offsetY += dist;
+}
+
 DrawrMap.prototype.loadNearbyChunks = function(){}
 DrawrMap.prototype.freeFarChunks = function(){}
 
@@ -54,6 +67,10 @@ DrawrMap.prototype.isChunkLoaded = function(chunk_numx, chunk_numy){
 
   
 DrawrMap.prototype.addPoint = function(x,y,brush){
+
+    x = x - this.offsetX;
+    y = y - this.offsetY;
+
     var gamex = Math.floor(x/PER_PIXEL_SCALING); // convert to ingame (big) pixels
     var gamey = Math.floor(y/PER_PIXEL_SCALING);
     
@@ -105,8 +122,8 @@ DrawrMap.prototype.getChunkLocalCoordinates = function(gamex, gamey, chunk_nums_
     // Preserve this order in this return
     // this function will probably explode if brush.size > CHUNK_BLOCK_SIZE. that should never happen.
     
-    var chunk_general_localx = gamex % CHUNK_BLOCK_SIZE; // these are correct for the chunk where the *CENTER OF THE BRUSH* is
-    var chunk_general_localy = gamey % CHUNK_BLOCK_SIZE; 
+    var chunk_general_localx = mod(gamex, CHUNK_BLOCK_SIZE); // these are correct for the chunk where the *CENTER OF THE BRUSH* is
+    var chunk_general_localy = mod(gamey, CHUNK_BLOCK_SIZE); 
     
     var chunk_numx = Math.floor(gamex / CHUNK_BLOCK_SIZE); // calculate which chunk the *CENTER OF THE BRUSH* is in
     var chunk_numy = Math.floor(gamey / CHUNK_BLOCK_SIZE);
@@ -164,8 +181,8 @@ DrawrMap.prototype.draw = function(ctx){
     for(var i=0; i<this.chunks_loaded.length; ++i){
         var chunk_numx = this.chunks_loaded[i].x;
         var chunk_numy = this.chunks_loaded[i].y;
-        var onscreenx = chunk_numx * CHUNK_ONSCREEN_SIZE;
-        var onscreeny = chunk_numy * CHUNK_ONSCREEN_SIZE;
+        var onscreenx = chunk_numx * CHUNK_ONSCREEN_SIZE + this.offsetX;
+        var onscreeny = chunk_numy * CHUNK_ONSCREEN_SIZE + this.offsetY;
         var chunk_canvas = this.chunks[chunk_numx][chunk_numy].canvas;
         ctx.drawImage(chunk_canvas, onscreenx, onscreeny, CHUNK_ONSCREEN_SIZE, CHUNK_ONSCREEN_SIZE);
     }

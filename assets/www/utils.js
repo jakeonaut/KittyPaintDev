@@ -29,6 +29,10 @@ function hypot(x,y){
     return Math.sqrt(x*x + y*y);
 }
 
+function mod(m, n) {
+    return ((m % n) + n) % n;
+}
+
 function now(){
     return (new Date)*1;
 }

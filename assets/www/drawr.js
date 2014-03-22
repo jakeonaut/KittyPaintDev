@@ -28,29 +28,6 @@ function KittyDrawr(canvas_id, brushes, debug_id){
     }, this.frame_time);
 }
 
-KittyDrawr.prototype.setup_mouse = function(){
-    this.mousex = this.mousey = 0;
-    this.mouselastx = this.mouselasty = 0;
-    this.mousedown = 0;
-    
-    var self_reference = this; // weird interaction with listeners and object methods
-    var movefunc = function(e){ self_reference.mousemoveEvent(e); };
-    var downfunc = function(e){ self_reference.mousedownEvent(e); };
-    var upfunc = function(e){ self_reference.mouseupEvent(e); };
-    this.stage.addEventListener("mousemove",movefunc,false);
-    this.stage.addEventListener("touchmove",movefunc,false);
-    this.stage.addEventListener("mousedown",downfunc,false);
-    this.stage.addEventListener("touchstart",downfunc,false);
-    this.stage.addEventListener("mouseup",upfunc,false);
-    this.stage.addEventListener("touchend",upfunc,false);
-    /*this.stage.addEventListener("mousemove",this.mousemoveEvent,false);
-    this.stage.addEventListener("touchmove",this.mousemoveEvent,false);
-    this.stage.addEventListener("mousedown",this.mousedownEvent,false);
-    this.stage.addEventListener("touchstart",this.mousedownEvent,false);
-    this.stage.addEventListener("mouseup",this.mouseupEvent,false);
-    this.stage.addEventListener("touchend",this.mouseupEvent,false);*/
-}
-
 KittyDrawr.prototype.setup_fps = function(){
     this.frame_time = 33; // 30 fps
     this.total_frame_count = 0;
@@ -98,6 +75,9 @@ KittyDrawr.prototype.update = function(){
     
     if(this.update_lock) return; // only allow 1 instance of update to run at a time
     this.update_lock = true;
+    
+    //this.stage.width = window.innerWidth + Math.floor(150*Math.cos(this.total_frame_count*3.14159/180));
+    //this.stage.height = window.innerHeight + Math.floor(150*Math.sin(this.total_frame_count*3.14159/180));
 
     this.total_frame_count++;
     this.fps_counter++;
@@ -124,68 +104,3 @@ KittyDrawr.prototype.update = function(){
 }
 
 
-
-KittyDrawr.prototype.getMouseX = function(e){
-    if(e.touches){
-        var touch = e.touches[0]; //array, for multi-touches
-        if(!touch) return;
-        return touch.pageX - this.stage.offsetLeft;
-    }else{
-        if(window.event) return window.event.clientX;
-        return e.pageX || e.clientX;
-    }
-}
-KittyDrawr.prototype.getMouseY = function(e){
-    if(e.touches){
-        var touch = e.touches[0]; //array, for multi-touches
-        if(!touch) return;
-        return touch.pageY - this.stage.offsetTop;
-    }else{
-        if(window.event) return window.event.clientY;
-        return e.pageY || e.clientY;
-    }
-}
-
-
-KittyDrawr.prototype.mousemoveEvent = function(e){
-    this.mousex = this.getMouseX(e);
-    this.mousey = this.getMouseY(e);
-    
-    // DRAWR CODE
-    if(this.mousedown){
-        this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush());
-    }
-    
-    e.preventDefault(); //prevent mouse drag from trying to drag webpage
-}
-
-KittyDrawr.prototype.mousedownEvent = function(e){
-    this.debug("mousedown");
-    this.mousedown = true;
-    this.mouselastx = this.getMouseX(e) || this.mousex;
-    this.mouselasty = this.getMouseY(e) || this.mousey;
-    
-    // DRAWR CODE
-    this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush());
-    
-    e.preventDefault(); //prevent mouse drag from trying to drag webpage
-}
-
-KittyDrawr.prototype.mouseupEvent = function(e){
-    this.debug("mouseup");
-    this.mousedown = false;
-    // getMouseX(e) may be undefined for a "touchend" event. if so, use previous value
-    this.mousex = this.getMouseX(e) || this.mousex;
-    this.mousey = this.getMouseY(e) || this.mousey;
-    
-    // DRAWR CODE
-    //tempDrawrObject.addPoint(mousex,mousey,stage.width,stage.height);
-    //this.drawrObjects.push(this.tempDrawrObject);
-    ////post_drawr_object(this.tempDrawrObject);
-    //this.tempDrawrObject = 0;
-    
-    this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush()); // nothing else needed (!)
-    
-    
-    e.preventDefault(); //prevent mouse drag from trying to drag webpage
-}

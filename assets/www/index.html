@@ -105,11 +105,11 @@
 </body>
 
 <script type="text/javascript" src="utils.js"></script>
-<script type="text/javascript" src="drawobject.js"></script>
 <script type="text/javascript" src="drawr_brushes.js"></script>
 <script type="text/javascript" src="drawr_map.js"></script>
 <script type="text/javascript" src="network.js"></script>
 <script type="text/javascript" src="drawr.js"></script>
+<script type="text/javascript" src="drawr_input.js"></script>
 
 <script type="text/javascript">
     
@@ -132,6 +132,9 @@
     
     function select_brush(){
         brushes.selectBrush(document.getElementById("brush_list").value, document.getElementById("color_list").value);
+        document.getElementById("brush_list").blur();
+        document.getElementById("color_list").blur();
+        document.getElementById("kittycanvas").focus();
     }
     
     function get_server(){
