@@ -76,8 +76,6 @@ KittyDrawr.prototype.update = function(){
     if(this.update_lock) return; // only allow 1 instance of update to run at a time
     this.update_lock = true;
     
-    //this.stage.width = window.innerWidth + Math.floor(150*Math.cos(this.total_frame_count*3.14159/180));
-    //this.stage.height = window.innerHeight + Math.floor(150*Math.sin(this.total_frame_count*3.14159/180));
 
     this.total_frame_count++;
     this.fps_counter++;

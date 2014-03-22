@@ -47,8 +47,12 @@ DrawrMap.prototype.moveY = function(dist){
     this.offsetY += dist;
 }
 
-DrawrMap.prototype.loadNearbyChunks = function(){}
-DrawrMap.prototype.freeFarChunks = function(){}
+DrawrMap.prototype.loadNearbyChunks = function(){
+    
+}
+DrawrMap.prototype.freeFarChunks = function(){
+    
+}
 
 DrawrMap.prototype.addPointRelative = function(x, y, screenOffsetX, screenOffsetY, brush){
     // x,y, offsets are true pixels per client
