@@ -80,8 +80,11 @@
                 <input type="button" value="clear" onClick="clear_drawr();"/>
                 <br/>
                 <select id="brush_list" onchange="select_brush();">
-                    <option>Default</option>
                 </select>
+				<select id="color_list" onchange="select_brush();">
+					<option value="">Black</option>
+					<option value="orange">Orange</option>
+				</select>
             </div>
             <div class="button_holder">
                 Drawr Server: <input type="text" id="server_url" class="server_box" value="http://127.0.0.1:27182"/>
@@ -128,7 +131,7 @@
     }
     
     function select_brush(){
-        brushes.selectBrush(document.getElementById("brush_list").value);
+        brushes.selectBrush(document.getElementById("brush_list").value, document.getElementById("color_list").value);
     }
     
     function get_server(){
