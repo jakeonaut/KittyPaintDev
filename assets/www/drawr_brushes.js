@@ -3,10 +3,10 @@
 
 function DrawrBrushes(onload_continuation){
     this.brushes = [];
-    this.blackfilenames = ["circle4.png","circle8.png","circle16.png","circle32.png","kappa32.png","cathead32.png","bar8.png"];
-	this.orangefilenames = ["orangecircle4.png","orangecircle8.png","orangecircle16.png","orangecircle32.png","orangekappa32.png","orangecathead32.png","orangebar8.png"];
+    this.blackfilenames = ["circle1.png", "circle4.png","circle8.png","circle16.png","circle32.png","kappa32.png","cathead32.png","bar8.png"];
+	this.orangefilenames = ["orangecircle1.png", "orangecircle4.png","orangecircle8.png","orangecircle16.png","orangecircle32.png","orangekappa32.png","orangecathead32.png","orangebar8.png"];
 	this.filenames = this.blackfilenames;
-    this.filewidths = [4,8,16,32,32,32,8];
+    this.filewidths = [1,4,8,16,32,32,32,8];
 	this.numrealbrushes = this.filenames.length;
     this.selected_brush = 0;
     this.loaded_count = 0;
