@@ -81,6 +81,13 @@
                 </select>
 				<select id="color_list" onchange="select_brush();">
 				</select>
+				<select id="zoom_list" onchange="select_zoom();">
+					<option>1</option>
+					<option>2</option>
+					<option>4</option>
+					<option>8</option>
+					<option>16</option>
+				</select>
             </div>
             <div class="button_holder">
                 Drawr Server: <input type="text" id="server_url" class="server_box" value="http://127.0.0.1:27182"/>
@@ -118,6 +125,7 @@
             brush_list_select.add(opt);
         }
 		brush_list_select.selectedIndex = 1;
+		document.getElementById("zoom_list").selectedIndex = 1;
 		
 		var color_list_select = document.getElementById("color_list");
         var color_list = brushes.getColors();
@@ -142,6 +150,13 @@
         document.getElementById("color_list").blur();
         document.getElementById("kittycanvas").focus();
     }
+	
+	function select_zoom(){
+		var zoom = document.getElementById("zoom_list").value;
+		drawr.drawr_map.changePixelScale(zoom);
+		document.getElementById("zoom_list").blur();
+        document.getElementById("kittycanvas").focus();
+	}
     
     function get_server(){
         server = document.getElementById("server_url").value;

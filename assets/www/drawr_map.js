@@ -1,19 +1,13 @@
-
-var CHUNK_BLOCK_SIZE = 256;
-var PER_PIXEL_SCALING = 2; // pixel is 2x2
-var CHUNK_ONSCREEN_SIZE = CHUNK_BLOCK_SIZE * PER_PIXEL_SCALING;
-// TODO: MAYBE disable double scaling on small screens??
-
-function DrawrChunk(){
+function DrawrChunk(drawr_map){
     this.canvas = document.createElement("canvas");
-    this.canvas.width = this.width = CHUNK_BLOCK_SIZE;
-    this.canvas.height = this.height = CHUNK_BLOCK_SIZE;
+    this.canvas.width = this.width = drawr_map.chunk_block_size;
+    this.canvas.height = this.height = drawr_map.chunk_block_size;
     this.ctx = this.canvas.getContext("2d");
     
-    drawLine(this.ctx, "yellow", 1, 1, CHUNK_BLOCK_SIZE - 1, 1, 1);
-    drawLine(this.ctx, "red", CHUNK_BLOCK_SIZE-1, CHUNK_BLOCK_SIZE-1, CHUNK_BLOCK_SIZE-1, 1, 1);
-    drawLine(this.ctx, "green", 1, 1, 1, CHUNK_BLOCK_SIZE-1, 1);
-    drawLine(this.ctx, "purple", 1, CHUNK_BLOCK_SIZE-1, CHUNK_BLOCK_SIZE-1, CHUNK_BLOCK_SIZE-1, 1);
+    drawLine(this.ctx, "yellow", 1, 1, drawr_map.chunk_block_size - 1, 1, 1);
+    drawLine(this.ctx, "red", drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, 1, 1);
+    drawLine(this.ctx, "green", 1, 1, 1, drawr_map.chunk_block_size-1, 1);
+    drawLine(this.ctx, "purple", 1, drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, 1);
 }
 DrawrChunk.prototype.addPoint = function(local_x,local_y,brush){
     var brush_img = brush.img;
@@ -23,6 +17,11 @@ DrawrChunk.prototype.addPoint = function(local_x,local_y,brush){
 
 
 function DrawrMap(){
+	this.chunk_block_size = 256;
+	this.per_pixel_scaling = 2; // pixel is 2x2
+	this.chunk_onscreen_size = this.chunk_block_size * this.per_pixel_scaling;
+	// TODO: MAYBE disable double scaling on small screens??
+	
     // hash of chunks - not array because we need negative and positive locations, and to be able to skip some
     this.chunks = {}; // keyed by xth chunk, value is a hash keyed by yth chunk
     this.chunks_loaded = [];
@@ -33,10 +32,39 @@ function DrawrMap(){
     for(var i=-1; i<2; ++i){
         this.chunks[i] = {};
         for(var j=-1; j<2; ++j){
-            this.chunks[i][j] = new DrawrChunk();
+            this.chunks[i][j] = new DrawrChunk(this);
             this.chunks_loaded.push({x: i, y: j}); // NOT EXACTRLY TRUE LOADED
         }
     }
+}
+
+DrawrMap.prototype.changePixelScale = function(pixel_scale){
+	//ZOOMS IN ON TOP LEFT, SHOULD ZOOM IN ON CENTER
+	//store ingameoffsets before scalng and reset to those stored offsets
+	var offsetX = this.getIngameOffsetX();
+	var offsetY = this.getIngameOffsetY();
+	
+	this.per_pixel_scaling = pixel_scale;
+	this.chunk_onscreen_size = this.chunk_block_size * this.per_pixel_scaling;
+	
+	this.setIngameOffsetX(offsetX);
+	this.setIngameOffsetY(offsetY);
+}
+
+DrawrMap.prototype.getIngameOffsetX = function(){
+	return Math.floor(this.offsetX/this.per_pixel_scaling);
+}
+
+DrawrMap.prototype.setIngameOffsetX = function(offsetX){
+	this.offsetX = offsetX * this.per_pixel_scaling;
+}
+
+DrawrMap.prototype.getIngameOffsetY = function(){
+	return Math.floor(this.offsetY/this.per_pixel_scaling);
+}
+
+DrawrMap.prototype.setIngameOffsetY = function(offsetY){
+	this.offsetY = offsetY * this.per_pixel_scaling;
 }
 
 DrawrMap.prototype.moveX = function(dist){
@@ -75,8 +103,8 @@ DrawrMap.prototype.addPoint = function(x,y,brush){
     x = x - this.offsetX;
     y = y - this.offsetY;
 
-    var gamex = Math.floor(x/PER_PIXEL_SCALING); // convert to ingame (big) pixels
-    var gamey = Math.floor(y/PER_PIXEL_SCALING);
+    var gamex = Math.floor(x/this.per_pixel_scaling); // convert to ingame (big) pixels
+    var gamey = Math.floor(y/this.per_pixel_scaling);
     
     var chunks_affected = this.getChunksAffected(gamex, gamey, brush);
     var chunks_local_coords = this.getChunkLocalCoordinates(gamex, gamey, chunks_affected, brush);
@@ -105,12 +133,12 @@ DrawrMap.prototype.addPoint = function(x,y,brush){
 DrawrMap.prototype.oldAddPoint = function(x,y,brush){
     // DEPRECATED - will incorrectly draw near the edge of chunks
     // find where to add to chunk
-    var gamex = Math.floor(x/PER_PIXEL_SCALING); // convert to ingame (big) pixels
-    var gamey = Math.floor(y/PER_PIXEL_SCALING);
-    var chunk_numx = Math.floor(gamex / CHUNK_BLOCK_SIZE); // calculate which chunk this pixel is in
-    var chunk_numy = Math.floor(gamey / CHUNK_BLOCK_SIZE);
-    var chunk_localx = gamex % CHUNK_BLOCK_SIZE; // pixel location in chunk local coordinates
-    var chunk_localy = gamey % CHUNK_BLOCK_SIZE; 
+    var gamex = Math.floor(x/this.per_pixel_scaling); // convert to ingame (big) pixels
+    var gamey = Math.floor(y/this.per_pixel_scaling);
+    var chunk_numx = Math.floor(gamex / this.chunk_block_size); // calculate which chunk this pixel is in
+    var chunk_numy = Math.floor(gamey / this.chunk_block_size);
+    var chunk_localx = gamex % this.chunk_block_size; // pixel location in chunk local coordinates
+    var chunk_localy = gamey % this.chunk_block_size; 
     
     if(this.isChunkLoaded(chunk_numx, chunk_numy)){
         var chunk = this.chunks[chunk_numx][chunk_numy];
@@ -124,21 +152,21 @@ DrawrMap.prototype.getChunkLocalCoordinates = function(gamex, gamey, chunk_nums_
     // calculate pixel location in local coordinates of each of the 4 possible chunks.
     // getChunksAffected will always return in this order: topleft, bottomleft, topright, bottomright 
     // Preserve this order in this return
-    // this function will probably explode if brush.size > CHUNK_BLOCK_SIZE. that should never happen.
+    // this function will probably explode if brush.size > this.chunk_block_size. that should never happen.
     
-    var chunk_general_localx = mod(gamex, CHUNK_BLOCK_SIZE); // these are correct for the chunk where the *CENTER OF THE BRUSH* is
-    var chunk_general_localy = mod(gamey, CHUNK_BLOCK_SIZE); 
+    var chunk_general_localx = mod(gamex, this.chunk_block_size); // these are correct for the chunk where the *CENTER OF THE BRUSH* is
+    var chunk_general_localy = mod(gamey, this.chunk_block_size); 
     
-    var chunk_numx = Math.floor(gamex / CHUNK_BLOCK_SIZE); // calculate which chunk the *CENTER OF THE BRUSH* is in
-    var chunk_numy = Math.floor(gamey / CHUNK_BLOCK_SIZE);
+    var chunk_numx = Math.floor(gamex / this.chunk_block_size); // calculate which chunk the *CENTER OF THE BRUSH* is in
+    var chunk_numy = Math.floor(gamey / this.chunk_block_size);
     
     var chunk_local_coords = [];
     for(var i=0; i<4; ++i){
         if(chunk_nums_affected[i]){
             var dx = chunk_numx - chunk_nums_affected[i].x;
             var dy = chunk_numy - chunk_nums_affected[i].y;
-            chunk_local_coords.push({x: chunk_general_localx + dx * CHUNK_BLOCK_SIZE,
-                                     y: chunk_general_localy + dy * CHUNK_BLOCK_SIZE }); // this is beautiful
+            chunk_local_coords.push({x: chunk_general_localx + dx * this.chunk_block_size,
+                                     y: chunk_general_localy + dy * this.chunk_block_size }); // this is beautiful
         }else{
             chunk_local_coords.push(0);
         }
@@ -159,8 +187,8 @@ DrawrMap.prototype.getChunksAffected = function(gamex, gamey, brush){
     var brush_ys = [gamey - brush_delta, gamey + brush_delta, gamey - brush_delta, gamey + brush_delta];
     
     for(var i=0; i<4; ++i){
-        var chunk_numx = Math.floor(brush_xs[i] / CHUNK_BLOCK_SIZE); // calculate which chunk this (ingame) pixel is in
-        var chunk_numy = Math.floor(brush_ys[i] / CHUNK_BLOCK_SIZE);
+        var chunk_numx = Math.floor(brush_xs[i] / this.chunk_block_size); // calculate which chunk this (ingame) pixel is in
+        var chunk_numy = Math.floor(brush_ys[i] / this.chunk_block_size);
         if(this.isChunkLoaded(chunk_numx, chunk_numy)){
             chunks_found.push({x: chunk_numx, y: chunk_numy});
         }else{
@@ -175,7 +203,7 @@ DrawrMap.prototype.draw = function(ctx){
     /*ctx.imageSmoothingEnabled = false;
     ctx.mozImageSmoothingEnabled = false;
     ctx.webkitImageSmoothingEnabled = false;
-    ctx.drawImage(this.canvas, 0, 0, CHUNK_BLOCK_SIZE*PER_PIXEL_SCALING, CHUNK_BLOCK_SIZE*PER_PIXEL_SCALING); //x, y, width, height
+    ctx.drawImage(this.canvas, 0, 0, this.chunk_block_size*this.per_pixel_scaling, this.chunk_block_size*this.per_pixel_scaling); //x, y, width, height
     */
     
     ctx.imageSmoothingEnabled = false;
@@ -185,10 +213,10 @@ DrawrMap.prototype.draw = function(ctx){
     for(var i=0; i<this.chunks_loaded.length; ++i){
         var chunk_numx = this.chunks_loaded[i].x;
         var chunk_numy = this.chunks_loaded[i].y;
-        var onscreenx = chunk_numx * CHUNK_ONSCREEN_SIZE + this.offsetX;
-        var onscreeny = chunk_numy * CHUNK_ONSCREEN_SIZE + this.offsetY;
+        var onscreenx = chunk_numx * this.chunk_onscreen_size + this.offsetX;
+        var onscreeny = chunk_numy * this.chunk_onscreen_size + this.offsetY;
         var chunk_canvas = this.chunks[chunk_numx][chunk_numy].canvas;
-        ctx.drawImage(chunk_canvas, onscreenx, onscreeny, CHUNK_ONSCREEN_SIZE, CHUNK_ONSCREEN_SIZE);
+        ctx.drawImage(chunk_canvas, onscreenx, onscreeny, this.chunk_onscreen_size, this.chunk_onscreen_size);
     }
 }
 
