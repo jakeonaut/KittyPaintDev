@@ -80,8 +80,6 @@
                 <select id="brush_list" onchange="select_brush();">
                 </select>
 				<select id="color_list" onchange="select_brush();">
-					<option value="">Black</option>
-					<option value="orange">Orange</option>
 				</select>
             </div>
             <div class="button_holder">
@@ -113,12 +111,22 @@
     
     var brushes = new DrawrBrushes(function(){  // maybe we need a loading screen for this
         var brush_list_select = document.getElementById("brush_list");
-        var brush_list = brushes.getBrushes();
+        var brush_list = brushes.getBrushNames();
         for(var i=0; i<brush_list.length; ++i){
             var opt = document.createElement("option");
-            opt.text = brush_list[i].name;
+            opt.text = brush_list[i];
             brush_list_select.add(opt);
         }
+		brush_list_select.selectedIndex = 1;
+		
+		var color_list_select = document.getElementById("color_list");
+        var color_list = brushes.getColors();
+        for(var i=0; i<color_list.length; ++i){
+            var opt = document.createElement("option");
+            opt.text = color_list[i];
+            color_list_select.add(opt);
+        }
+		select_brush();
     });
     
     var drawr = new KittyDrawr("kittycanvas", brushes, "debug");
