@@ -52,6 +52,15 @@
             float:left;
             margin: 0px 10px;
         }
+		.select_box{
+			width: 32px;
+			height: 32px;
+			border: solid black 1px;
+			float:left;
+			margin-right:3px;
+			margin-bottom:3px;
+			cursor:pointer;
+		}
         
         canvas {
             image-rendering: optimizeSpeed;             // Older versions of FF
@@ -72,21 +81,42 @@
             <!-- hide into small box in topleft screen, if small screen? toggle on click/timeout -->
             <div class="button_holder">
                 <!--input type="button" value="hello" onClick="showAndroidToast('Welcome 2 DRAWR!');" / -->
-                <input type="button" value="add obj" onClick="add_one();" /> | 
+                <!--<input type="button" value="add obj" onClick="add_one();" /> | 
                 <input type="button" value="update: on" id="toggle_update" onClick="toggle_update();" disabled /> | 
                 <input type="button" value="update" onClick="update();" disabled /> | 
                 <input type="button" value="clear" onClick="clear_drawr();"/>
-                <br/>
-                <select id="brush_list" onchange="select_brush();">
-                </select>
-				<select id="color_list" onchange="select_brush();">
-				</select>
+                <br/>-->
+				<a href="#" style="float:left;margin-right:3px;" onClick="prevBrushPage(); return false;">&lt;&lt;</a>
+                <div class="select_box" id="brush_box0" onClick="selectBrush(0);"></div>
+				<div class="select_box" id="brush_box1" onClick="selectBrush(1);"></div>
+				<div class="select_box" id="brush_box2" onClick="selectBrush(2);"></div>
+				<div class="select_box" id="brush_box3" onClick="selectBrush(3);"></div>
+				<div class="select_box" id="brush_box4" onClick="selectBrush(4);"></div>
+				<div class="select_box" id="brush_box5" onClick="selectBrush(5);"></div>
+				<div class="select_box" id="brush_box6" onClick="selectBrush(6);"></div>
+				<div class="select_box" id="brush_box7" onClick="selectBrush(7);"></div>
+				<div class="select_box" id="brush_box8" onClick="selectBrush(8);"></div>
+				<div class="select_box" id="brush_box9" onClick="selectBrush(9);"></div>
+				<a href="#" onClick="nextBrushPage(); return false;">&gt;&gt;</a>
+				
+				<br/>
+				<div class="select_box" id="size_box0" onClick="selectBrushSize(0,1);">XS</div>
+				<div class="select_box" id="size_box1" onClick="selectBrushSize(1,4);">S</div>
+				<div class="select_box" id="size_box2" onClick="selectBrushSize(2,8);">M</div>
+				<div class="select_box" id="size_box3" onClick="selectBrushSize(3,16);">L</div>
+				<div class="select_box" id="size_box4" onClick="selectBrushSize(4,32);">XL</div>
+				
+				<span>Zoom: </span>
 				<select id="zoom_list" onchange="select_zoom();">
 					<option>1</option>
 					<option>2</option>
 					<option>4</option>
 					<option>8</option>
 					<option>16</option>
+				</select>
+				<select style="visibility:hidden;" id="brush_list" onchange="select_brush();">
+                </select>
+				<select style="visibility:hidden;" id="color_list" onchange="select_brush();">
 				</select>
             </div>
             <div class="button_holder">
@@ -115,10 +145,29 @@
 <script type="text/javascript" src="drawr_input.js"></script>
 
 <script type="text/javascript">
-    
+    var num_brush_boxes = 10;
+	var brush_box_page = 0;
+	var brush_boxes = [];
+	var num_size_boxes = 5;
+	var size_boxes = [];
+	var current_brushes = [];
+	var brush_index = 0;
+	
     var brushes = new DrawrBrushes(function(){  // maybe we need a loading screen for this
-        var brush_list_select = document.getElementById("brush_list");
-        var brush_list = brushes.getBrushNames();
+		//Load Brushes
+		for (var i=0; i<num_brush_boxes;++i){
+			brush_boxes[i] = document.getElementById("brush_box"+i);
+		}
+		for (var i=0; i<num_size_boxes;++i){
+			size_boxes[i] = document.getElementById("size_box"+i);
+		}
+		setBrushBoxes();
+		selectBrushSize(2, 8);
+		
+		document.getElementById("zoom_list").selectedIndex = 1;
+		
+        /*var brush_list_select = document.getElementById("brush_list");
+        var brush_list = brushes.getBrushAndStampNames();
         for(var i=0; i<brush_list.length; ++i){
             var opt = document.createElement("option");
             opt.text = brush_list[i];
@@ -127,14 +176,17 @@
 		brush_list_select.selectedIndex = 1;
 		document.getElementById("zoom_list").selectedIndex = 1;
 		
+		//Load Stamps
+		
+		//Load Colors
 		var color_list_select = document.getElementById("color_list");
         var color_list = brushes.getColors();
         for(var i=0; i<color_list.length; ++i){
             var opt = document.createElement("option");
-            opt.text = color_list[i];
+            opt.text = color_list[i].name;
             color_list_select.add(opt);
         }
-		select_brush();
+		select_brush();*/
     });
     
     var drawr = new KittyDrawr("kittycanvas", brushes, "debug");
@@ -143,6 +195,26 @@
     function showAndroidToast(toast) {
         Android.showToast(toast);
     }
+	
+	function selectBrush(index){
+		for (var i=0; i<brush_boxes.length;++i){
+			brush_boxes[i].style.border = "solid black 1px";
+		}
+		if (index < current_brushes.length){
+			console.log(current_brushes[index].name);
+			brushes.selectBrush(index+(num_brush_boxes*brush_box_page));
+			brush_boxes[index].style.border = "solid white 1px";
+			brush_index = index;
+		}
+	}
+	
+	function selectBrushSize(index, size){
+		for (var i=0; i<size_boxes.length;++i){
+			size_boxes[i].style.border = "solid black 1px";
+		}
+		size_boxes[index].style.border = "solid white 1px";
+		brushes.setBrushSize(size);
+	}
     
     function select_brush(){
         brushes.selectBrush(document.getElementById("brush_list").value, document.getElementById("color_list").value);
@@ -168,6 +240,34 @@
     function get_room(){
         return document.getElementById("room").value.replace(/\&/, "");
     }
+	
+	function setBrushBoxes(){
+		current_brushes = [];
+		var brush_list = brushes.getBrushes();
+		for (var i=0; i<num_brush_boxes;++i){
+			var real_brush_index = i+(num_brush_boxes*brush_box_page);
+			if (real_brush_index < brush_list.length){
+				var brush = brush_list[real_brush_index];
+				current_brushes.push(brush);
+				brush_boxes[i].style.backgroundImage = "url('"+brush.img.src+"')";
+			}else{
+				brush_boxes[i].style.backgroundColor = "";
+				brush_boxes[i].style.backgroundImage = "";
+			}
+		}
+		selectBrush(brush_index);
+	}
+	
+	function prevBrushPage(){
+		brush_box_page--;
+		if (brush_box_page < 0) brush_box_page = 0;
+		setBrushBoxes();
+	}
+	
+	function nextBrushPage(){
+		brush_box_page++;
+		setBrushBoxes();
+	}
     
     
     

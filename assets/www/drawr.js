@@ -3,6 +3,9 @@ function KittyDrawr(canvas_id, brushes, debug_id){
     this.stage = document.getElementById(canvas_id);
     this.debug_div = debug_id && document.getElementById(debug_id) || 0;
     this.ctx = this.stage.getContext("2d");
+	this.ctx.imageSmoothingEnabled = false;
+	this.ctx.mozImageSmoothingEnabled = false;
+	this.ctx.webkitImageSmoothingEnabled = false;
     this.ctx.fillStyle = "black";
     
     this.stage.width = window.innerWidth;

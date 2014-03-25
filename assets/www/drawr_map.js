@@ -9,10 +9,15 @@ function DrawrChunk(drawr_map){
     drawLine(this.ctx, "green", 1, 1, 1, drawr_map.chunk_block_size-1, 1);
     drawLine(this.ctx, "purple", 1, drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, 1);
 }
-DrawrChunk.prototype.addPoint = function(local_x,local_y,brush){
+DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
     var brush_img = brush.img;
-    var s = Math.floor(brush.size/2);
-    this.ctx.drawImage(brush_img, local_x-s, local_y-s);
+    var s = Math.floor(size/2);
+	if (brush.type == "brush")
+		this.ctx.drawImage(brush_img, local_x-s, local_y-s, size, size);
+	else if (brush.type == "stamp"){
+		s = 32/2;
+		this.ctx.drawImage(brush_img, local_x-s, local_y-s);
+	}
 }
 
 
@@ -113,7 +118,7 @@ DrawrMap.prototype.isChunkLoaded = function(chunk_numx, chunk_numy){
 }
 
   
-DrawrMap.prototype.addPoint = function(x,y,brush){
+DrawrMap.prototype.addPoint = function(x,y,brush,size){
 
     x = x - this.offsetX;
     y = y - this.offsetY;
@@ -121,7 +126,7 @@ DrawrMap.prototype.addPoint = function(x,y,brush){
     var gamex = Math.floor(x/this.per_pixel_scaling); // convert to ingame (big) pixels
     var gamey = Math.floor(y/this.per_pixel_scaling);
     
-    var chunks_affected = this.getChunksAffected(gamex, gamey, brush);
+    var chunks_affected = this.getChunksAffected(gamex, gamey, brush, size);
     var chunks_local_coords = this.getChunkLocalCoordinates(gamex, gamey, chunks_affected, brush);
     
     var chunks_written = []; // store the chunks already written to, to avoid redundancy
@@ -134,7 +139,7 @@ DrawrMap.prototype.addPoint = function(x,y,brush){
             if(chunks_written.indexOf(chunk_written_id) < 0){
                 if(this.isChunkLoaded(chunk_numx, chunk_numy)){
                     var chunk = this.chunks[chunk_numx][chunk_numy];
-                    chunk.addPoint(chunks_local_coords[i].x, chunks_local_coords[i].y, brush);
+                    chunk.addPoint(chunks_local_coords[i].x, chunks_local_coords[i].y, brush,size);
                 }else{
                     console.log("Chunk not loaded: (" + chunk_numx + ", " + chunk_numy + ")");
                 }
@@ -167,7 +172,7 @@ DrawrMap.prototype.getChunkLocalCoordinates = function(gamex, gamey, chunk_nums_
     // calculate pixel location in local coordinates of each of the 4 possible chunks.
     // getChunksAffected will always return in this order: topleft, bottomleft, topright, bottomright 
     // Preserve this order in this return
-    // this function will probably explode if brush.size > this.chunk_block_size. that should never happen.
+    // this function will probably explode if brush size > this.chunk_block_size. that should never happen.
     
     var chunk_general_localx = mod(gamex, this.chunk_block_size); // these are correct for the chunk where the *CENTER OF THE BRUSH* is
     var chunk_general_localy = mod(gamey, this.chunk_block_size); 
@@ -190,13 +195,13 @@ DrawrMap.prototype.getChunkLocalCoordinates = function(gamex, gamey, chunk_nums_
     return chunk_local_coords;
 }
 
-DrawrMap.prototype.getChunksAffected = function(gamex, gamey, brush){
+DrawrMap.prototype.getChunksAffected = function(gamex, gamey, brush, size){
     // To find chunks affected: find 1 or more chunks for each 4 points of the square mask of the brush
     // getChunksAffected will always return in this order: topleft, bottomleft, topright, bottomright
     // if one of those 4 chunks isn't loaded, log it, and its location in the return array will be null
     
     var chunks_found = [];
-    var brush_delta = brush.size/2;
+    var brush_delta = size/2;
     // coordinates of the 4 coordinates of the brush, in the correct order
     var brush_xs = [gamex - brush_delta, gamex - brush_delta, gamex + brush_delta, gamex + brush_delta];
     var brush_ys = [gamey - brush_delta, gamey + brush_delta, gamey - brush_delta, gamey + brush_delta];
