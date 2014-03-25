@@ -153,7 +153,7 @@
 	
 	function select_zoom(){
 		var zoom = document.getElementById("zoom_list").value;
-		drawr.drawr_map.changePixelScale(zoom);
+		drawr.changePixelScale(zoom);
 		document.getElementById("zoom_list").blur();
         document.getElementById("kittycanvas").focus();
 	}

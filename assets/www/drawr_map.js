@@ -38,19 +38,6 @@ function DrawrMap(){
     }
 }
 
-DrawrMap.prototype.changePixelScale = function(pixel_scale){
-	//ZOOMS IN ON TOP LEFT, SHOULD ZOOM IN ON CENTER
-	//store ingameoffsets before scalng and reset to those stored offsets
-	var offsetX = this.getIngameOffsetX();
-	var offsetY = this.getIngameOffsetY();
-	
-	this.per_pixel_scaling = pixel_scale;
-	this.chunk_onscreen_size = this.chunk_block_size * this.per_pixel_scaling;
-	
-	this.setIngameOffsetX(offsetX);
-	this.setIngameOffsetY(offsetY);
-}
-
 DrawrMap.prototype.getIngameOffsetX = function(){
 	return Math.floor(this.offsetX/this.per_pixel_scaling);
 }

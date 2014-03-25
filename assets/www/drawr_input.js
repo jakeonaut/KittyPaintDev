@@ -37,6 +37,29 @@ KittyDrawr.prototype.screenResizeEvent = function(){
     this.stage.height = window.innerHeight;
 }
 
+KittyDrawr.prototype.changePixelScale = function(pixel_scale){
+	//store ingameoffsets before scaling and reset to those stored offsets
+    var dmap = this.drawr_map;
+    var old_pixel_scale = dmap.per_pixel_scaling;
+    
+    // differences between top-left of window and center in ingame coordinates
+    var deltaX = Math.floor(this.getWidth()/2 / old_pixel_scale);
+    var deltaY = Math.floor(this.getHeight()/2 / old_pixel_scale);
+	var center_offsetX = dmap.getIngameOffsetX() - deltaX;
+	var center_offsetY = dmap.getIngameOffsetY() - deltaY;
+	
+	dmap.per_pixel_scaling = pixel_scale;
+	dmap.chunk_onscreen_size = dmap.chunk_block_size * dmap.per_pixel_scaling;
+    
+    // new deltas in ingame coordinates after resize
+    var zoomDeltaX = Math.floor(this.getWidth()/2 / dmap.per_pixel_scaling);
+    var zoomDeltaY = Math.floor(this.getHeight()/2 / dmap.per_pixel_scaling);
+	
+	dmap.setIngameOffsetX(center_offsetX + zoomDeltaX);
+	dmap.setIngameOffsetY(center_offsetY + zoomDeltaY);
+}
+
+
 
 KittyDrawr.prototype.isMoveKeyPressed = function(){ // hold this button and drag with mouse to move screen
     var moveKeyCode = 77; // m
