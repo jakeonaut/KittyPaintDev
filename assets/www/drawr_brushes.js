@@ -5,6 +5,7 @@ function DrawrBrushes(onload_continuation){
     this.brush_types = ["brush","stamp","stamp","stamp"];
 	this.brush_sizes = [16, 16, 16, 32];
     this.selected_brush = 0;
+    this.brush_size = 1;
     this.loaded_count = 0;
     
 	var num_brushes = this.brush_names.length;

@@ -4,6 +4,10 @@ function DrawrChunk(drawr_map){
     this.canvas.height = this.height = drawr_map.chunk_block_size;
     this.ctx = this.canvas.getContext("2d");
     
+    this.ctx.imageSmoothingEnabled = false;
+    this.ctx.mozImageSmoothingEnabled = false;
+    this.ctx.webkitImageSmoothingEnabled = false;
+    
     drawLine(this.ctx, "yellow", 1, 1, drawr_map.chunk_block_size - 1, 1, 1);
     drawLine(this.ctx, "red", drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, 1, 1);
     drawLine(this.ctx, "green", 1, 1, 1, drawr_map.chunk_block_size-1, 1);
@@ -12,49 +16,8 @@ function DrawrChunk(drawr_map){
 DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
     var brush_img = brush.img;
     var s = Math.floor(size/2);
-	if (size != brush.size && size != 1){
-		brush_canvas = resize(brush_img, size/brush.size);
-		this.ctx.drawImage(brush_canvas, local_x-s, local_y-s);
-	}else{
-		this.ctx.drawImage(brush_img, local_x-s, local_y-s, size, size);
-	}
-}
-
-var resize = function( img, scale ) {
-    // Takes an image and a scaling factor and returns the scaled image
-    
-    // The original image is drawn into an offscreen canvas of the same size
-    // and copied, pixel by pixel into another offscreen canvas with the 
-    // new size.
-    
-    var widthScaled = img.width * scale;
-    var heightScaled = img.height * scale;
-    
-    var orig = document.createElement('canvas');
-    orig.width = img.width;
-    orig.height = img.height;
-    var origCtx = orig.getContext('2d');
-    origCtx.drawImage(img, 0, 0);
-    var origPixels = origCtx.getImageData(0, 0, img.width, img.height);
-    
-    var scaled = document.createElement('canvas');
-    scaled.width = widthScaled;
-    scaled.height = heightScaled;
-    var scaledCtx = scaled.getContext('2d');
-    var scaledPixels = scaledCtx.getImageData( 0, 0, widthScaled, heightScaled );
-    
-    for( var y = 0; y < heightScaled; y++ ) {
-        for( var x = 0; x < widthScaled; x++ ) {
-            var index = (Math.floor(y / scale) * img.width + Math.floor(x / scale)) * 4;
-            var indexScaled = (y * widthScaled + x) * 4;
-            scaledPixels.data[ indexScaled ] = origPixels.data[ index ];
-            scaledPixels.data[ indexScaled+1 ] = origPixels.data[ index+1 ];
-            scaledPixels.data[ indexScaled+2 ] = origPixels.data[ index+2 ];
-            scaledPixels.data[ indexScaled+3 ] = origPixels.data[ index+3 ];
-        }
-    }
-    scaledCtx.putImageData( scaledPixels, 0, 0 );
-    return scaled;
+	
+    this.ctx.drawImage(brush_img, local_x-s, local_y-s, size, size);
 }
 
 
