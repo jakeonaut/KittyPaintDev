@@ -152,6 +152,8 @@
 	var size_boxes = [];
 	var current_brushes = [];
 	var brush_index = 0;
+	var brush_size_index = 2;
+	var brush_size = 8;
 	
     var brushes = new DrawrBrushes(function(){  // maybe we need a loading screen for this
 		//Load Brushes
@@ -162,7 +164,6 @@
 			size_boxes[i] = document.getElementById("size_box"+i);
 		}
 		setBrushBoxes();
-		selectBrushSize(2, 8);
 		
 		document.getElementById("zoom_list").selectedIndex = 1;
 		
@@ -213,6 +214,8 @@
 			size_boxes[i].style.border = "solid black 1px";
 		}
 		size_boxes[index].style.border = "solid white 1px";
+		brush_size_index = index;
+		brush_size = size;
 		brushes.setBrushSize(size);
 	}
     
@@ -256,6 +259,7 @@
 			}
 		}
 		selectBrush(brush_index);
+		selectBrushSize(brush_size_index, brush_size);
 	}
 	
 	function prevBrushPage(){

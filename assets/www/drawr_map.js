@@ -12,12 +12,7 @@ function DrawrChunk(drawr_map){
 DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
     var brush_img = brush.img;
     var s = Math.floor(size/2);
-	if (brush.type == "brush")
-		this.ctx.drawImage(brush_img, local_x-s, local_y-s, size, size);
-	else if (brush.type == "stamp"){
-		s = 32/2;
-		this.ctx.drawImage(brush_img, local_x-s, local_y-s);
-	}
+	this.ctx.drawImage(brush_img, local_x-s, local_y-s, size, size);
 }
 
 

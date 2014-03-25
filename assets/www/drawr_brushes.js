@@ -84,5 +84,13 @@ DrawrBrushes.prototype.getBrushSize = function(){
 }
 
 DrawrBrushes.prototype.setBrushSize = function(size){
+	if (this.getBrush().type == "stamp"){
+		if (size == 1) size = 8;
+		else if (size == 4) size = 16;
+		else if (size == 8) size = 24;
+		else if (size == 16) size = 32;
+		else if (size == 32) size = 64;
+	}
+	console.log(size);
 	this.brush_size = size;
 }
