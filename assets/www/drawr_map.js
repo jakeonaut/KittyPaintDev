@@ -78,8 +78,8 @@ DrawrMap.prototype.loadNearbyChunks = function(viewer_radius){
     // viewer_radius is max(screen width, screen height), and is approximately 1 "screen length"
     // load all chunks within 1 screen length away from what is visible
     // load from the center out! <---- TODO!!!
-    var ingameX = this.getIngameOffsetX();
-    var ingameY = this.getIngameOffsetY();
+    var ingameX = -this.getIngameOffsetX();
+    var ingameY = -this.getIngameOffsetY();
     var ingameRadius = viewer_radius/this.per_pixel_scaling;
     
     //ingameX is topleft of screen. go 1 screen to right side of screen, then 1 more to fill out the radius
@@ -88,14 +88,17 @@ DrawrMap.prototype.loadNearbyChunks = function(viewer_radius){
     var chunk_min_y = Math.floor((ingameY - ingameRadius) / this.chunk_block_size);
     var chunk_max_y = Math.floor((ingameY + 2*ingameRadius) / this.chunk_block_size);
     
+    var str = "(" + chunk_min_x + "," + chunk_min_y + ") -> (" + chunk_max_x + "," + chunk_max_y + ") ";
+    
     for(var i=chunk_min_x; i <= chunk_max_x; ++i){
         for(var j=chunk_min_y; j <= chunk_max_y; ++j){
             if(!this.isChunkLoaded(i, j)){
                 this.loadChunk(i,j);
-                console.log("Chunk loaded!!: (" + i + ", " + j + ")");
+                str += "[" + i + ", " + j + "]";
             }
         }
     }
+    console.log(str);
 }
 
 DrawrMap.prototype.freeFarChunks = function(){
