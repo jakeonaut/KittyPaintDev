@@ -30,10 +30,8 @@ function DrawrMap(){
     this.offsetY = 0;
     
     for(var i=-1; i<2; ++i){
-        this.chunks[i] = {};
         for(var j=-1; j<2; ++j){
-            this.chunks[i][j] = new DrawrChunk(this);
-            this.chunks_loaded.push({x: i, y: j}); // NOT EXACTRLY TRUE LOADED
+            this.loadChunk(i,j);
         }
     }
 }
@@ -62,9 +60,39 @@ DrawrMap.prototype.moveY = function(dist){
     this.offsetY += dist;
 }
 
-DrawrMap.prototype.loadNearbyChunks = function(){
-    
+DrawrMap.prototype.loadChunk = function(chunk_numx, chunk_numy){
+    // THIS ISNT REALLY LOADING YET!!!!!
+    if(!this.chunks.hasOwnProperty(chunk_numx)){
+        this.chunks[chunk_numx] = {};
+    }
+    this.chunks[chunk_numx][chunk_numy] = new DrawrChunk(this);
+    this.chunks_loaded.push({x: chunk_numx, y: chunk_numy}); // NOT EXACTRLY TRUE LOADED
 }
+
+DrawrMap.prototype.loadNearbyChunks = function(viewer_radius){
+    // viewer_radius is max(screen width, screen height), and is approximately 1 "screen length"
+    // load all chunks within 1 screen length away from what is visible
+    // load from the center out! <---- TODO!!!
+    var ingameX = this.getIngameOffsetX();
+    var ingameY = this.getIngameOffsetY();
+    var ingameRadius = viewer_radius/this.per_pixel_scaling;
+    
+    //ingameX is topleft of screen. go 1 screen to right side of screen, then 1 more to fill out the radius
+    var chunk_min_x = Math.floor((ingameX - ingameRadius) / this.chunk_block_size);
+    var chunk_max_x = Math.floor((ingameX + 2*ingameRadius) / this.chunk_block_size);
+    var chunk_min_y = Math.floor((ingameY - ingameRadius) / this.chunk_block_size);
+    var chunk_max_y = Math.floor((ingameY + 2*ingameRadius) / this.chunk_block_size);
+    
+    for(var i=chunk_min_x; i <= chunk_max_x; ++i){
+        for(var j=chunk_min_y; j <= chunk_max_y; ++j){
+            if(!this.isChunkLoaded(i, j)){
+                this.loadChunk(i,j);
+                console.log("Chunk loaded!!: (" + i + ", " + j + ")");
+            }
+        }
+    }
+}
+
 DrawrMap.prototype.freeFarChunks = function(){
     
 }

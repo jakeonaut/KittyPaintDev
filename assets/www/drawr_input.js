@@ -139,6 +139,8 @@ KittyDrawr.prototype.mousemoveEvent = function(e){
         
         this.drawr_map.moveX(dx);
         this.drawr_map.moveY(dy);
+        ///////////////ABSTRACT THIS BETTER v
+        this.drawr_map.loadNearbyChunks(Math.max(this.getWidth(), this.getHeight()));
     }
     
     e.preventDefault(); //prevent mouse drag from trying to drag webpage
