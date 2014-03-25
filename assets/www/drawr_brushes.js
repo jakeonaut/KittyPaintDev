@@ -3,7 +3,7 @@ function DrawrBrushes(onload_continuation){
     //this.brush_names = ["circle1", "circle4","circle8","circle16","circle32","bar8"];
 	this.brush_names = ["circle","cathead","goblin","kappa"];
     this.brush_types = ["brush","stamp","stamp","stamp"];
-	this.brush_size = 1;
+	this.brush_sizes = [16, 16, 16, 32];
     this.selected_brush = 0;
     this.loaded_count = 0;
     
@@ -19,6 +19,7 @@ function DrawrBrushes(onload_continuation){
 			var brush_obj = {
 				img: temp_img, 
 				name: brush_name, 
+				size: this.brush_sizes[i],
 				type: this.brush_types[i], 
 				loaded: 0
 			};
@@ -84,13 +85,5 @@ DrawrBrushes.prototype.getBrushSize = function(){
 }
 
 DrawrBrushes.prototype.setBrushSize = function(size){
-	if (this.getBrush().type == "stamp"){
-		if (size == 1) size = 8;
-		else if (size == 4) size = 16;
-		else if (size == 8) size = 24;
-		else if (size == 16) size = 32;
-		else if (size == 32) size = 64;
-	}
-	console.log(size);
 	this.brush_size = size;
 }
