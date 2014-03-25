@@ -37,7 +37,7 @@ function now(){
     return (new Date)*1;
 }
 
-function replaceColor(ctx, old_r, old_g, old_b, n_r, n_g, n_b, ){
+function replaceColor(ctx, old_r, old_g, old_b, n_r, n_g, n_b){
     var pixels = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
     
     for(var i=0; i<imageData.data.length; i+=4){

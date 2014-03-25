@@ -23,6 +23,7 @@ function DrawrBrushes(onload_continuation){
     for(var i=0; i<this.brush_names.length; ++i){
         var temp_img = new Image();
         temp_img.src = "brushes/" + this.brush_names[i] + ".png";
+        temp_img.crossOrigin = "anonymous";
         
         var self_ref = this;
         temp_img.onload = function(){
@@ -41,15 +42,16 @@ function DrawrBrushes(onload_continuation){
         var color = this.named_colors[j];
         for(var i=0; i<this.stamp_names.length; ++i){
             var temp_img = new Image();
-            temp_img.src = "brushes/" + color.name + "/" + this.brush_names[i] + ".png";
+            temp_img.src = "brushes/" + color.name + "/" + this.stamp_names[i] + ".png";
+            temp_img.crossOrigin = "anonymous";
             
             var self_ref = this;
             temp_img.onload = function(){
                 var brush_obj = {
                     img: temp_img, 
-                    name: this.brush_names[i], 
+                    name: this.stamp_names[i], 
                     color: color.name, 
-                    size: this.brush_widths[i], 
+                    size: this.stamp_widths[i], 
                     loaded: 1
                 };
                 this.brushes.push(brush_obj);
