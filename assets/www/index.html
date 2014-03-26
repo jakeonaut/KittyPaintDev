@@ -105,7 +105,6 @@
 				<div class="select_box" id="size_box2" onClick="selectBrushSize(2,8);">8</div>
 				<div class="select_box" id="size_box3" onClick="selectBrushSize(3,16);">16</div>
 				<div class="select_box" id="size_box4" onClick="selectBrushSize(4,32);">32</div>
-				<div class="select_box" id="size_box5" onClick="selectBrushSize(5,64);">64</div>
 		
 				<span>Zoom: </span>
 				<select id="zoom_list" onchange="select_zoom();">
@@ -151,7 +150,7 @@
 	var brush_box_page = 0;
 	var num_brush_box_pages = 0;
 	var brush_boxes = [];
-	var num_size_boxes = 6;
+	var num_size_boxes = 5;
 	var size_boxes = [];
 	var current_brushes = [];
 	var brush_index = 0;
@@ -211,6 +210,7 @@
 	function select_zoom(){
 		var zoom = document.getElementById("zoom_list").value;
 		drawr.changePixelScale(zoom);
+		drawr.loadNearbyChunks();
 		document.getElementById("zoom_list").blur();
         document.getElementById("kittycanvas").focus();
 	}
@@ -234,7 +234,12 @@
 			if (real_brush_index < brush_list.length){
 				var brush = brush_list[real_brush_index];
 				current_brushes.push(brush);
-				brush_boxes[i].style.backgroundImage = "url('"+brush.img.src+"')";
+				
+				if (brush.type == "brush"){
+					brush_boxes[i].style.backgroundImage = "url('"+brush.sizes[4].img.src+"')";
+				}else if (brush.type == "stamp"){
+					brush_boxes[i].style.backgroundImage = "url('"+brush.img.src+"')";
+				}
 			}else{
 				brush_boxes[i].style.backgroundColor = "";
 				brush_boxes[i].style.backgroundImage = "";
