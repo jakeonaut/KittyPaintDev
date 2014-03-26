@@ -29,6 +29,7 @@ KittyDrawr.prototype.setup_mouse = function(){
     setInterval(function(e){ self_reference.handleKeys(); }, this.frame_time);
     
     window.onresize = function(){ self_reference.screenResizeEvent(); }
+    this.loadNearbyChunks();
 }
 
 
@@ -140,7 +141,7 @@ KittyDrawr.prototype.mousemoveEvent = function(e){
         this.drawr_map.moveX(dx);
         this.drawr_map.moveY(dy);
         ///////////////ABSTRACT THIS BETTER v
-        this.drawr_map.loadNearbyChunks(Math.max(this.getWidth(), this.getHeight()));
+        this.loadNearbyChunks();
     }
     
     e.preventDefault(); //prevent mouse drag from trying to drag webpage

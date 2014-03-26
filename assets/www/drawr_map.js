@@ -74,6 +74,26 @@ DrawrMap.prototype.loadChunk = function(chunk_numx, chunk_numy){
     this.chunks_loaded.push({x: chunk_numx, y: chunk_numy}); // NOT EXACTRLY TRUE LOADED
 }
 
+DrawrMap.prototype.unloadChunk = function(chunk_numx, chunk_numy){
+    if(this.isChunkLoaded(chunk_numx, chunk_numy)){
+        this.chunks[chunk_numx][chunk_numy] = 0;
+    }
+}
+
+DrawrMap.prototype.foreachChunk = function(block){
+    for(var numx in this.chunks){
+        if(this.chunks.hasOwnProperty(numx)){
+            for(var numy in this.chunks[numx]){
+                if(this.chunks[numx].hasOwnProperty(numy)){
+                    if(this.isChunkLoaded(numx,numy)){
+                        block(numx,numy);
+                    }
+                }
+            }
+        }
+    }
+}
+
 DrawrMap.prototype.loadNearbyChunks = function(viewer_radius){
     // viewer_radius is max(screen width, screen height), and is approximately 1 "screen length"
     // load all chunks within 1 screen length away from what is visible
@@ -88,21 +108,48 @@ DrawrMap.prototype.loadNearbyChunks = function(viewer_radius){
     var chunk_min_y = Math.floor((ingameY - ingameRadius) / this.chunk_block_size);
     var chunk_max_y = Math.floor((ingameY + 2*ingameRadius) / this.chunk_block_size);
     
-    var str = "(" + chunk_min_x + "," + chunk_min_y + ") -> (" + chunk_max_x + "," + chunk_max_y + ") ";
+    var str = "load (" + chunk_min_x + "," + chunk_min_y + ") -> (" + chunk_max_x + "," + chunk_max_y + ") ";
+    var didit = false;
     
     for(var i=chunk_min_x; i <= chunk_max_x; ++i){
         for(var j=chunk_min_y; j <= chunk_max_y; ++j){
             if(!this.isChunkLoaded(i, j)){
                 this.loadChunk(i,j);
-                str += "[" + i + ", " + j + "]";
+                str += "[" + i + "," + j + "] ";didit = true;
             }
         }
     }
-    console.log(str);
+    didit && console.log(str);
 }
 
-DrawrMap.prototype.freeFarChunks = function(){
+DrawrMap.prototype.freeFarChunks = function(viewer_radius){
+    // viewer_radius is max(screen width, screen height), and is approximately 1 "screen length"
+    // free all chunks outside 2 screen lengths away from what is visible
+    var ingameX = -this.getIngameOffsetX();
+    var ingameY = -this.getIngameOffsetY();
+    var ingameRadius = viewer_radius/this.per_pixel_scaling;
     
+    //ingameX is topleft of screen. go 1 screen to right side of screen, then 2 more to fill out the radius
+    var chunk_min_x = Math.floor((ingameX - 2*ingameRadius) / this.chunk_block_size);
+    var chunk_max_x = Math.floor((ingameX + 3*ingameRadius) / this.chunk_block_size);
+    var chunk_min_y = Math.floor((ingameY - 2*ingameRadius) / this.chunk_block_size);
+    var chunk_max_y = Math.floor((ingameY + 3*ingameRadius) / this.chunk_block_size);
+    
+    var str = "free (" + chunk_min_x + "," + chunk_min_y + ") -> (" + chunk_max_x + "," + chunk_max_y + ") ";
+    var didit = false;
+    
+    var self = this;
+    this.foreachChunk(function(numx, numy){
+        if(numx < chunk_min_x ||
+           numy < chunk_min_y ||
+           numx > chunk_max_x ||
+           numy > chunk_max_y){
+            self.unloadChunk(numx, numy);
+            str += "[" + numx + "," + numy + "] ";didit = true;
+        }
+    });
+    
+    didit && console.log(str);
 }
 
 DrawrMap.prototype.addPointRelative = function(x, y, screenOffsetX, screenOffsetY, brush){
@@ -113,7 +160,9 @@ DrawrMap.prototype.addPointRelative = function(x, y, screenOffsetX, screenOffset
 }
 
 DrawrMap.prototype.isChunkLoaded = function(chunk_numx, chunk_numy){
-    if(this.chunks.hasOwnProperty(chunk_numx) && this.chunks[chunk_numx].hasOwnProperty(chunk_numy)){
+    if(this.chunks.hasOwnProperty(chunk_numx) &&
+       this.chunks[chunk_numx].hasOwnProperty(chunk_numy) &&
+       this.chunks[chunk_numx][chunk_numy]){
         return true;
     }else{
         return false;
@@ -233,14 +282,13 @@ DrawrMap.prototype.draw = function(ctx){
     ctx.mozImageSmoothingEnabled = false;
     ctx.webkitImageSmoothingEnabled = false;
     
-    for(var i=0; i<this.chunks_loaded.length; ++i){
-        var chunk_numx = this.chunks_loaded[i].x;
-        var chunk_numy = this.chunks_loaded[i].y;
-        var onscreenx = chunk_numx * this.chunk_onscreen_size + this.offsetX;
-        var onscreeny = chunk_numy * this.chunk_onscreen_size + this.offsetY;
-        var chunk_canvas = this.chunks[chunk_numx][chunk_numy].canvas;
-        ctx.drawImage(chunk_canvas, onscreenx, onscreeny, this.chunk_onscreen_size, this.chunk_onscreen_size);
-    }
+    var self = this;
+    this.foreachChunk(function(chunk_numx, chunk_numy){
+        var onscreenx = chunk_numx * self.chunk_onscreen_size + self.offsetX;
+        var onscreeny = chunk_numy * self.chunk_onscreen_size + self.offsetY;
+        var chunk_canvas = self.chunks[chunk_numx][chunk_numy].canvas;
+        ctx.drawImage(chunk_canvas, onscreenx, onscreeny, self.chunk_onscreen_size, self.chunk_onscreen_size);
+    });
 }
 
 

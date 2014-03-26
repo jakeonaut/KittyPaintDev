@@ -74,6 +74,14 @@ KittyDrawr.prototype.writeDebug = function(){
     }
 }
 
+KittyDrawr.prototype.loadNearbyChunks = function(){
+    this.drawr_map.loadNearbyChunks(Math.max(this.getWidth(), this.getHeight()));
+}
+
+KittyDrawr.prototype.freeFarChunks = function(){
+    this.drawr_map.freeFarChunks(Math.max(this.getWidth(), this.getHeight()));
+}
+
 
 
 KittyDrawr.prototype.update = function(){
@@ -90,7 +98,9 @@ KittyDrawr.prototype.update = function(){
         this.fps = this.fps_counter;
         this.fpsLastUpdate = nowTime;
         this.fps_counter = 0;
+        
         this.updateDebugString(); // update this every second while we're at it
+        this.freeFarChunks();
     }
     this.writeDebug();
     
