@@ -56,10 +56,30 @@
 			width: 32px;
 			height: 32px;
 			border: solid black 1px;
+			color: black;
 			float:left;
 			margin-right:3px;
 			margin-bottom:3px;
 			cursor:pointer;
+		}
+		.selected_box{
+			width: 32px;
+			height: 32px;
+			border: solid white 1px;
+			color: black;
+			float:left;
+			margin-right:3px;
+			margin-bottom:3px;
+			cursor:pointer;
+		}
+		.disabled_select_box{
+			width: 32px;
+			height: 32px;
+			border: solid #A0A0A0 1px;
+			color: #A0A0A0;
+			float:left;
+			margin-right:3px;
+			margin-bottom:3px;
 		}
         
         canvas {
@@ -180,32 +200,58 @@
 	
 	function selectBrush(index){
 		for (var i=0; i<brush_boxes.length;++i){
-			brush_boxes[i].style.border = "solid black 1px";
+			brush_boxes[i].className = "select_box";
 		}
 		if (index < current_brushes.length){
 			console.log(current_brushes[index].name);
 			brushes.selectBrush(index+(num_brush_boxes*brush_box_page));
-			brush_boxes[index].style.border = "solid white 1px";
+			brush_boxes[index].className = "selected_box";
 			brush_index = index;
+		}
+		
+		fixBrushSize();
+	}
+	
+	function fixBrushSize(){
+		for (var i=0; i<size_boxes.length; ++i){
+			size_boxes[i].className = "select_box";
+		}
+		var brush = brushes.getBrush();
+		if (brush.type == "stamp"){
+			var index = 1;
+			size_boxes[0].className = "disabled_select_box";
+			if (brush.size >= 8){ 
+				index = 2;
+				size_boxes[1].className = "disabled_select_box";
+			}
+			if (brush.size >= 16){ 
+				index = 3;
+				size_boxes[2].className = "disabled_select_box";
+			}
+			if (brush.size >= 32){ 
+				index = 4;
+				size_boxes[3].className = "disabled_select_box";
+			}
+		
+			if (brush_size < brush.size) selectBrushSize(index, brush.size);
 		}
 	}
 	
 	function selectBrushSize(index, size){
-		for (var i=0; i<size_boxes.length;++i){
-			size_boxes[i].style.border = "solid black 1px";
+		var brush = brushes.getBrush();
+		if (brush.type == "stamp"){
+			if (size < brush.size) return;
 		}
-		size_boxes[index].style.border = "solid white 1px";
+		
+		for (var i=0; i<size_boxes.length;++i){
+			if (size_boxes[i].className != "disabled_select_box")
+				size_boxes[i].className = "select_box";
+		}
+		size_boxes[index].className = "selected_box";
 		brush_size_index = index;
 		brush_size = size;
 		brushes.setBrushSize(size);
 	}
-    
-    function select_brush(){
-        brushes.selectBrush(document.getElementById("brush_list").value, document.getElementById("color_list").value);
-        document.getElementById("brush_list").blur();
-        document.getElementById("color_list").blur();
-        document.getElementById("kittycanvas").focus();
-    }
 	
 	function select_zoom(){
 		var zoom = document.getElementById("zoom_list").value;

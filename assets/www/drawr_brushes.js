@@ -5,7 +5,7 @@ function DrawrBrushes(onload_continuation){
     this.brush_types = ["brush","stamp","stamp","stamp"];
 	this.brush_sizes = [32, 16, 16, 32];
 	this.size_variations = [1, 4, 8, 16, 32];
-	this.num_brush_variations = 10;
+	this.num_brush_variations_per_brush = 10;
     this.selected_brush = 0;
     this.brush_size = 1;
     this.loaded_count = 0;
@@ -13,7 +13,7 @@ function DrawrBrushes(onload_continuation){
 	//load brushes and stamps
 	for(var i=0; i<this.brush_names.length; ++i){
 		name = this.brush_names[i];
-		for (var j = 0; j<this.num_brush_variations; ++j){
+		for (var j = 0; j<this.num_brush_variations_per_brush; ++j){
 			var type = this.brush_types[i];
 			if (type == "brush"){
 				var sizes = [];
