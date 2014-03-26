@@ -179,7 +179,7 @@
 	
     var brushes = new DrawrBrushes(function(){  // maybe we need a loading screen for this
 		//Load Brushes
-		num_brush_box_pages = Math.floor(brushes.getBrushes().length/num_brush_boxes);
+		num_brush_box_pages = Math.ceil(brushes.getBrushes().length/num_brush_boxes);
 		for (var i=0; i<num_brush_boxes;++i){
 			brush_boxes[i] = document.getElementById("brush_box"+i);
 		}
@@ -199,7 +199,7 @@
     }
 	
 	function selectBrush(index){
-		for (var i=0; i<brush_boxes.length;++i){
+		for (var i=0; i<current_brushes.length;++i){
 			brush_boxes[i].className = "select_box";
 		}
 		if (index < current_brushes.length){
@@ -208,8 +208,20 @@
 			brush_boxes[index].className = "selected_box";
 			brush_index = index;
 		}
-		
+	
 		fixBrushSize();
+	}
+	
+	function fixSelectedBrush(){
+		if (brush_index >= current_brushes.length){
+			for (var i=0; i<brush_boxes.length;++i){
+				if (i < current_brushes.length){
+					brush_index = i;
+				}else{
+					brush_boxes[i].className = "disabled_select_box";
+				}
+			}
+		}
 	}
 	
 	function fixBrushSize(){
@@ -237,8 +249,8 @@
 				brush_size = brush.size;
 				brush_size_index = index;
 			}
-			selectBrushSize(brush_size_index, brush_size);
 		}
+		selectBrushSize(brush_size_index, brush_size);
 	}
 	
 	function selectBrushSize(index, size){
@@ -286,15 +298,16 @@
 				current_brushes.push(brush);
 				
 				if (brush.type == "brush"){
-					brush_boxes[i].style.backgroundImage = "url('"+brush.sizes[4].img.src+"')";
+					brush_boxes[i].style.background = "url('"+brush.sizes[4].img.src+"')  no-repeat center";
 				}else if (brush.type == "stamp"){
-					brush_boxes[i].style.backgroundImage = "url('"+brush.img.src+"')";
+					brush_boxes[i].style.background = "url('"+brush.img.src+"') no-repeat center";
 				}
 			}else{
 				brush_boxes[i].style.backgroundColor = "";
-				brush_boxes[i].style.backgroundImage = "";
+				brush_boxes[i].style.background = "";
 			}
 		}
+		fixSelectedBrush();
 		selectBrush(brush_index);
 		selectBrushSize(brush_size_index, brush_size);
 	}
