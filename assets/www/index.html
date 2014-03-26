@@ -233,7 +233,11 @@
 				size_boxes[3].className = "disabled_select_box";
 			}
 		
-			if (brush_size < brush.size) selectBrushSize(index, brush.size);
+			if (brush_size < brush.size){
+				brush_size = brush.size;
+				brush_size_index = index;
+			}
+			selectBrushSize(brush_size_index, brush_size);
 		}
 	}
 	
