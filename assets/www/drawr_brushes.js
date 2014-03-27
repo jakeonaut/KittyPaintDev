@@ -82,21 +82,6 @@ DrawrBrushes.prototype.getBrushNames = function(){
 	return this.brush_names;
 }
 
-DrawrBrushes.prototype.getBrushAndStampNames = function(){
-	var brushAndStampNames = [];
-	for (var i=0; i < this.brush_names.length; ++i){
-		brushAndStampNames.push(this.brush_names[i]);
-	}
-	for (var i=0; i < this.stamp_names.length; ++i){
-		brushAndStampNames.push(this.stamp_names[i]);
-	}
-	return brushAndStampNames;
-}
-
-DrawrBrushes.prototype.getColors = function(){
-    return this.named_colors;
-}
-
 DrawrBrushes.prototype.selectBrush = function(brush){
     if(brush + '' == (1*brush) + ''){ // if brush by number
         this.selected_brush = 1*brush;
