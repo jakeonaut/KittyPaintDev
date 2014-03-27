@@ -17,12 +17,12 @@ function DrawrBrushes(onload_continuation){
 		for (var j = 0; j<this.brush_variations[i]; ++j){
 			var type = this.brush_types[i];
 			if (type == "brush"){
-				var sizes = [];
+				var sized_images = [];
 				var brush_obj = {
-					img: new Image(),
+					img: null,
 					name: name + j,
 					size: 0,
-					sizes: [],
+					sized_images: [],
 					type: type,
 					loaded: 1 - this.size_variations.length
 				}
@@ -30,12 +30,7 @@ function DrawrBrushes(onload_continuation){
 					var temp_img = new Image();
 					var size = this.size_variations[k];
 					temp_img.src = "brushes/"+name+"/"+j+"/"+size+".png"; //brushes/circle/0/16.png
-					var brush_size_obj = {
-						img: temp_img,
-						size: size,
-						loaded: 0
-					}
-					sizes.push(brush_size_obj);
+					sized_images.push(temp_img);
 					
 					var self_ref = this;
 					temp_img.onload = function(){
@@ -47,7 +42,7 @@ function DrawrBrushes(onload_continuation){
 						}
 					}
 				}
-				brush_obj.sizes = sizes;
+				brush_obj.sized_images = sized_images;
 				this.brushes.push(brush_obj);
 			}
 			else if (type == "stamp"){
@@ -59,6 +54,7 @@ function DrawrBrushes(onload_continuation){
 					img: temp_img, 
 					name: brush_name, 
 					size: this.brush_sizes[i],
+					sized_images: null,
 					type: type, 
 					loaded: 0
 				};

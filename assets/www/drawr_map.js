@@ -22,8 +22,7 @@ DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
 		if (size == 16) index = 3;
 		if (size == 32) index = 4;
 		
-		var sized_brush = brush.sizes[index];
-		var brush_img = sized_brush.img;
+		var brush_img = brush.sized_images[index];
 		this.ctx.drawImage(brush_img, local_x-s, local_y-s);
 	}else if (brush.type == "stamp"){
 		var brush_img = brush.img;

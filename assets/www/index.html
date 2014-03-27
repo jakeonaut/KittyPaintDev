@@ -174,8 +174,8 @@
 	var size_boxes = [];
 	var current_brushes = [];
 	var brush_index = 0;
-	var brush_size_index = 3;
-	var brush_size = 16;
+	var brush_size_index = 2;
+	var brush_size = 8;
 	
     var brushes = new DrawrBrushes(function(){  // maybe we need a loading screen for this
 		//Load Brushes
@@ -298,7 +298,7 @@
 				current_brushes.push(brush);
 				
 				if (brush.type == "brush"){
-					brush_boxes[i].style.background = "url('"+brush.sizes[4].img.src+"')  no-repeat center";
+					brush_boxes[i].style.background = "url('"+brush.sized_images[4].src+"')  no-repeat center";
 				}else if (brush.type == "stamp"){
 					brush_boxes[i].style.background = "url('"+brush.img.src+"') no-repeat center";
 				}
