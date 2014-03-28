@@ -1,10 +1,10 @@
 function DrawrBrushes(onload_continuation){
     this.brushes = [];
     //this.brush_names = ["circle1", "circle4","circle8","circle16","circle32","bar8"];
-	this.brush_names = ["circle","cathead","goblin","kappa","custom"]; //"dota"];
+	this.brush_names = ["circle","critters","cat","cat32","kappa","custom"]; //"dota"];
     this.brush_types = ["brush","stamp","stamp","stamp","stamp"]; //"stamp"];
-	this.brush_variations = [10, 4, 6, 1, 0]; //102];
-	this.brush_sizes = [32, 16, 16, 32, 16]; //32];
+	this.brush_variations = [10, 7, 5, 1, 1, 0]; //102];
+	this.brush_sizes = [32, 16, 16, 32, 32, 16]; //32];
 	
 	this.selected_brush = 0;
     this.brush_size = 1;
