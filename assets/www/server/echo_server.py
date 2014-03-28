@@ -18,11 +18,11 @@ class TCPHandler(socketserver.StreamRequestHandler):
         print(str(iddd) + " CONNECTED: " + str(self.remoteaddr))
         while True:
             try:
-                self.data = self.rfile.readline().strip()
+                self.data = self.rfile.readline()
                 if not self.data:
                     break
                 self.data = self.data.decode(encoding="UTF-8")
-                print(str(iddd) + " " + self.data)
+                print(str(iddd) + " " + self.data.strip())
             except:
                 break
         print(str(iddd) + " DISCONNECT: " + str(self.remoteaddr))

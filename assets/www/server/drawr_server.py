@@ -1,9 +1,8 @@
 import json
-import socketserver
+import SocketServer
 import socket
 import re
 import time
-import urllib.parse
 #import drawr_server_brushes
 #import drawr_server_map
 
@@ -17,12 +16,17 @@ def utc_now():
     return int(round(time.time() * 1000))
     
 
-def strip_path(p):
-    p = re.sub(r'^http:\/\/','',p)
-    p = re.sub(r'^.*\/','',p)
-    return p
+def parse_path(p):
+    reg = r"^([a-z]+:\/\/[^\/]*)?\/*(?P<path>.*)$"
+    m = re.match(reg, p)
+    return m.group('path')
 
-class DrawrHandler(socketserver.StreamRequestHandler):
+def parse_headers(headers_str):
+    # sexy regex thx to http://stackoverflow.com/questions/4685217/parse-raw-http-headers
+    headers = dict(re.findall(r"(?P<name>.*?): ?(?P<value>.*?)\r?\n", header))
+    return headers
+
+class DrawrHandler(SocketServer.StreamRequestHandler):
 
     """
     Instantiated once per connection to the server.
@@ -89,26 +93,53 @@ class DrawrHandler(socketserver.StreamRequestHandler):
 
         else:
             self.send_error(404, "Invalid Request")
+
+    def request_chunk(self,query):
+    
+
+    def route(self):
+        just_path = parse_path(self.path)
+        match = re.match(r'(?P<path>[a-z]+)\?(?P<query>.*)$', just_path)
+
+        if match.group('path') == "drawr" or "Upgrade" in self.headers:
             
+        
 
-    def parse_and_do_request(self):
+    def readline(self):
+        try:
+            line = self.rfile.readline()
+            if not line:
+                #self.close_connection = 1
+                return False
 
-        # HTTP requests are of the form:
-        # <command> <path> <version>
-        # with spaces appearing only between those, and <path> url encoded
-        # command is case sensitive GET, POST, etc.
-        # version can be ignored because doesn't matter here
+            line = line.decode(encoding="UTF-8")
+            print(str(self.conn_id) + "|" + line.decode(encoding="UTF-8"))
+            return line
+            #######self.wfile.flush()
+        except socket.timeout as e:
+            # a read or write timed out. Discard connection
+            #self.close_connection = 1
+            return False
 
-        # All of the data this server will read will be in the <path>
-        # passed as CGI arguments after a "?" added to the requested path
+    def read_request_headers(self):
+        headers_str = ""
+        while True:
+            line = self.readline()
+            if not line: return False
 
-        self.close_connection = 0 # changed later depending on command MAYBEEE
+            if not line.strip():
+                # finished reading headers, got a blank line
+                break
 
-        words = self.requestline.split()
-        print(self.requestline.decode(encoding="UTF-8"))
+            headers_str += line
+        self.headers = parse_headers(headers_str)
 
-        for i in range(0,len(words)):
-            words[i] = words[i].decode(encoding="UTF-8")
+    def handle_one_request(self):
+        line = self.readline()
+        if not line: return False
+        line = line.strip()
+        
+        words = line.split()
 
         if len(words) not in [2,3]:
             self.send_error(404, "Invalid Request");
@@ -118,41 +149,24 @@ class DrawrHandler(socketserver.StreamRequestHandler):
         self.path = words[1]
 
         if self.command == "GET":
+            self.read_request_headers()
             self.route()
-            #####
-            #self.send_response(self.path.upper())
-            #print(self.path.upper())
         else:
             self.send_error(404, "Invalid Request - only GET supported")
             return False
-
-    def handle_one_request(self):
-        try:
-            self.requestline = self.rfile.readline().strip()
-            if not self.requestline:
-                self.close_connection = 1
-                return
-            if not self.parse_and_do_request():
-                # An error code has been sent, just exit
-                self.close_connection = 1
-                return
-            self.wfile.flush()
-        except socket.timeout as e:
-            # a read or write timed out. Discard connection
-            self.close_connection = 1
-            return
     
     def handle(self):
         """Handle multiple HTTP requests if necessary"""
-        self.close_connection = 1
+        self.close_connection = 0
+        self.conn_id = DrawrHandler.unique_connection_id
+        DrawrHandler.unique_connection_id += 1
 
-        print("got connection")
+        print(str(self.conn_id) + "|connect: " + str(self.remote_addr))
 
-        self.handle_one_request()
         while not self.close_connection:
             self.handle_one_request()
 
-        print("a connection closed\n")
+        print(str(self.conn_id) + "|closed: " + str(self.remote_addr))
 
 
     def send_error(self, code, message="Error"):
