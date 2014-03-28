@@ -203,20 +203,6 @@
         Android.showToast(toast);
     }
 	
-	function selectBrush(index){
-		for (var i=0; i<current_brushes.length;++i){
-			brush_boxes[i].className = "select_box";
-		}
-		if (index < current_brushes.length){
-			console.log(current_brushes[index].name);
-			brushes.selectBrush(index+(num_brush_boxes*brush_box_page));
-			brush_boxes[index].className = "selected_box";
-			brush_index = index;
-		}
-	
-		fixBrushSize();
-	}
-	
 	function fixSelectedBrush(){
 		if (brush_index >= current_brushes.length){
 			for (var i=0; i<brush_boxes.length;++i){
@@ -226,7 +212,25 @@
 					brush_boxes[i].className = "disabled_select_box";
 				}
 			}
+		}else{
+			for (var i=current_brushes.length-1; i < brush_boxes.length;++i){
+				brush_boxes[i].className = "disabled_select_box";
+			}
 		}
+	}
+	
+	function selectBrush(index){
+		if (index >= current_brushes.length) return;
+		for (var i=0; i<current_brushes.length;++i){
+			brush_boxes[i].className = "select_box";
+		}
+		
+		console.log(current_brushes[index].name);
+		brushes.selectBrush(index+(num_brush_boxes*brush_box_page));
+		brush_boxes[index].className = "selected_box";
+		brush_index = index;
+			
+		fixBrushSize();
 	}
 	
 	function fixBrushSize(){

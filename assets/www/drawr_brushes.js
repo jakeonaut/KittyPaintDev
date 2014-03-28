@@ -1,10 +1,10 @@
 function DrawrBrushes(onload_continuation){
     this.brushes = [];
     //this.brush_names = ["circle1", "circle4","circle8","circle16","circle32","bar8"];
-	this.brush_names = ["circle","cathead","goblin","kappa","dota", "custom"];
-    this.brush_types = ["brush","stamp","stamp","stamp","stamp","stamp"];
-	this.brush_variations = [10, 4, 6, 1, 102, 0];
-	this.brush_sizes = [32, 16, 16, 32, 32, 16];
+	this.brush_names = ["circle","cathead","goblin","kappa","custom"]; //"dota"];
+    this.brush_types = ["brush","stamp","stamp","stamp","stamp"]; //"stamp"];
+	this.brush_variations = [10, 4, 6, 1, 0]; //102];
+	this.brush_sizes = [32, 16, 16, 32, 16]; //32];
 	
 	this.selected_brush = 0;
     this.brush_size = 1;
@@ -113,10 +113,10 @@ DrawrBrushes.draw = function(ctx, x, y, brush, size){
 	var s = Math.floor(size/2);
 	if (brush.type == "brush"){
 		index = 0;
-		if (size == 4) index = 1;
-		if (size == 8) index = 2;
-		if (size == 16) index = 3;
-		if (size == 32) index = 4;
+		if (size == 4) 			index = 1;
+		else if (size == 8) 	index = 2;
+		else if (size == 16) 	index = 3;
+		else if (size == 32) 	index = 4;
 		
 		var brush_img = brush.sized_images[index];
 		ctx.drawImage(brush_img, x-s, y-s);

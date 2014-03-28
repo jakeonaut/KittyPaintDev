@@ -1,3 +1,4 @@
+import math
 import Image
 # http://effbot.org/imagingbook/introduction.htm
 
@@ -34,7 +35,7 @@ class DrawrBrushes():
 					brush_obj = BrushObj(None, name+j, 0, [], type, 1-len(self.size_variations))
 					for k in range(0, len(self.size_variations)):
 						size = self.size_variations[k]
-						src = "brushes/"+name+"/"+str(j)+"/"+size+".png" #brushes/circle/0/16.png
+						src = "../brushes/"+name+"/"+str(j)+"/"+size+".png" #../brushes/circle/0/16.png
 						try:
 							temp_img = Image.open(src)
 							sized_images.push(temp_img)
@@ -47,7 +48,7 @@ class DrawrBrushes():
 					brush_obj.sized_images = sized_images
 					self.brushes.push(brush_obj)
 				elif type == "stamp":
-					src = "brushes/"+name+"/"+str(j)+".png"
+					src = "../brushes/"+name+"/"+str(j)+".png"
 					try:
 						temp_img = Image.open(src)
 						brush_obj = BrushObj(temp_img, name+str(j), self.brush_sizes[i], None, type, 1)
@@ -85,5 +86,19 @@ class DrawrBrushes():
 		
 	def getBrushSize(self):
 		return self.brush_size
+		
+	@staticmethod
+	def draw(self, box, x, y, brush, size):
+		s = math.floor(size/2.0)
+		if brush.type == "brush":
+			index = 0
+			if size == 4: 	index = 1
+			elif size == 8: index = 2
+			elif size == 16:index = 3
+			elif size = 32:	index = 4
+			
+			self.chunk_im.paste(brush.sized_images[index], box)
+		elif brush.type == "stamp":
+			self.chunk_im.paste(brush.img, box)
 
 image.paste(something, (0,0,100,100))
