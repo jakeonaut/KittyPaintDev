@@ -1,4 +1,4 @@
-import drawr_server_brushes
+#import drawr_server_brushes
 
 class DrawrChunk():
     def __init__(self, drawr_map, numx, numy):
@@ -69,7 +69,7 @@ class DrawrMap():
         
         return chunks_found
         
-    def getChunkLocalCoordinates(self, gamex, gamey, chunk_nums_affected, brush){
+    def getChunkLocalCoordinates(self, gamex, gamey, chunk_nums_affected, brush):
         # calculate pixel location in local coordinates of each of the 4 possible chunks.
         # getChunksAffected will always return in this order: topleft, bottomleft, topright, bottomright 
         # Preserve this order in this return
@@ -99,10 +99,10 @@ class DrawrMap():
         
         chunks_written = [] # store the chunks already written to, to avoid redundancy
         
-        for i in range(0,4){
+        for i in range(0,4):
             if chunks_affected[i] and chunks_local_coords[i]:
-                chunk_numx = chunks_affected[i]['x'];
-                chunk_numy = chunks_affected[i]['y'];
+                chunk_numx = chunks_affected[i]['x']
+                chunk_numy = chunks_affected[i]['y']
                 chunk_written_id = str(chunk_numx) + ":" + str(chunk_numy)
                 if chunk_written_id not in chunks_written:
                     if not self.isChunkLoaded(chunk_numx, chunk_numy):
@@ -112,7 +112,4 @@ class DrawrMap():
                     chunk.addPoint(chunks_local_coords[i]['x'], chunks_local_coords[i]['y'], brush, size)
                     
                     chunks_written.append(chunk_written_id)
-                }
-            }
-        }
         pass

@@ -1,0 +1,33 @@
+
+
+<input type="button" value="networktest" onClick="networkerino();"/>
+<input type="button" value="murder" onClick="murder();"/><br/>
+<div id="stupid">nothing<br/></div>
+
+<script type="text/javascript" src="network.js"></script>
+<script type="text/javascript">
+    var socket;
+    var d = document.getElementById("stupid");
+
+    function networkerino(){
+        if("WebSocket" in window){
+            socket = new WebSocket("ws://localhost:27182/");
+            socket.onopen = function(){
+                socket.send("PONY");
+                d.innerHTML += "SENT<br/>";
+            };
+            socket.onmessage = function(e){
+                var rec_msg = e.data;
+                d.innerHTML += "messagerino: " + rec_msg + "<br/>";
+            };
+            socket.onclose = function(e){
+                d.innerHTML += "ded ;-;<br/>";
+            };
+        }
+    }
+    
+    function murder(){
+        socket.close();
+        d.innerHTML += "xx<br/>";
+    }
+</script>

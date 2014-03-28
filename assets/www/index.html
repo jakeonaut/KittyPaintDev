@@ -144,6 +144,7 @@
                 Drawr Server: <input type="text" id="server_url" class="server_box" value="http://127.0.0.1:27182"/>
                 <!--br/>
                 Room: <input type="text" id="room" class="server_box" value="testroom"/-->
+                <input type="button" value="networktest" onClick="networkerino();"/>
             </div>
             <div class="button_holder" style="overflow-y:scroll;height:3em;border: 1px solid black;">
                 <div id="debug">-<br/>-<br/>-</div>
@@ -166,7 +167,9 @@
 <script type="text/javascript" src="drawr_input.js"></script>
 
 <script type="text/javascript">
-    var drawr_client = DrawrClient();
+    function networkerino(){
+        var drawr_client = DrawrClient();
+    }
 
     var num_brush_boxes = 10;
 	var brush_box_page = 0;
