@@ -14,21 +14,7 @@ function DrawrChunk(drawr_map){
     drawLine(this.ctx, "purple", 1, drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, 1);
 }
 DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
-	var s = Math.floor(size/2);
-	if (brush.type == "brush"){
-		index = 0;
-		if (size == 4) index = 1;
-		if (size == 8) index = 2;
-		if (size == 16) index = 3;
-		if (size == 32) index = 4;
-		
-		var brush_img = brush.sized_images[index];
-		this.ctx.drawImage(brush_img, local_x-s, local_y-s);
-	}else if (brush.type == "stamp"){
-		var brush_img = brush.img;
-		
-		this.ctx.drawImage(brush_img, local_x-s, local_y-s, size, size);
-	}
+    DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size);
 }
 
 

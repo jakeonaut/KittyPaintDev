@@ -108,3 +108,21 @@ DrawrBrushes.prototype.getBrushSize = function(){
 DrawrBrushes.prototype.setBrushSize = function(size){
 	this.brush_size = size;
 }
+
+DrawrBrushes.draw = function(ctx, x, y, brush, size){
+	var s = Math.floor(size/2);
+	if (brush.type == "brush"){
+		index = 0;
+		if (size == 4) index = 1;
+		if (size == 8) index = 2;
+		if (size == 16) index = 3;
+		if (size == 32) index = 4;
+		
+		var brush_img = brush.sized_images[index];
+		ctx.drawImage(brush_img, x-s, y-s);
+	}else if (brush.type == "stamp"){
+		var brush_img = brush.img;
+		
+		ctx.drawImage(brush_img, x-s, y-s, size, size);
+	}
+}
