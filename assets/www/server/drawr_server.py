@@ -4,10 +4,10 @@ import socket
 import re
 import time
 import urllib.parse
-import drawr_server_brushes
-import drawr_server_map
+#import drawr_server_brushes
+#import drawr_server_map
 
-from PIL import Image
+#from PIL import Image
 
 host = "" #127.0.0.1
 port = 27182 # 80
@@ -27,6 +27,12 @@ class DrawrHandler(socketserver.StreamRequestHandler):
     """
     Instantiated once per connection to the server.
     """
+
+    unique_connection_id = 0
+
+    def __init__(self, request, client_address, server):
+        self.remote_addr = client_address
+        super(DrawrHandler, self).__init__(request, client_address, server)
 
     def route(self):
         #### below, r is current time to prevent caching

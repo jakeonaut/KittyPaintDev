@@ -1,7 +1,23 @@
 
-/*** network.js V1.0 ***/
 
-var loadJsonUniqueUrlId = 0;
+var XHRUniqueUrlId = 0;
+
+function DrawrClient(){
+    if("WebSocket" in window){
+        this.socket = new WebSocket("ws://localhost:27182/");
+        this.socket.onopen = function(){
+            this.socket.send("PONY");
+            alert("SENT");
+        };
+        this.socket.onmessage = function(e){
+            var rec_msg = evt.data;
+            alert("messagerino + " + rec_msg);
+        };
+        this.socket.onclose = function(e){
+            alert("ded ;-;");
+        };
+    }
+}
 
 function loadJSON(uri_string, handler){
     var http_request = new XMLHttpRequest();
@@ -44,18 +60,6 @@ function loadJSON(uri_string, handler){
             document.getElementById("debug").innerHTML = response + "#" + loadJsonUniqueUrlId;
         }
     }, 0);*/
-}
-
-function joinRoom(name){
-    
-}
-
-function broadcastDrawrObject(drawrObject){
-    var s = drawrObject.serialize();
-}
-
-function getDrawrObjects(){
-    //var newDObject = deserialze(..); //how to make a static method -- GOOGLE THISD<<-----
 }
     
     ///////// DO THINGS ABOUT THIS !!!!

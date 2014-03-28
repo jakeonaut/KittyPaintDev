@@ -11,7 +11,7 @@ class BrushObj():
 		self.loaded = loaded
 
 class DrawrBrushes():
-    def __init__(self):
+    def __init__(self):  # # # I think this function will block while loading brushes
         self.brushes = []
         self.brush_names = ["circle","cathead","goblin","kappa","dota","custom"]
 		self.brush_types = ["brush","stamp","stamp","stamp","stamp","stamp"]
@@ -22,6 +22,8 @@ class DrawrBrushes():
 		self.loaded_count = 0
 		self.selected_brush = 0
 		self.brush_size = 0
+        
+        print("loading brushes...")
 
         for i in range(0, len(self.brush_names)):
 			name = self.brush_name[i]
@@ -54,6 +56,8 @@ class DrawrBrushes():
 						if self.loaded_count == len(self.brush_names):
 							onload_continuation()
 					except IOError: pass
+        
+        print("brushes loaded")
 	
 	def getBrushes(self):
 		return self.brushes

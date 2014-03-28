@@ -63,6 +63,12 @@ DrawrMap.prototype.moveY = function(dist){
 }
 
 DrawrMap.prototype.loadChunk = function(chunk_numx, chunk_numy){
+    // This function ensures that there's a DrawrChunk in this chunk location, then
+    // it starts loading the chunk image from the server.
+    // The actual chunk from the server MIGHT NOT BE LOADED YET AFTER THIS FUNCIONT RETURNS!!
+    /////
+    /* CHUNKS WILL BE IN ./server/chunks/chunk[numx]x[numy].png */
+
     // THIS ISNT REALLY LOADING YET!!!!!
     if(!this.chunks.hasOwnProperty(chunk_numx)){
         this.chunks[chunk_numx] = {};
