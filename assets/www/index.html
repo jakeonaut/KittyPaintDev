@@ -104,7 +104,6 @@
     </style>
 </head>
 <body>
-
     <center>
 		<div id="minimized_ui" class="drawr_ui" style="width:35px;height:35px;display:none;" onClick="toggleMinimizeUI();">
 			<div class="selected_box" id="minimized_brush_box">&nbsp;</div>
@@ -144,6 +143,8 @@
                     <div class="select_box" id="size_box3" onClick="selectBrushSize(3,16);">16</div>
                     <div class="select_box" id="size_box4" onClick="selectBrushSize(4,32);">32</div>
                     <!--span style="clear:both;">&nbsp;</span-->
+					<div class="select_box" id="color_box" onClick="editColor();">
+					</div>
             
                     <span>Zoom: </span>
                     <select id="zoom_list" onchange="select_zoom();">
@@ -188,7 +189,7 @@
             </div-->
         </div>
 
-        <canvas id="kittycanvas">
+        <canvas id="kittycanvas" oncontextmenu="return false;">
             Pls upgrade browser
         </canvas>
     
@@ -313,6 +314,7 @@
 		brush_index = index;
 			
 		fixBrushSize();
+		fixBrushColorEdit();
 	}
 	
 	function fixBrushSize(){
@@ -360,6 +362,34 @@
 		brushes.setBrushSize(size);
 	}
 	
+	function fixBrushColorEdit(){
+		var edit_color = document.getElementById("color_box");
+		var brush = brushes.getBrush();
+		if (brush.type == "brush"){
+			edit_color.style.background = "url('brushes/editcolor.png')";
+			edit_color.className = "select_box";
+		}else if (brush.type == "stamp"){
+			edit_color.style.background = "url('brushes/editcolordisabled.png')";
+			edit_color.className = "disabled_select_box";
+		}
+	}
+	
+	function editColor(){
+		var brush = brushes.getBrush();
+		if (brush.type == "stamp") return false;
+		
+		var r = Math.floor(Math.random()*255);
+		var g = Math.floor(Math.random()*255);
+		var b = Math.floor(Math.random()*255);
+		
+		brush.color.r = r;
+		brush.color.b = b;
+		brush.color.g = g;
+		
+		var bg_color = "rgb("+brush.color.r+","+brush.color.g+","+brush.color.b+")";
+		brush_boxes[brush_index].style.background = bg_color;
+	}
+	
 	function select_zoom(){
 		var zoom = document.getElementById("zoom_list").value;
 		drawr.changePixelScale(zoom);
@@ -379,12 +409,12 @@
 				
 				if (brush.type == "brush"){
                     if(!brush_boxes[i]) alert(i);
-					brush_boxes[i].style.background = "url('"+brush.sized_images[4].src+"')  no-repeat center";
+					var bg_color = "rgb("+brush.color.r+","+brush.color.g+","+brush.color.b+")";
+					brush_boxes[i].style.background = bg_color;
 				}else if (brush.type == "stamp"){
 					brush_boxes[i].style.background = "url('"+brush.img.src+"') no-repeat center";
 				}
 			}else{
-				brush_boxes[i].style.backgroundColor = "";
 				brush_boxes[i].style.background = "";
 			}
 		}

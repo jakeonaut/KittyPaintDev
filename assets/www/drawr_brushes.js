@@ -1,9 +1,22 @@
 function DrawrBrushes(onload_continuation){
     this.brushes = [];
+	
+	this.named_colors = [
+		{r: 0, g: 0, b: 0}, 		//black
+		{r: 255, g: 255, b: 0}, 	//yellow
+		{r: 255, g: 128, b: 0},		//orange
+		{r: 255, g: 0, b: 0},		//red
+		{r: 128, g: 64, b: 0},		//brown
+		{r: 255, g: 0, b: 255},		//fuschia
+		{r: 0, g: 0, b: 255},		//blue
+		{r: 0, g: 255, b: 0},		//bright green
+		{r: 128, g: 128, b: 128},	//grey
+		{r: 255, g: 255, b: 255},	//white
+	];
     //this.brush_names = ["circle1", "circle4","circle8","circle16","circle32","bar8"];
 	this.brush_names = ["circle","cat","cat32","kappa","custom"]; //"dota"];
     this.brush_types = ["brush","stamp","stamp","stamp"]; //"stamp"];
-	this.brush_variations = [10, 4, 1, 1, 0]; //102];
+	this.brush_variations = [this.named_colors.length, 4, 1, 1, 0]; //102];
 	this.brush_sizes = [32, 16, 32, 32, 16]; //32];
 	
 	this.selected_brush = 0;
@@ -23,13 +36,14 @@ function DrawrBrushes(onload_continuation){
 					name: name + j,
 					size: 0,
 					sized_images: [],
+					color: this.named_colors[j],
 					type: type,
 					loaded: 1 - this.size_variations.length
 				}
 				for (var k = 0; k<this.size_variations.length;++k){
 					var temp_img = new Image();
 					var size = this.size_variations[k];
-					temp_img.src = "brushes/"+name+"/"+j+"/"+size+".png"; //brushes/circle/0/16.png
+					temp_img.src = "brushes/"+name+"/"+size+".png"; //brushes/circle/0/16.png
 					sized_images.push(temp_img);
 					
 					var self_ref = this;
@@ -55,6 +69,7 @@ function DrawrBrushes(onload_continuation){
 					name: brush_name, 
 					size: this.brush_sizes[i],
 					sized_images: null,
+					color: {r: 255, g: 255, b: 255},
 					type: type, 
 					loaded: 0
 				};
@@ -118,8 +133,23 @@ DrawrBrushes.draw = function(ctx, x, y, brush, size){
 		else if (size == 16) 	index = 3;
 		else if (size == 32) 	index = 4;
 		
+		var ctemp = document.createElement('canvas');
+		ctemp.width = size; ctemp.height = size; 
+		var ctxtemp = ctemp.getContext("2d");
 		var brush_img = brush.sized_images[index];
-		ctx.drawImage(brush_img, x-s, y-s);
+		
+		ctxtemp.drawImage(brush_img, 0, 0);
+		var img_data = ctxtemp.getImageData(0, 0, ctemp.width, ctemp.height);
+		for (var i = 0; i < img_data.data.length; i+= 4){
+			img_data.data[i] = brush.color.r;  		//rreed
+			img_data.data[i+1] = brush.color.g;		//green
+			img_data.data[i+2] = brush.color.b;		//bblue
+		}
+		ctxtemp.putImageData(img_data,0,0);
+		
+		var img = new Image();
+		img.src = ctemp.toDataURL("imgage/png");
+		ctx.drawImage(img, x-s, y-s, size, size);
 	}else if (brush.type == "stamp"){
 		var brush_img = brush.img;
 		
