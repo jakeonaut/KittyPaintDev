@@ -11,7 +11,7 @@
             padding: 0;
             overflow: hidden;
         }
-        canvas {
+        #kittycanvas {
             display: block;
             //border:1px solid black;
             border: 0px;
@@ -29,7 +29,6 @@
             
             top: 15px;
             left: 15px;
-            right: 15px;
             
             //border-width: 0px 0px 1px 0px;
             //top: 0px;
@@ -52,6 +51,14 @@
             float:left;
             margin: 0px 10px;
         }
+        .arrow_box{
+			width: 32px;
+			height: 32px;
+            line-height:32px;
+            text-align: center;
+            padding: 1px;
+            float: left;
+        }
 		.select_box{
 			width: 32px;
 			height: 32px;
@@ -61,6 +68,7 @@
 			margin-right:3px;
 			margin-bottom:3px;
 			cursor:pointer;
+            line-height: 32px;
 		}
 		.selected_box{
 			width: 32px;
@@ -71,6 +79,7 @@
 			margin-right:3px;
 			margin-bottom:3px;
 			cursor:pointer;
+            line-height: 32px;
 		}
 		.disabled_select_box{
 			width: 32px;
@@ -80,6 +89,7 @@
 			float:left;
 			margin-right:3px;
 			margin-bottom:3px;
+            line-height: 32px;
 		}
         
         canvas {
@@ -106,49 +116,63 @@
                 <input type="button" value="update" onClick="update();" disabled /> | 
                 <input type="button" value="clear" onClick="clear_drawr();"/>
                 <br/>-->
-				<a href="#" style="float:left;margin-right:3px;" onClick="prevBrushPage(); return false;">&lt;&lt;</a>
-                <div class="select_box" id="brush_box0" onClick="selectBrush(0);"></div>
-				<div class="select_box" id="brush_box1" onClick="selectBrush(1);"></div>
-				<div class="select_box" id="brush_box2" onClick="selectBrush(2);"></div>
-				<div class="select_box" id="brush_box3" onClick="selectBrush(3);"></div>
-				<div class="select_box" id="brush_box4" onClick="selectBrush(4);"></div>
-				<div class="select_box" id="brush_box5" onClick="selectBrush(5);"></div>
-				<div class="select_box" id="brush_box6" onClick="selectBrush(6);"></div>
-				<div class="select_box" id="brush_box7" onClick="selectBrush(7);"></div>
-				<div class="select_box" id="brush_box8" onClick="selectBrush(8);"></div>
-				<div class="select_box" id="brush_box9" onClick="selectBrush(9);"></div>
-				<a href="#" onClick="nextBrushPage(); return false;">&gt;&gt;</a>
+                <div style="overflow: auto;">
+                    <a href="#" style="margin-right:3px;" class="arrow_box" onClick="prevBrushPage(); return false;">&lt;&lt;</a>
+                    <div class="select_box" id="brush_box0" onClick="selectBrush(0);">&nbsp;</div>
+                    <div class="select_box" id="brush_box1" onClick="selectBrush(1);">&nbsp;</div>
+                    <div class="select_box" id="brush_box2" onClick="selectBrush(2);">&nbsp;</div>
+                    <div class="select_box" id="brush_box3" onClick="selectBrush(3);">&nbsp;</div>
+                    <div class="select_box" id="brush_box4" onClick="selectBrush(4);">&nbsp;</div>
+                    <div class="select_box" id="brush_box5" onClick="selectBrush(5);">&nbsp;</div>
+                    <div class="select_box" id="brush_box6" onClick="selectBrush(6);">&nbsp;</div>
+                    <div class="select_box" id="brush_box7" onClick="selectBrush(7);">&nbsp;</div>
+                    <div class="select_box" id="brush_box8" onClick="selectBrush(8);">&nbsp;</div>
+                    <div class="select_box" id="brush_box9" onClick="selectBrush(9);">&nbsp;</div>
+                    <a href="#" class="arrow_box" id="right_brush_arrow" onClick="nextBrushPage(); return false;">&gt;&gt;</a>
+                    <!--span style="clear:both;">&nbsp;</span-->
+                </div>
 				
-				<br/>
-				<div class="select_box" id="size_box0" onClick="selectBrushSize(0,1);">1</div>
-				<div class="select_box" id="size_box1" onClick="selectBrushSize(1,4);">4</div>
-				<div class="select_box" id="size_box2" onClick="selectBrushSize(2,8);">8</div>
-				<div class="select_box" id="size_box3" onClick="selectBrushSize(3,16);">16</div>
-				<div class="select_box" id="size_box4" onClick="selectBrushSize(4,32);">32</div>
-		
-				<span>Zoom: </span>
-				<select id="zoom_list" onchange="select_zoom();">
-					<option>0.5</option>
-					<option>1</option>
-					<option>2</option>
-					<option>4</option>
-					<option>8</option>
-					<option>16</option>
-				</select>
-				<select style="visibility:hidden;" id="brush_list" onchange="select_brush();">
-                </select>
-				<select style="visibility:hidden;" id="color_list" onchange="select_brush();">
-				</select>
+				<div style="overflow: auto;">
+                    <div class="select_box" id="size_box0" onClick="selectBrushSize(0,1);">1</div>
+                    <div class="select_box" id="size_box1" onClick="selectBrushSize(1,4);">4</div>
+                    <div class="select_box" id="size_box2" onClick="selectBrushSize(2,8);">8</div>
+                    <div class="select_box" id="size_box3" onClick="selectBrushSize(3,16);">16</div>
+                    <div class="select_box" id="size_box4" onClick="selectBrushSize(4,32);">32</div>
+                    <!--span style="clear:both;">&nbsp;</span-->
+            
+                    <span>Zoom: </span>
+                    <select id="zoom_list" onchange="select_zoom();">
+                        <option>0.5</option>
+                        <option>1</option>
+                        <option>2</option>
+                        <option>4</option>
+                        <option>8</option>
+                        <option>16</option>
+                    </select>
+                    <select style="visibility:hidden;" id="brush_list" onchange="select_brush();">
+                    </select>
+                    <select style="visibility:hidden;" id="color_list" onchange="select_brush();">
+                    </select>
+                    
+                    <input type="button" value="adv" id="toggle_adv_tab" onClick="toggle_adv();"/>
+                </div>
             </div>
-            <div class="button_holder">
-                Drawr Server: <input type="text" id="server_url" class="server_box" value="http://127.0.0.1:27182"/>
-                <!--br/>
-                Room: <input type="text" id="room" class="server_box" value="testroom"/-->
-                <input type="button" value="networktest" onClick="networkerino();"/>
-            </div>
-            <div class="button_holder" style="overflow-y:scroll;height:3em;border: 1px solid black;">
-                <div id="debug">-<br/>-<br/>-</div>
-            </div>
+            <span id="adv_tab" style="display:none;">
+                <div class="button_holder">
+                    Drawr Server: <input type="text" id="server_url" class="server_box" value="http://127.0.0.1:27182"/>
+                    <!--br/>
+                    Room: <input type="text" id="room" class="server_box" value="testroom"/-->
+                    <input type="button" value="networktest" onClick="networkerino();"/>
+                </div>
+                <div class="button_holder" style="overflow-y:scroll;height:3em;border: 1px solid black;">
+                    <div id="debug">-<br/>-<br/>-</div>
+                </div>
+            </span>
+            <!--div style="display:inline;">
+                <div style="display: table-cell; vertical-align: center;">
+                    <a href="#" onclick="toggle_drawr_ui(); return false;">&#8662;</a>
+                </div>
+            </div-->
         </div>
 
         <canvas id="kittycanvas">
@@ -172,6 +196,7 @@
     }
 
     var num_brush_boxes = 10;
+    var num_available_brush_boxes = 10;
 	var brush_box_page = 0;
 	var num_brush_box_pages = 0;
 	var brush_boxes = [];
@@ -181,23 +206,61 @@
 	var brush_index = 0;
 	var brush_size_index = 2;
 	var brush_size = 8;
+    
+    for (var i=0; i<num_brush_boxes;++i){
+        brush_boxes[i] = document.getElementById("brush_box"+i);
+    }
+    for (var i=0; i<num_size_boxes;++i){
+        size_boxes[i] = document.getElementById("size_box"+i);
+    }
+    document.getElementById("zoom_list").selectedIndex = 2;
+    
+    
 	
     var brushes = new DrawrBrushes(function(){  // maybe we need a loading screen for this
 		//Load Brushes
-		num_brush_box_pages = Math.ceil(brushes.getBrushes().length/num_brush_boxes);
-		for (var i=0; i<num_brush_boxes;++i){
-			brush_boxes[i] = document.getElementById("brush_box"+i);
-		}
-		for (var i=0; i<num_size_boxes;++i){
-			size_boxes[i] = document.getElementById("size_box"+i);
-		}
+        num_brush_box_pages = Math.ceil(brushes.getBrushes().length/num_available_brush_boxes);
 		setBrushBoxes();
-		
-		document.getElementById("zoom_list").selectedIndex = 2;
     });
     
     var drawr = new KittyDrawr("kittycanvas", brushes, "debug");
     
+    
+    var default_onresize = window.onresize || function(){};
+    window.onresize = function(){ ui_onresize(); default_onresize(); }
+    ui_onresize();
+    function ui_onresize(){
+        // see if the line of brush boxes wraps around. if so, hide the ones that go too far past the edge, so it stays 1 row.
+        var brush_box_row1 = document.getElementById("brush_box0").offsetTop;
+        var s = brush_box_row1 + " ";
+        var count_row1_boxes = 1;
+        for (var i=1; i<num_brush_boxes;++i){
+			var thisbox_top = document.getElementById("brush_box"+i).offsetTop;
+            s += thisbox_top + " ";
+            if(thisbox_top == 0 || document.getElementById("brush_box"+i).style.display == "none"){
+                // block is hidden, make it visible to check where its offset would be
+                document.getElementById("brush_box"+i).style.display = "block";
+                thisbox_top = document.getElementById("brush_box"+i).offsetTop;
+            }
+            if(thisbox_top == brush_box_row1){
+                count_row1_boxes++;
+                document.getElementById("brush_box"+i).style.display = "block";
+            }else{
+                document.getElementById("brush_box"+i).style.display = "none";
+            }
+		}
+        //hide 1 more brush_box if the arrow button is moved to next line too!
+        if(document.getElementById("right_brush_arrow").offsetTop != brush_box_row1){
+            if(count_row1_boxes > 1){ // make sure we actually have a button to hide
+                var i = count_row1_boxes - 1;
+                document.getElementById("brush_box"+i).style.display = "none";
+            }
+        }
+        
+        num_available_brush_boxes = count_row1_boxes;
+		num_brush_box_pages = Math.ceil(brushes.getBrushes().length/num_available_brush_boxes);
+		setBrushBoxes();
+    }
 
     function showAndroidToast(toast) {
         Android.showToast(toast);
@@ -226,7 +289,7 @@
 		}
 		
 		console.log(current_brushes[index].name);
-		brushes.selectBrush(index+(num_brush_boxes*brush_box_page));
+		brushes.selectBrush(index+(num_available_brush_boxes*brush_box_page));
 		brush_boxes[index].className = "selected_box";
 		brush_index = index;
 			
@@ -285,28 +348,18 @@
 		document.getElementById("zoom_list").blur();
         document.getElementById("kittycanvas").focus();
 	}
-    
-    function get_server(){
-        server = document.getElementById("server_url").value;
-        if(!server.match(/^http:\/\//)) server = "http://" + server;
-        document.getElementById("server_url").value = server;
-        return server;
-    }
-    
-    function get_room(){
-        return document.getElementById("room").value.replace(/\&/, "");
-    }
 	
 	function setBrushBoxes(){
 		current_brushes = [];
 		var brush_list = brushes.getBrushes();
-		for (var i=0; i<num_brush_boxes;++i){
-			var real_brush_index = i+(num_brush_boxes*brush_box_page);
+		for (var i=0; i<num_available_brush_boxes;++i){
+			var real_brush_index = i+(num_available_brush_boxes*brush_box_page);
 			if (real_brush_index < brush_list.length){
 				var brush = brush_list[real_brush_index];
 				current_brushes.push(brush);
 				
 				if (brush.type == "brush"){
+                    if(!brush_boxes[i]) alert(i);
 					brush_boxes[i].style.background = "url('"+brush.sized_images[4].src+"')  no-repeat center";
 				}else if (brush.type == "stamp"){
 					brush_boxes[i].style.background = "url('"+brush.img.src+"') no-repeat center";
@@ -333,6 +386,25 @@
 		setBrushBoxes();
 	}
     
+    function toggle_adv(){
+        a = document.getElementById("adv_tab");
+        if(a.style.display != "none"){
+            a.style.display = "none";
+        }else{
+            a.style.display = "inline";
+        }
+    }
+    
+    function get_server(){
+        server = document.getElementById("server_url").value;
+        if(!server.match(/^http:\/\//)) server = "http://" + server;
+        document.getElementById("server_url").value = server;
+        return server;
+    }
+    
+    function get_room(){
+        return document.getElementById("room").value.replace(/\&/, "");
+    }
     
     
     

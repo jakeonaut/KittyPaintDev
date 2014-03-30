@@ -28,7 +28,8 @@ KittyDrawr.prototype.setup_mouse = function(){
     window.addEventListener("keyup", keyupfunc, false);
     setInterval(function(e){ self_reference.handleKeys(); }, this.frame_time);
     
-    window.onresize = function(){ self_reference.screenResizeEvent(); }
+    var default_onresize = window.onresize || function(){};
+    window.onresize = function(){ self_reference.screenResizeEvent(); default_onresize(); }
     this.loadNearbyChunks();
 }
 
