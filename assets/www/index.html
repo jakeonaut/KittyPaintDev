@@ -59,6 +59,18 @@
             padding: 1px;
             float: left;
         }
+		.small_select_box{
+			font-size: 22px;
+			width: 16px;
+			height: 16px;
+			border: solid black 1px;
+			color: black;
+			float:right;
+			margin-left:9px;
+			margin-bottom:3px;
+			cursor:pointer;
+            line-height: 16px;
+		}
 		.select_box{
 			width: 32px;
 			height: 32px;
@@ -106,8 +118,10 @@
 <body>
 
     <center>
-    
-        <div class="drawr_ui">
+		<div id="minimized_ui" class="drawr_ui" style="width:36px;height:36px;display:none;" onClick="toggleMinimizeUI();">
+			<div class="selected_box" id="minimized_brush_box">&nbsp;</div>
+		</div>
+        <div id="drawr_ui" class="drawr_ui">
             <!-- hide into small box in topleft screen, if small screen? toggle on click/timeout -->
             <div class="button_holder">
                 <!--input type="button" value="hello" onClick="showAndroidToast('Welcome 2 DRAWR!');" / -->
@@ -130,6 +144,9 @@
                     <div class="select_box" id="brush_box9" onClick="selectBrush(9);">&nbsp;</div>
                     <a href="#" class="arrow_box" id="right_brush_arrow" onClick="nextBrushPage(); return false;">&gt;&gt;</a>
                     <!--span style="clear:both;">&nbsp;</span-->
+					
+					<div class="small_select_box" onClick="toggleAdv();">+</div>
+					<div class="small_select_box" onClick="toggleMinimizeUI();">-</div>
                 </div>
 				
 				<div style="overflow: auto;">
@@ -154,7 +171,7 @@
                     <select style="visibility:hidden;" id="color_list" onchange="select_brush();">
                     </select>
                     
-                    <input type="button" value="adv" id="toggle_adv_tab" onClick="toggle_adv();"/>
+                    <!--<input type="button" value="adv" id="toggle_adv_tab" onClick="toggleAdv();"/>-->
                 </div>
             </div>
             <span id="adv_tab" style="display:none;">
@@ -291,6 +308,7 @@
 		console.log(current_brushes[index].name);
 		brushes.selectBrush(index+(num_available_brush_boxes*brush_box_page));
 		brush_boxes[index].className = "selected_box";
+		document.getElementById("minimized_brush_box").style.background = brush_boxes[index].style.background;
 		brush_index = index;
 			
 		fixBrushSize();
@@ -385,8 +403,20 @@
 		if (brush_box_page >= num_brush_box_pages) brush_box_page = 0;
 		setBrushBoxes();
 	}
+	
+	function toggleMinimizeUI(){
+		dui = document.getElementById("drawr_ui");
+		mdui = document.getElementById("minimized_ui");
+		if (dui.style.display != "none"){
+			dui.style.display = "none";
+			mdui.style.display = "block";
+		}else{
+			dui.style.display = "block";
+			mdui.style.display = "none";
+		}
+	}
     
-    function toggle_adv(){
+    function toggleAdv(){
         a = document.getElementById("adv_tab");
         if(a.style.display != "none"){
             a.style.display = "none";
