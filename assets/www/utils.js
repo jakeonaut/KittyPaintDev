@@ -1,6 +1,10 @@
 
 /*** utils.js V1.0 ***/
 
+function $(id){
+    return document.getElementById(id);
+}
+
 function drawCircle(ctx,color,x,y,r){
     ctx.strokeStyle = color;
     ctx.beginPath();
