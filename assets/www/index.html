@@ -59,18 +59,6 @@
             padding: 1px;
             float: left;
         }
-		.small_select_box{
-			font-size: 22px;
-			width: 16px;
-			height: 16px;
-			border: solid black 1px;
-			color: black;
-			float:right;
-			margin-left:9px;
-			margin-bottom:3px;
-			cursor:pointer;
-            line-height: 16px;
-		}
 		.select_box{
 			width: 32px;
 			height: 32px;
@@ -118,7 +106,7 @@
 <body>
 
     <center>
-		<div id="minimized_ui" class="drawr_ui" style="width:36px;height:36px;display:none;" onClick="toggleMinimizeUI();">
+		<div id="minimized_ui" class="drawr_ui" style="width:35px;height:35px;display:none;" onClick="toggleMinimizeUI();">
 			<div class="selected_box" id="minimized_brush_box">&nbsp;</div>
 		</div>
         <div id="drawr_ui" class="drawr_ui">
@@ -171,8 +159,10 @@
                     <select style="visibility:hidden;" id="color_list" onchange="select_brush();">
                     </select>
                     
-					<input type="button" value="-" id="toggle_min_tab" onClick="toggleMinimizeUI();"/>
+					<div style="display:inline;float:right;">
+					<input type="button" value="&ndash;" id="toggle_min_tab" onClick="toggleMinimizeUI();"/>
                     <input type="button" value="+" id="toggle_max_tab" onClick="toggleAdv();"/>
+					</div>
                 </div>
             </div>
             <span id="adv_tab" style="display:none;">
@@ -269,13 +259,13 @@
 		}
         //hide 1 more brush_box if the arrow button is moved to next line too!
         if(document.getElementById("right_brush_arrow").offsetTop != brush_box_row1){
-            if(count_row1_boxes > 1){ // make sure we actually have a button to hide
-                var i = count_row1_boxes - 1;
-                document.getElementById("brush_box"+i).style.display = "none";
+            if(count_row1_boxes > 2){ // make sure we actually have a button to hide
+                count_row1_boxes -= 1;
+                document.getElementById("brush_box"+count_row1_boxes).style.display = "none";
             }
         }
         
-        num_available_brush_boxes = count_row1_boxes-1;
+        num_available_brush_boxes = count_row1_boxes;
 		num_brush_box_pages = Math.ceil(brushes.getBrushes().length/num_available_brush_boxes);
 		setBrushBoxes();
     }
