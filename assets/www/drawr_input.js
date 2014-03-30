@@ -4,8 +4,12 @@ KittyDrawr.prototype.setup_mouse = function(){
     this.mousex = this.mousey = 0;
     this.mouselastx = this.mouselasty = 0;
     this.mousedown = 0;
+    this.screenmove_callback = function(){};
     
     var self_reference = this; // weird interaction with listeners and object methods
+    
+    this.addEventListener("mapmove", function(){ self_reference.loadNearbyChunks();} ); // custom even listener
+    
     var movefunc = function(e){ self_reference.mousemoveEvent(e); };
     var downfunc = function(e){ self_reference.mousedownEvent(e); };
     var upfunc = function(e){ self_reference.mouseupEvent(e); };
@@ -30,7 +34,13 @@ KittyDrawr.prototype.setup_mouse = function(){
     
     var default_onresize = window.onresize || function(){};
     window.onresize = function(){ self_reference.screenResizeEvent(); default_onresize(); }
-    this.loadNearbyChunks();
+}
+
+KittyDrawr.prototype.addEventListener = function(event, callback){
+    if(event == "mapmove"){
+        var previous_callback = this.screenmove_callback;
+        this.screenmove_callback = function(){ callback(); previous_callback(); }
+    }
 }
 
 
@@ -141,8 +151,8 @@ KittyDrawr.prototype.mousemoveEvent = function(e){
         
         this.drawr_map.moveX(dx);
         this.drawr_map.moveY(dy);
-        ///////////////ABSTRACT THIS BETTER v
-        this.loadNearbyChunks();
+        // call mapmove event callback
+        this.screenmove_callback();
     }
     
     e.preventDefault(); //prevent mouse drag from trying to drag webpage

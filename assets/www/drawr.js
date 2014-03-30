@@ -23,9 +23,7 @@ function KittyDrawr(canvas_id, brushes, debug_id){
     this.debug_string = "";
     this.update_lock = false;
     
-    ///////// TODO: mouse things, make a mouse type object that handles this
-    this.drawrObjects = [];
-    this.tempDrawrObject = 0;
+    this.loadNearbyChunks();
     
     var self_reference = this;
     this.game_loop = setInterval(function(){
