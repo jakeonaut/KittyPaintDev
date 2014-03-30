@@ -4,7 +4,7 @@
     <!-- cool -->
     <meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
     <meta name="viewport" content="width=device-width" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
     
     <style type="text/css">
         body {
@@ -92,21 +92,19 @@
 			margin-bottom:3px;
             line-height: 32px;
 		}
-        
         .position_box {
-            background-color: inherit;
-            border: 1px solid black;
-            width: 50px;
-            text-align: left;
-            margin: 0px;
-        }
-        .position_box_focus {
-            background-color: #FFF;
-            border: 1px solid black;
-            width: 50px;
-            margin: 1px;
-        }
-        
+             background-color: inherit;
+             border: 1px solid black;
+             width: 50px;
+             text-align: left;
+             margin: 0px;
+         }
+         .position_box_focus {
+             background-color: #FFF;
+             border: 1px solid black;
+             width: 50px;
+             margin: 1px;
+         }
         canvas {
             image-rendering: optimizeSpeed;             // Older versions of FF
             image-rendering: -moz-crisp-edges;          // FF 6.0+
@@ -192,17 +190,17 @@
                     <!--br/>
                     Room: <input type="text" id="room" class="server_box" value="testroom"/-->
                     <input type="button" value="networktest" onClick="networkerino();"/>
-                    <br/>
-                    location <span id="map_pos_display">[
-                        <span id="map_pos_x" class="position_box" style="display:inline-block;">0</span>,
-                        <span id="map_pos_y" class="position_box" style="display:inline-block;">0</span> 
-                    ]</span>
-                    <span id="map_pos_teleport" style="display: none;">[
-                        <input type="text" id="map_tele_x" class="position_box_focus"/>, 
-                        <input type="text" id="map_tele_y" class="position_box_focus"/>
-                    ]</span>
-                    <input type="button" value="teleport" id="map_teleport_button" onclick="toggle_teleport();"/>
                 </div>
+				<br/>
+                     location <span id="map_pos_display">[
+                         <span id="map_pos_x" class="position_box" style="display:inline-block;">0</span>,
+                         <span id="map_pos_y" class="position_box" style="display:inline-block;">0</span> 
+                     ]</span>
+                     <span id="map_pos_teleport" style="display: none;">[
+                         <input type="text" id="map_tele_x" class="position_box_focus"/>, 
+                         <input type="text" id="map_tele_y" class="position_box_focus"/>
+                     ]</span>
+                     <input type="button" value="teleport" id="map_teleport_button" onclick="toggle_teleport();"/>
                 <div class="button_holder" style="overflow-y:scroll;height:3em;border: 1px solid black;">
                     <div id="debug">-<br/>-<br/>-</div>
                 </div>
@@ -268,7 +266,7 @@
     });
     
     var drawr = new KittyDrawr("kittycanvas", brushes, "debug");
-    drawr.addEventListener("mapmove", update_position_box);
+	drawr.addEventListener("mapmove", update_position_box);
     
     
     var default_onresize = window.onresize || function(){};
@@ -490,42 +488,42 @@
             a.style.display = "inline";
         }
     }
-    
-                  /*  location <span id="map_pos_display">[
-                        <span id="map_pos_x" style="width: 75px;">0</span>,
-                        <span id="map_pos_y" style="width: 75px;">0</span> 
-                    ]</span>
-                    <span id="map_pos_teleport" style="display: none;">[
-                        <input type="text" id="map_tele_x" style="width: 75px;"/>, 
-                        <input type="text" id="map_tele_y" style="width: 75px;"/>
-                    ]</span>
-                    <input type="button" value="teleport" id="map_teleport_button" onclick="toggle_teleport();"/>*/
-    function toggle_teleport(){
-        if($("map_pos_display").style.display != "none"){
-            $("map_pos_display").style.display = "none";
-            $("map_pos_teleport").style.display = "inline";
-            
-            $("map_tele_x").value = $("map_pos_x").innerHTML;
-            $("map_tele_y").value = $("map_pos_y").innerHTML;
-            var button_width = $("map_teleport_button").offsetWidth;
-            $("map_teleport_button").value = "go";
-            $("map_teleport_button").style.width = button_width;
-        }else{
-            $("map_pos_teleport").style.display = "none";
-            $("map_pos_display").style.display = "inline";
-            
-            drawr.drawr_map.setIngameOffsetX(-1 * $("map_tele_x").value);
-            drawr.drawr_map.setIngameOffsetY(-1 * $("map_tele_y").value);
-            drawr.loadNearbyChunks();
-            $("map_teleport_button").value = "teleport";
-            update_position_box();
-        }
-    }
-    
-    function update_position_box(){
-        $("map_pos_x").innerHTML = -drawr.drawr_map.getIngameOffsetX();
-        $("map_pos_y").innerHTML = -drawr.drawr_map.getIngameOffsetY();
-    }
+	
+	/*  location <span id="map_pos_display">[
+                         <span id="map_pos_x" style="width: 75px;">0</span>,
+                         <span id="map_pos_y" style="width: 75px;">0</span> 
+                     ]</span>
+                     <span id="map_pos_teleport" style="display: none;">[
+                         <input type="text" id="map_tele_x" style="width: 75px;"/>, 
+                         <input type="text" id="map_tele_y" style="width: 75px;"/>
+                     ]</span>
+                     <input type="button" value="teleport" id="map_teleport_button" onclick="toggle_teleport();"/>*/
+     function toggle_teleport(){
+         if($("map_pos_display").style.display != "none"){
+             $("map_pos_display").style.display = "none";
+             $("map_pos_teleport").style.display = "inline";
+             
+             $("map_tele_x").value = $("map_pos_x").innerHTML;
+             $("map_tele_y").value = $("map_pos_y").innerHTML;
+             var button_width = $("map_teleport_button").offsetWidth;
+             $("map_teleport_button").value = "go";
+             $("map_teleport_button").style.width = button_width;
+         }else{
+             $("map_pos_teleport").style.display = "none";
+             $("map_pos_display").style.display = "inline";
+             
+             drawr.drawr_map.setIngameOffsetX(-1 * $("map_tele_x").value);
+             drawr.drawr_map.setIngameOffsetY(-1 * $("map_tele_y").value);
+             drawr.loadNearbyChunks();
+             $("map_teleport_button").value = "teleport";
+             update_position_box();
+         }
+     }
+     
+     function update_position_box(){
+         $("map_pos_x").innerHTML = -drawr.drawr_map.getIngameOffsetX();
+         $("map_pos_y").innerHTML = -drawr.drawr_map.getIngameOffsetY();
+     }
     
     function get_server(){
         server = document.getElementById("server_url").value;
