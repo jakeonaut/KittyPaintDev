@@ -344,6 +344,7 @@
 			brush_boxes[i].className = "select_box";
 		}
 		
+		console.log(current_brushes[index].name);
 		brushes.selectBrush(index+(num_available_brush_boxes*brush_box_page));
 		brush_boxes[index].className = "selected_box";
 		document.getElementById("minimized_brush_box").style.background = brush_boxes[index].style.background;
@@ -434,16 +435,13 @@
 	
 	function editColor(){
 		var brush = brushes.getBrush();
-		if (brush.type == "stamp") return false;		
+		var r = document.getElementById("color_r").value;
+		var g = document.getElementById("color_g").value;
+		var b = document.getElementById("color_b").value;
 		
-		var r = document.getElementById("color_r");
-		var g = document.getElementById("color_g");
-		var b = document.getElementById("color_b");
-		r.blur(); g.blur(); b.blur();
-		
-		brush.color.r = r.value;
-		brush.color.b = b.value;
-		brush.color.g = g.value;
+		brush.color.r = r;
+		brush.color.b = b;
+		brush.color.g = g;
 		
 		var bg_color = "rgb("+brush.color.r+","+brush.color.g+","+brush.color.b+")";
 		brush_boxes[brush_index].style.backgroundColor = bg_color;

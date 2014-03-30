@@ -169,6 +169,7 @@ KittyDrawr.prototype.mousedownEvent = function(e){
     
     if(e.which == 1 || e.touches && e.touches.length <= 1){ //e.touchs if is only 1 touch
 		if (auto_hide_ui) minimizeUI();
+		editColor();
         this.mousedown = true;
         this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
     }

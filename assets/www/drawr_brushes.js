@@ -31,8 +31,10 @@ function DrawrBrushes(onload_continuation){
 			var type = this.brush_types[i];
 			if (type == "brush"){
 				var sized_images = [];
+				var temp_img = new Image();
+				temp_img.src = "brushes/" + name + "/" + name + ".png";
 				var brush_obj = {
-					img: null,
+					img: temp_img,
 					name: name + j,
 					size: 0,
 					sized_images: [],
