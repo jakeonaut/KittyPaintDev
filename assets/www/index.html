@@ -165,7 +165,12 @@
 					</div>
                 </div>
             </div>
+			
+			
             <span id="adv_tab" style="display:none;">
+				<div class="button_holder">
+					auto-hide ui: <input id="auto_hide_ui" type="checkbox" onClick="toggleAutoHideUI();">
+				</div>
                 <div class="button_holder">
                     Drawr Server: <input type="text" id="server_url" class="server_box" value="http://127.0.0.1:27182"/>
                     <!--br/>
@@ -214,6 +219,11 @@
 	var brush_index = 0;
 	var brush_size_index = 2;
 	var brush_size = 8;
+	var auto_hide_ui = false;
+	
+	function toggleAutoHideUI(){
+		auto_hide_ui = !auto_hide_ui;
+	}
     
     for (var i=0; i<num_brush_boxes;++i){
         brush_boxes[i] = document.getElementById("brush_box"+i);
@@ -393,6 +403,15 @@
 		brush_box_page++;
 		if (brush_box_page >= num_brush_box_pages) brush_box_page = 0;
 		setBrushBoxes();
+	}
+	
+	function minimizeUI(){
+		dui = document.getElementById("drawr_ui");
+		mdui = document.getElementById("minimized_ui");
+		if (dui.style.display != "none"){
+			dui.style.display = "none";
+			mdui.style.display = "block";
+		}
 	}
 	
 	function toggleMinimizeUI(){
