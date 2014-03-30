@@ -4,15 +4,16 @@ class DrawrChunk():
     def __init__(self, drawr_map, numx, numy, chunk_im):
         # chunk sizes and such...
         self.size = drawr_map.chunk_block_size
-		if chunk_im == None:
-			self.chunk_im = Image.new("RGB", (self.size, self.size), "white")
-		else self.chunk_im = chunk_im
+        if chunk_im == None:
+            self.chunk_im = Image.new("RGB", (self.size, self.size), "white")
+        else:
+            self.chunk_im = chunk_im
         self.numx = numx
-        self.numy = numy
+        self.numy = numy 
 
     def addPoint(self, local_x, local_y, brush, size):
         box = (local_x, local_y, local_x + size, local_y + size)
-		drawr_server_brushes.DrawrBrushes.draw(box, local_x, local_y, brush, size)
+        drawr_server_brushes.DrawrBrushes.draw(box, local_x, local_y, brush, size)
 
     def write(self):
         # output to png file to be served with HTTP
@@ -42,17 +43,17 @@ class DrawrMap():
         
     def loadChunk(self, numx, numy):
         # todo: if this chunk exists in ./chunks/, load that image
-		# # # could solution below??
+        # # # could solution below??
         (numx, numy) = (str(numx), str(numy))
         if numx not in self.chunks:
             self.chunks[numx] = {}
         
-		#try:
-		#	src = "./chunks/chunk" + numx + "x" + numy + ".png"
-		#	chunk_im = Image.open(src)
-		#	self.chunks[numx][numy] = DrawrChunk(self, numx, numy, chunk_im)
-		#except:
-		#	self.chunks[numx][numy] = DrawrChunk(self, numx, numy, None)
+        #try:
+        #   src = "./chunks/chunk" + numx + "x" + numy + ".png"
+        #   chunk_im = Image.open(src)
+        #   self.chunks[numx][numy] = DrawrChunk(self, numx, numy, chunk_im)
+        #except:
+        #   self.chunks[numx][numy] = DrawrChunk(self, numx, numy, None)
         self.chunks[numx][numy] = DrawrChunk(self, numx, numy, None) #comment out
     
     def getChunksAffected(self, gamex, gamey, brush, size):

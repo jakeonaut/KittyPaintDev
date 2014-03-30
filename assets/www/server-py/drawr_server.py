@@ -163,7 +163,7 @@ class DrawrHandler(SocketServer.StreamRequestHandler):
 
         while True:
             m = self.read_frame()
-            if m == "exit": break
+            if not m or m == "exit": break
             self.send_frame("<3".join(list(m)))
 
     def send_frame(self, msg):
@@ -171,7 +171,8 @@ class DrawrHandler(SocketServer.StreamRequestHandler):
         self.wfile.flush()
 
     def read_frame(self):
-        self.read_byte() # drop the type byte
+        if not self.read_byte():
+            return False
         length = ord(self.read_byte()) & 127
         if length == 126:
             length = ord(self.read_byte()) << 8
