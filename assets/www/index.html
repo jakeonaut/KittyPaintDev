@@ -192,6 +192,7 @@
                     <input type="button" value="networktest" onClick="networkerino();"/>
                 </div>
 				<br/>
+				<div class="button_holder">
                      location <span id="map_pos_display">[
                          <span id="map_pos_x" class="position_box" style="display:inline-block;">0</span>,
                          <span id="map_pos_y" class="position_box" style="display:inline-block;">0</span> 
@@ -201,6 +202,7 @@
                          <input type="text" id="map_tele_y" class="position_box_focus"/>
                      ]</span>
                      <input type="button" value="teleport" id="map_teleport_button" onclick="toggle_teleport();"/>
+				</div>
                 <div class="button_holder" style="overflow-y:scroll;height:3em;border: 1px solid black;">
                     <div id="debug">-<br/>-<br/>-</div>
                 </div>
@@ -412,6 +414,7 @@
 		
 		var bg_color = "rgb("+brush.color.r+","+brush.color.g+","+brush.color.b+")";
 		brush_boxes[brush_index].style.background = bg_color;
+		document.getElementById("minimized_brush_box").style.background = brush_boxes[brush_index].style.background;
 	}
 	
 	function select_zoom(){
