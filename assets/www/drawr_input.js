@@ -168,6 +168,7 @@ KittyDrawr.prototype.mousedownEvent = function(e){
 }
 
 KittyDrawr.prototype.mouseupEvent = function(e){
+	return false;
     // getMouseX(e) may be undefined for a "touchend" event. if so, use previous value
     this.mouselastx = this.mousex;
     this.mouselasty = this.mousey;
