@@ -166,11 +166,14 @@
 					</div>
 					<div id="color_picker" style="line-height:32px;display:none;">
 						<div class="color_pick_part">&nbsp;<b>R</b> 
-							<input id="color_r" type="text" style="width:36px;text-align:right;" onchange="editColor();"></div>
+							<input id="color_r" type="text" style="width:36px;text-align:right;" onkeypress="editColor();" onkeyup="editColor();">
+                        </div>
 						<div class="color_pick_part">&nbsp;<b>G</b> 
-							<input id="color_g" type="text" style="width:36px;text-align:right;" onchange="editColor();"></div>
+							<input id="color_g" type="text" style="width:36px;text-align:right;" onkeypress="editColor();" onkeyup="editColor();">
+                        </div>
 						<div class="color_pick_part">&nbsp;<b>B</b> 
-							<input id="color_b" type="text" style="width:36px;text-align:right;margin-right:1px;" onchange="editColor();">&nbsp;&nbsp;
+							<input id="color_b" type="text" style="width:36px;text-align:right;margin-right:1px;" onkeypress="editColor();" onkeyup="editColor();">
+                            &nbsp;&nbsp;
 						</div>
 					</div>
 					<div class="select_box" id="color_box" onClick="toggleColorPicker();">
@@ -412,8 +415,8 @@
 			edit_color.style.background = "url('brushes/editcolordisabled.png')";
 			edit_color.className = "disabled_select_box";
 			
-			sp.style.display = "inline";
-			cp.style.display = "none";
+			$("size_picker").style.display = "inline";
+			$("color_picker").style.display = "none";
 		}
 	}
 	
@@ -421,11 +424,14 @@
 		var brush = brushes.getBrush();
 		if (brush.type == "stamp") return false;
 		
-		sp = document.getElementById("size_picker");
-		cp = document.getElementById("color_picker");
+		sp = $("size_picker");
+		cp = $("color_picker");
 		if (sp.style.display != "none"){
 			sp.style.display = "none";
 			cp.style.display = "inline";
+            $("color_r").blur();
+            $("color_g").blur();
+            $("color_b").blur();
 		}else{
 			sp.style.display = "inline";
 			cp.style.display = "none";
@@ -436,18 +442,18 @@
 		var brush = brushes.getBrush();
 		if (brush.type == "stamp") return false;		
 		
-		var r = document.getElementById("color_r");
-		var g = document.getElementById("color_g");
-		var b = document.getElementById("color_b");
-		r.blur(); g.blur(); b.blur();
+		var r = $("color_r");
+		var g = $("color_g");
+		var b = $("color_b");
 		
-		brush.color.r = r.value;
-		brush.color.b = b.value;
-		brush.color.g = g.value;
-		
+        r.value > 255 && (r.value = 255) || r.value < 0 && (r.value = 0);
+        g.value > 255 && (g.value = 255) || g.value < 0 && (g.value = 0);
+        b.value > 255 && (b.value = 255) || b.value < 0 && (b.value = 0);
+        
+        DrawrBrushes.setBrushColor(brush, r.value, g.value, b.value);
 		var bg_color = "rgb("+brush.color.r+","+brush.color.g+","+brush.color.b+")";
-		brush_boxes[brush_index].style.backgroundColor = bg_color;
-		document.getElementById("minimized_brush_box").style.backgroundColor = brush_boxes[brush_index].style.backgroundColor;
+		brush_boxes[brush_index].style.background = "url('" + brush.sized_images[4].src + "') no-repeat center";
+		document.getElementById("minimized_brush_box").style.backgroundColor = bg_color;
 	}
 	
 	function select_zoom(){
@@ -468,10 +474,10 @@
 				current_brushes.push(brush);
 				
 				if (brush.type == "brush"){
-                    if(!brush_boxes[i]) alert(i);
-					var bg_color = "rgb("+brush.color.r+","+brush.color.g+","+brush.color.b+")";
+					/*var bg_color = "rgb("+brush.color.r+","+brush.color.g+","+brush.color.b+")";
 					brush_boxes[i].style.background = "url('"+brush.img.src+"') no-repeat center";
-					brush_boxes[i].style.backgroundColor = bg_color;
+					brush_boxes[i].style.backgroundColor = bg_color;*/
+                    brush_boxes[i].style.background = "url('" + brush.sized_images[4].src + "') no-repeat center";
 				}else if (brush.type == "stamp"){
 					brush_boxes[i].style.background = "url('"+brush.img.src+"') no-repeat center";
 					brush_boxes[i].style.backgroundColor = "";
@@ -533,41 +539,32 @@
         }
     }
 	
-	/*  location <span id="map_pos_display">[
-                         <span id="map_pos_x" style="width: 75px;">0</span>,
-                         <span id="map_pos_y" style="width: 75px;">0</span> 
-                     ]</span>
-                     <span id="map_pos_teleport" style="display: none;">[
-                         <input type="text" id="map_tele_x" style="width: 75px;"/>, 
-                         <input type="text" id="map_tele_y" style="width: 75px;"/>
-                     ]</span>
-                     <input type="button" value="teleport" id="map_teleport_button" onclick="toggle_teleport();"/>*/
-     function toggle_teleport(){
-         if($("map_pos_display").style.display != "none"){
-             $("map_pos_display").style.display = "none";
-             $("map_pos_teleport").style.display = "inline";
-             
-             $("map_tele_x").value = $("map_pos_x").innerHTML;
-             $("map_tele_y").value = $("map_pos_y").innerHTML;
-             var button_width = $("map_teleport_button").offsetWidth;
-             $("map_teleport_button").value = "go";
-             $("map_teleport_button").style.width = button_width;
-         }else{
-             $("map_pos_teleport").style.display = "none";
-             $("map_pos_display").style.display = "inline";
-             
-             drawr.drawr_map.setIngameOffsetX(-1 * $("map_tele_x").value);
-             drawr.drawr_map.setIngameOffsetY(-1 * $("map_tele_y").value);
-             drawr.loadNearbyChunks();
-             $("map_teleport_button").value = "teleport";
-             update_position_box();
-         }
-     }
-     
-     function update_position_box(){
-         $("map_pos_x").innerHTML = -drawr.drawr_map.getIngameOffsetX();
-         $("map_pos_y").innerHTML = -drawr.drawr_map.getIngameOffsetY();
-     }
+    function toggle_teleport(){
+    if($("map_pos_display").style.display != "none"){
+        $("map_pos_display").style.display = "none";
+        $("map_pos_teleport").style.display = "inline";
+
+        $("map_tele_x").value = $("map_pos_x").innerHTML;
+        $("map_tele_y").value = $("map_pos_y").innerHTML;
+        var button_width = $("map_teleport_button").offsetWidth;
+        $("map_teleport_button").value = "go";
+        $("map_teleport_button").style.width = button_width;
+    }else{
+        $("map_pos_teleport").style.display = "none";
+        $("map_pos_display").style.display = "inline";
+
+        drawr.drawr_map.setIngameOffsetX(-1 * $("map_tele_x").value);
+        drawr.drawr_map.setIngameOffsetY(-1 * $("map_tele_y").value);
+        drawr.loadNearbyChunks();
+        $("map_teleport_button").value = "teleport";
+        update_position_box();
+    }
+    }
+
+    function update_position_box(){
+        $("map_pos_x").innerHTML = -drawr.drawr_map.getIngameOffsetX();
+        $("map_pos_y").innerHTML = -drawr.drawr_map.getIngameOffsetY();
+    }
     
     function get_server(){
         server = document.getElementById("server_url").value;
