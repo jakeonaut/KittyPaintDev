@@ -173,30 +173,36 @@
                         </div>
 						<div class="color_pick_part">&nbsp;<b>B</b> 
 							<input id="color_b" type="text" style="width:36px;text-align:right;margin-right:1px;" onkeypress="editColor();" onkeyup="editColor();">
-                            &nbsp;&nbsp;
+                            &nbsp;
 						</div>
 					</div>
 					<div class="select_box" id="color_box" onClick="toggleColorPicker();">
 					</div>
+					<div class="select_box" id="stamp_box" onClick="toggleStampUI();" 
+						style="background: url('brushes/createstamp.png')"></div>
             
-                    <span>Zoom: </span>
-                    <select id="zoom_list" onchange="select_zoom();">
-                        <option>0.5</option>
-                        <option>1</option>
-                        <option>2</option>
-                        <option>4</option>
-                        <option>8</option>
-                        <option>16</option>
-                    </select>
-                    <select style="visibility:hidden;" id="brush_list" onchange="select_brush();">
+					<div style="line-height:32px;float:right;text-align:center;">
+						<div>
+						<span>Zoom: </span>
+						<select id="zoom_list" onchange="select_zoom();">
+							<option>0.5</option>
+							<option>1</option>
+							<option>2</option>
+							<option>4</option>
+							<option>8</option>
+							<option>16</option>
+						</select>
+						&nbsp;
+						<div style="display:inline;">
+							<input type="button" value="&ndash;" id="toggle_min_tab" onClick="toggleMinimizeUI();"/>
+							<input type="button" value="+" id="toggle_max_tab" onClick="toggleAdv();"/>
+						</div>
+						</div>
+					</div>
+                    <!--<select style="visibility:hidden;" id="brush_list" onchange="select_brush();">
                     </select>
                     <select style="visibility:hidden;" id="color_list" onchange="select_brush();">
-                    </select>
-                    
-					<div style="display:inline;float:right;">
-					<input type="button" value="&ndash;" id="toggle_min_tab" onClick="toggleMinimizeUI();"/>
-                    <input type="button" value="+" id="toggle_max_tab" onClick="toggleAdv();"/>
-					</div>
+                    </select>-->
                 </div>
             </div>
 			
@@ -226,6 +232,16 @@
                     <div id="debug">-<br/>-<br/>-</div>
                 </div>
             </span>
+			
+			<div id="edit_stamp_ui" style="display:none;">
+				<canvas id="stampcanvas" oncontextmenu="return false;" style="margin-top:10px;border:solid black 1px;">
+					Pls upgrade browser
+				</canvas><br/><br/>
+				<div style="display:inline;">
+					<input type="button" value="Save" id="save_stamp" onClick="return false;"/>
+					<input type="button" value="Clear" id="clear_stamp" onClick="return false;"/>
+				</div>
+			</div>
         </div>
 
         <canvas id="kittycanvas" oncontextmenu="return false;">
@@ -240,6 +256,7 @@
 <script type="text/javascript" src="drawr_brushes.js"></script>
 <script type="text/javascript" src="drawr_map.js"></script>
 <script type="text/javascript" src="network.js"></script>
+<script type="text/javascript" src="stampdrawr.js"></script>
 <script type="text/javascript" src="drawr.js"></script>
 <script type="text/javascript" src="drawr_input.js"></script>
 
@@ -283,6 +300,8 @@
     
     var drawr = new KittyDrawr("kittycanvas", brushes, "debug");
 	drawr.addEventListener("mapmove", update_position_box);
+	
+	var stampdrawr = new StampDrawr("stampcanvas", brushes, "debug");
     
     
     var default_onresize = window.onresize || function(){};
@@ -510,6 +529,14 @@
 		if (dui.style.display != "none"){
 			dui.style.display = "none";
 			mdui.style.display = "block";
+		}
+	}
+	
+	function toggleStampUI(){
+		if ($("edit_stamp_ui").style.display != "none"){
+			$("edit_stamp_ui").style.display = "none";
+		}else{
+			$("edit_stamp_ui").style.display = "block";
 		}
 	}
 	
