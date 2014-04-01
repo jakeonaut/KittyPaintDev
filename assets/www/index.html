@@ -99,18 +99,11 @@
             line-height: 32px;
 		}
         .position_box {
-             background-color: inherit;
-             border: 1px solid black;
-             width: 50px;
-             text-align: left;
-             margin: 0px;
-         }
-         .position_box_focus {
-             background-color: #FFF;
-             border: 1px solid black;
-             width: 50px;
-             margin: 1px;
-         }
+            background-color: #FFF;
+            border: 1px solid black;
+            width: 150px;
+            margin: 1px;
+        }
         canvas {
             image-rendering: optimizeSpeed;             // Older versions of FF
             image-rendering: -moz-crisp-edges;          // FF 6.0+
@@ -199,10 +192,6 @@
 						</div>
 						</div>
 					</div>
-                    <!--<select style="visibility:hidden;" id="brush_list" onchange="select_brush();">
-                    </select>
-                    <select style="visibility:hidden;" id="color_list" onchange="select_brush();">
-                    </select>-->
                 </div>
             </div>
 			
@@ -212,21 +201,17 @@
 				</div>
                 <div class="button_holder">
                     Drawr Server: <input type="text" id="server_url" class="server_box" value="http://127.0.0.1:27182"/>
-                    <!--br/>
-                    Room: <input type="text" id="room" class="server_box" value="testroom"/-->
                     <input type="button" value="networktest" onClick="networkerino();"/>
                 </div>
 				<br/>
 				<div class="button_holder">
-                     location <span id="map_pos_display">[
-                         <span id="map_pos_x" class="position_box" style="display:inline-block;">0</span>,
-                         <span id="map_pos_y" class="position_box" style="display:inline-block;">0</span> 
-                     ]</span>
-                     <span id="map_pos_teleport" style="display: none;">[
-                         <input type="text" id="map_tele_x" class="position_box_focus"/>, 
-                         <input type="text" id="map_tele_y" class="position_box_focus"/>
-                     ]</span>
-                     <input type="button" value="teleport" id="map_teleport_button" onclick="toggle_teleport();"/>
+                    <span id="map_pos_display">
+                        <input type="button" value="teleport" onclick="toggle_teleport();"/>
+                    </span>
+                    <span id="map_pos_teleport" style="display: none;">
+                        <input type="text" id="tele_waypoint" class="position_box" placeholder="Enter waypoint..."/>
+                        <input type="button" value="go" onclick="teleport_go();"/>
+                    </span>
 				</div>
                 <div class="button_holder" style="overflow-y:scroll;height:3em;border: 1px solid black;">
                     <div id="debug">-<br/>-<br/>-</div>
@@ -253,6 +238,7 @@
 </body>
 
 <script type="text/javascript" src="utils.js"></script>
+<script type="text/javascript" src="md5_crypt.js"></script>
 <script type="text/javascript" src="drawr_brushes.js"></script>
 <script type="text/javascript" src="drawr_map.js"></script>
 <script type="text/javascript" src="network.js"></script>
@@ -567,28 +553,37 @@
     }
 	
     function toggle_teleport(){
-    if($("map_pos_display").style.display != "none"){
-        $("map_pos_display").style.display = "none";
-        $("map_pos_teleport").style.display = "inline";
-
-        $("map_tele_x").value = $("map_pos_x").innerHTML;
-        $("map_tele_y").value = $("map_pos_y").innerHTML;
-        var button_width = $("map_teleport_button").offsetWidth;
-        $("map_teleport_button").value = "go";
-        $("map_teleport_button").style.width = button_width;
-    }else{
-        $("map_pos_teleport").style.display = "none";
-        $("map_pos_display").style.display = "inline";
-
-        drawr.drawr_map.setIngameOffsetX(-1 * $("map_tele_x").value);
-        drawr.drawr_map.setIngameOffsetY(-1 * $("map_tele_y").value);
-        drawr.loadNearbyChunks();
-        $("map_teleport_button").value = "teleport";
-        update_position_box();
+        if($("map_pos_display").style.display != "none"){
+            $("map_pos_display").style.display = "none";
+            $("map_pos_teleport").style.display = "inline";
+        }else{
+            $("map_pos_teleport").style.display = "none";
+            $("map_pos_display").style.display = "inline";
+        }
     }
+    
+    function teleport_go(){
+        var waypointstr = $("tele_waypoint").value;
+        if(waypointstr != ""){
+            var rstr_loc = hex_md5(waypointstr);
+            var hex_x = rstr_loc.substr(0,8);
+            var hex_y = rstr_loc.substr(8,8);
+            var x = parseInt(hex_x, 16) - 0xffffffff/2;
+            var y = parseInt(hex_y, 16) - 0xffffffff/2;
+            console.log(x + "," + y);
+        }else{
+            var x = 0;
+            var y = 0;
+        }
+        
+        drawr.drawr_map.setIngameOffsetX(x);
+        drawr.drawr_map.setIngameOffsetY(y);
+        drawr.loadNearbyChunks();
+        toggle_teleport();
     }
 
     function update_position_box(){
+        return false;
         $("map_pos_x").innerHTML = -drawr.drawr_map.getIngameOffsetX();
         $("map_pos_y").innerHTML = -drawr.drawr_map.getIngameOffsetY();
     }
