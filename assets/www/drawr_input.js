@@ -8,7 +8,7 @@ KittyDrawr.prototype.setup_mouse = function(){
     
     var self_reference = this; // weird interaction with listeners and object methods
     
-    this.addEventListener("mapmove", function(){ self_reference.loadNearbyChunks();} ); // custom even listener
+    this.addEventListener("mapmove", function(){ self_reference.loadNearbyChunks();} ); // custom event listener
     
     var movefunc = function(e){ self_reference.mousemoveEvent(e); };
     var downfunc = function(e){ self_reference.mousedownEvent(e); };
@@ -40,6 +40,9 @@ KittyDrawr.prototype.addEventListener = function(event, callback){
     if(event == "mapmove"){
         var previous_callback = this.screenmove_callback;
         this.screenmove_callback = function(){ callback(); previous_callback(); }
+    }else if(event == "addpoint"){
+        var previous_callback = this.addpoint_callback;
+        this.addpoint_callback = function(){ callback(); previous_callback(); }
     }
 }
 

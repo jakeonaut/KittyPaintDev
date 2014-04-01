@@ -16,9 +16,19 @@ function DrawrChunk(drawr_map){
 DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
     DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size);
 }
+DrawrChunk.prototype.load = function(numx, numy, drawr_client){
+    var img = new Image();
+    var server = drawr_client.getServer();
+    img.src = "http://" + server + "/chunk?" + numx + "&" + numy + "&" + Math.random();
+    var self = this;
+    img.onload = function(){
+        self.ctx.drawImage(img, 0, 0);
+    };
+}
 
 
-function DrawrMap(){
+function DrawrMap(drawr_client){
+    this.drawr_client = drawr_client;
 	this.chunk_block_size = 256;
 	this.per_pixel_scaling = 2; // pixel is 2x2
 	this.chunk_onscreen_size = this.chunk_block_size * this.per_pixel_scaling;
@@ -66,15 +76,16 @@ DrawrMap.prototype.loadChunk = function(chunk_numx, chunk_numy){
     // This function ensures that there's a DrawrChunk in this chunk location, then
     // it starts loading the chunk image from the server.
     // The actual chunk from the server MIGHT NOT BE LOADED YET AFTER THIS FUNCIONT RETURNS!!
-    /////
-    /* CHUNKS WILL BE IN ./server/chunks/chunk[numx]x[numy].png */
-
-    // THIS ISNT REALLY LOADING YET!!!!!
+    
     if(!this.chunks.hasOwnProperty(chunk_numx)){
         this.chunks[chunk_numx] = {};
     }
-    this.chunks[chunk_numx][chunk_numy] = new DrawrChunk(this);
-    this.chunks_loaded.push({x: chunk_numx, y: chunk_numy}); // NOT EXACTRLY TRUE LOADED
+    if(!this.isChunkLoaded(chunk_numx, chunk_numy)){
+        this.chunks[chunk_numx][chunk_numy] = new DrawrChunk(this);
+    }
+    this.chunks[chunk_numx][chunk_numy].load(chunk_numx, chunk_numy, this.drawr_client);
+    
+    this.chunks_loaded.push({x: chunk_numx, y: chunk_numy}); // this array isn't used i think, not necessary. will see.
 }
 
 DrawrMap.prototype.unloadChunk = function(chunk_numx, chunk_numy){
@@ -185,6 +196,7 @@ DrawrMap.prototype.addPoint = function(x,y,brush,size){
     var chunks_local_coords = this.getChunkLocalCoordinates(gamex, gamey, chunks_affected, brush);
     
     var chunks_written = []; // store the chunks already written to, to avoid redundancy
+    var self = this;
     
     for(var i=0; i<4; ++i){
         if(chunks_affected[i] && chunks_local_coords[i]){
@@ -194,7 +206,17 @@ DrawrMap.prototype.addPoint = function(x,y,brush,size){
             if(chunks_written.indexOf(chunk_written_id) < 0){
                 if(this.isChunkLoaded(chunk_numx, chunk_numy)){
                     var chunk = this.chunks[chunk_numx][chunk_numy];
-                    chunk.addPoint(chunks_local_coords[i].x, chunks_local_coords[i].y, brush,size);
+                    var localx = chunks_local_coords[i].x;
+                    var localy = chunks_local_coords[i].y;
+                    chunk.addPoint(localx, localy, brush,size);
+                    
+                    /***** I FEEL LIKE THIS SHOULD BE ABSTRACTED BETTER *****/
+                    // make new thread
+                    (function(chunk_numx, chunk_numy, localx, localy, brush, size){
+                        setTimeout( function(){
+                            self.drawr_client.addPoint(chunk_numx, chunk_numy, localx, localy, brush, size);
+                        }, 0);
+                    })(chunk_numx, chunk_numy, localx, localy, brush, size);
                 }else{
                     console.log("Chunk not loaded: (" + chunk_numx + ", " + chunk_numy + ")");
                 }

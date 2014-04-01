@@ -200,8 +200,8 @@
 					auto-hide ui: <input id="auto_hide_ui" type="checkbox" onClick="toggleAutoHideUI();">
 				</div>
                 <div class="button_holder">
-                    Drawr Server: <input type="text" id="server_url" class="server_box" value="http://127.0.0.1:27182"/>
-                    <input type="button" value="networktest" onClick="networkerino();"/>
+                    server: <input type="text" id="server_url" class="server_box" value="127.0.0.1:27182"/>
+                    <input type="button" value="set" onClick="set_server();"/>
                 </div>
 				<br/>
 				<div class="button_holder">
@@ -236,15 +236,12 @@
 <script type="text/javascript" src="md5_crypt.js"></script>
 <script type="text/javascript" src="drawr_brushes.js"></script>
 <script type="text/javascript" src="drawr_map.js"></script>
-<script type="text/javascript" src="network.js"></script>
 <script type="text/javascript" src="stampdrawr.js"></script>
+<script type="text/javascript" src="drawr_client.js"></script>
 <script type="text/javascript" src="drawr.js"></script>
 <script type="text/javascript" src="drawr_input.js"></script>
 
 <script type="text/javascript">
-    function networkerino(){
-        var drawr_client = DrawrClient();
-    }
 
     var num_brush_boxes = 10;
     var num_available_brush_boxes = 10;
@@ -272,14 +269,16 @@
     document.getElementById("zoom_list").selectedIndex = 2;
     
     
-	
+	/******* SETUP *******/
     var brushes = new DrawrBrushes(function(){  // maybe we need a loading screen for this
 		//Load Brushes
         num_brush_box_pages = Math.ceil(brushes.getBrushes().length/num_available_brush_boxes);
 		setBrushBoxes();
     });
     
-    var drawr = new KittyDrawr("kittycanvas", brushes, "debug");
+    var drawr_client = new DrawrClient("127.0.0.1:27182");
+    
+    var drawr = new KittyDrawr("kittycanvas", brushes, drawr_client, "debug");
 	drawr.addEventListener("mapmove", update_position_box);
 	
 	var stampdrawr = new StampDrawr("stampcanvas", brushes, "debug");
@@ -354,6 +353,8 @@
 			
 		fixBrushSize();
 		fixBrushColorEdit();
+        
+        drawr_client.setBrush(brushes); // abstract this better maybe
 	}
 	
 	function fixBrushSize(){
@@ -570,11 +571,13 @@
         //$("tele_waypoint").value = "";
     }
     
-    function get_server(){
-        server = document.getElementById("server_url").value;
-        if(!server.match(/^http:\/\//)) server = "http://" + server;
-        document.getElementById("server_url").value = server;
-        return server;
+    function set_server(){
+        var server = $("server_url").value;
+        if(!server.match(/^[^\/]$/)){
+            server = drawr_client.server;
+            $("server_url").value = server;
+        }
+        drawr_client.server = server;
     }
     
     function get_room(){
@@ -586,18 +589,7 @@
     
     
     
-    var newest_id = -1;
     
-    function makeobjo(){
-        r = function(){ return Math.floor(Math.random()*10 - 5); }
-        objo = new DrawrPath();
-        objo.addPoint(25+r(),25+r(),100,100);
-        objo.addPoint(34+r(),30+r(),100,100);
-        objo.addPoint(87+r(),54+r(),100,100);
-        objo.addPoint(10+r(),54+r(),100,100);
-        objo.addPoint(90+r(),78+r(),100,100);
-        return objo;//.serialize();
-    }
     function add_one(){
         /*url_post = get_server() + "/post?" + get_room() + "&" + makeobjo();
         loadJSON(url_post, function(jsonObj){

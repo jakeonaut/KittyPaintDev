@@ -1,5 +1,5 @@
 
-function KittyDrawr(canvas_id, brushes, debug_id){
+function KittyDrawr(canvas_id, brushes, drawr_client, debug_id){
     this.stage = document.getElementById(canvas_id);
     this.debug_div = debug_id && document.getElementById(debug_id) || 0;
     this.ctx = this.stage.getContext("2d");
@@ -13,8 +13,9 @@ function KittyDrawr(canvas_id, brushes, debug_id){
     this.stage.width = window.innerWidth;
     this.stage.height = window.innerHeight;
     
+    this.drawr_client = drawr_client;
     this.drawr_brushes = brushes || new DrawrBrushes();
-    this.drawr_map = new DrawrMap();
+    this.drawr_map = new DrawrMap(this.drawr_client);
     
     this.setup_fps();
     this.setup_mouse();

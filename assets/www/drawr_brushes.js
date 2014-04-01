@@ -80,6 +80,7 @@ function DrawrBrushes(onload_continuation){
 				var brush_obj = {
 					img: temp_img, 
 					name: brush_name, 
+                    path: "brushes/" + name + "/" + j + ".png",
 					size: this.brush_sizes[i],
 					sized_images: null,
 					color: {r: 255, g: 255, b: 255},
@@ -99,6 +100,10 @@ function DrawrBrushes(onload_continuation){
 			}
 		}
 	}
+}
+
+DrawrBrushes.prototype.getDefaultPath = function(){
+    return "brushes/"+this.brush_names[0]+"/"+this.brush_size+".png"
 }
 
 DrawrBrushes.prototype.getBrushes = function(){
@@ -134,6 +139,14 @@ DrawrBrushes.prototype.getBrushSize = function(){
 
 DrawrBrushes.prototype.setBrushSize = function(size){
 	this.brush_size = size;
+}
+
+DrawrBrushes.brushToPath = function(brush, size){
+    if(brush.type == "brush"){
+        return "brushes/"+name+"/"+size+".png";
+    }else{
+        return brush.path;
+    }
 }
 
 DrawrBrushes.setImageColor = function(img, size, r, g, b){
