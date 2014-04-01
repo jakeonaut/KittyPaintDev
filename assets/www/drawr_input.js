@@ -156,8 +156,8 @@ KittyDrawr.prototype.mousemoveEvent = function(e){
     }
     
     e.preventDefault(); //prevent mouse drag from trying to drag webpage
-    if (event.stopPropagation) event.stopPropagation();
-    event.cancelBubble = true;
+    if (e.stopPropagation) e.stopPropagation();
+    e.cancelBubble = true;
     return false;
 }
 
@@ -175,13 +175,13 @@ KittyDrawr.prototype.mousedownEvent = function(e){
     }
     
     e.preventDefault(); //prevent mouse drag from trying to drag webpage
-    if (event.stopPropagation) event.stopPropagation();
-    event.cancelBubble = true;
+    if (e.stopPropagation) e.stopPropagation();
+    e.cancelBubble = true;
     return false;
 }
 
 KittyDrawr.prototype.mouseupEvent = function(e){
-	return false;
+	//return false;
     // getMouseX(e) may be undefined for a "touchend" event. if so, use previous value
     this.mouselastx = this.mousex;
     this.mouselasty = this.mousey;
@@ -194,7 +194,7 @@ KittyDrawr.prototype.mouseupEvent = function(e){
     }
     
     e.preventDefault(); //prevent mouse drag from trying to drag webpage
-    if (event.stopPropagation) event.stopPropagation();
-    event.cancelBubble = true;
+    if (e.stopPropagation) e.stopPropagation();
+    e.cancelBubble = true;
     return false;
 }
