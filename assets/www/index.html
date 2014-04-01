@@ -205,13 +205,8 @@
                 </div>
 				<br/>
 				<div class="button_holder">
-                    <span id="map_pos_display">
-                        <input type="button" value="teleport" onclick="toggle_teleport();"/>
-                    </span>
-                    <span id="map_pos_teleport" style="display: none;">
-                        <input type="text" id="tele_waypoint" class="position_box" placeholder="Enter waypoint..."/>
-                        <input type="button" value="go" onclick="teleport_go();"/>
-                    </span>
+                    <input type="text" id="tele_waypoint" class="position_box" placeholder="Enter waypoint..."/>
+                    <input type="button" value="go" onclick="teleport_go();"/>
 				</div>
                 <div class="button_holder" style="overflow-y:scroll;height:3em;border: 1px solid black;">
                     <div id="debug">-<br/>-<br/>-</div>
@@ -551,16 +546,6 @@
             a.style.display = "inline";
         }
     }
-	
-    function toggle_teleport(){
-        if($("map_pos_display").style.display != "none"){
-            $("map_pos_display").style.display = "none";
-            $("map_pos_teleport").style.display = "inline";
-        }else{
-            $("map_pos_teleport").style.display = "none";
-            $("map_pos_display").style.display = "inline";
-        }
-    }
     
     function teleport_go(){
         var waypointstr = $("tele_waypoint").value;
@@ -579,13 +564,10 @@
         drawr.drawr_map.setIngameOffsetX(x);
         drawr.drawr_map.setIngameOffsetY(y);
         drawr.loadNearbyChunks();
-        toggle_teleport();
     }
 
     function update_position_box(){
-        return false;
-        $("map_pos_x").innerHTML = -drawr.drawr_map.getIngameOffsetX();
-        $("map_pos_y").innerHTML = -drawr.drawr_map.getIngameOffsetY();
+        //$("tele_waypoint").value = "";
     }
     
     function get_server(){
