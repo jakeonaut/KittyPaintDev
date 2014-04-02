@@ -243,7 +243,6 @@
 
 <script type="text/javascript">
 
-	var canvas_zoom = 2;
     var num_brush_boxes = 10;
     var num_available_brush_boxes = 10;
 	var brush_box_page = 0;
@@ -458,7 +457,6 @@
 	
 	function select_zoom(){
 		var zoom = $("zoom_list").value;
-		canvas_zoom = zoom;
 		drawr.changePixelScale(zoom);
 		drawr.loadNearbyChunks();
 		$("zoom_list").blur();
