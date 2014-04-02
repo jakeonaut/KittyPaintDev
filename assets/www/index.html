@@ -243,6 +243,7 @@
 
 <script type="text/javascript">
 
+	var canvas_zoom = 2;
     var num_brush_boxes = 10;
     var num_available_brush_boxes = 10;
 	var brush_box_page = 0;
@@ -261,12 +262,12 @@
 	}
     
     for (var i=0; i<num_brush_boxes;++i){
-        brush_boxes[i] = document.getElementById("brush_box"+i);
+        brush_boxes[i] = $("brush_box"+i);
     }
     for (var i=0; i<num_size_boxes;++i){
-        size_boxes[i] = document.getElementById("size_box"+i);
+        size_boxes[i] = $("size_box"+i);
     }
-    document.getElementById("zoom_list").selectedIndex = 2;
+    $("zoom_list").selectedIndex = 2;
     
     
 	/******* SETUP *******/
@@ -289,29 +290,29 @@
     ui_onresize();
     function ui_onresize(){
         // see if the line of brush boxes wraps around. if so, hide the ones that go too far past the edge, so it stays 1 row.
-        var brush_box_row1 = document.getElementById("brush_box0").offsetTop;
+        var brush_box_row1 = $("brush_box0").offsetTop;
         var s = brush_box_row1 + " ";
         var count_row1_boxes = 1;
         for (var i=1; i<num_brush_boxes;++i){
-			var thisbox_top = document.getElementById("brush_box"+i).offsetTop;
+			var thisbox_top = $("brush_box"+i).offsetTop;
             s += thisbox_top + " ";
-            if(thisbox_top == 0 || document.getElementById("brush_box"+i).style.display == "none"){
+            if(thisbox_top == 0 || $("brush_box"+i).style.display == "none"){
                 // block is hidden, make it visible to check where its offset would be
-                document.getElementById("brush_box"+i).style.display = "block";
-                thisbox_top = document.getElementById("brush_box"+i).offsetTop;
+                $("brush_box"+i).style.display = "block";
+                thisbox_top = $("brush_box"+i).offsetTop;
             }
             if(thisbox_top == brush_box_row1){
                 count_row1_boxes++;
-                document.getElementById("brush_box"+i).style.display = "block";
+                $("brush_box"+i).style.display = "block";
             }else{
-                document.getElementById("brush_box"+i).style.display = "none";
+                $("brush_box"+i).style.display = "none";
             }
 		}
         //hide 1 more brush_box if the arrow button is moved to next line too!
-        if(document.getElementById("right_brush_arrow").offsetTop != brush_box_row1){
+        if($("right_brush_arrow").offsetTop != brush_box_row1){
             if(count_row1_boxes > 2){ // make sure we actually have a button to hide
                 count_row1_boxes -= 1;
-                document.getElementById("brush_box"+count_row1_boxes).style.display = "none";
+                $("brush_box"+count_row1_boxes).style.display = "none";
             }
         }
         
@@ -348,7 +349,7 @@
 		
 		brushes.selectBrush(index+(num_available_brush_boxes*brush_box_page));
 		brush_boxes[index].className = "selected_box";
-		document.getElementById("minimized_brush_box").style.background = brush_boxes[index].style.background;
+		$("minimized_brush_box").style.background = brush_boxes[index].style.background;
 		brush_index = index;
 			
 		fixBrushSize();
@@ -403,15 +404,15 @@
 	}
 	
 	function fixBrushColorEdit(){
-		var edit_color = document.getElementById("color_box");
+		var edit_color = $("color_box");
 		var brush = brushes.getBrush();
 		if (brush.type == "brush"){
 			edit_color.style.background = "url('brushes/editcolor.png')";
 			edit_color.className = "select_box";
 			
-			document.getElementById("color_r").value = brush.color.r;
-			document.getElementById("color_g").value = brush.color.g;
-			document.getElementById("color_b").value = brush.color.b;
+			$("color_r").value = brush.color.r;
+			$("color_g").value = brush.color.g;
+			$("color_b").value = brush.color.b;
 		}else if (brush.type == "stamp"){
 			edit_color.style.background = "url('brushes/editcolordisabled.png')";
 			edit_color.className = "disabled_select_box";
@@ -452,17 +453,21 @@
         b.value > 255 && (b.value = 255) || b.value < 0 && (b.value = 0);
         
         DrawrBrushes.setBrushColor(brush, r.value, g.value, b.value);
-		var bg_color = "rgb("+brush.color.r+","+brush.color.g+","+brush.color.b+")";
-		brush_boxes[brush_index].style.background = "url('" + brush.sized_images[4].src + "') no-repeat center";
-		document.getElementById("minimized_brush_box").style.backgroundColor = bg_color;
+		$("minimized_brush_box").style.background = brush_boxes[index].style.background;
 	}
 	
 	function select_zoom(){
-		var zoom = document.getElementById("zoom_list").value;
+		var zoom = $("zoom_list").value;
+		canvas_zoom = zoom;
 		drawr.changePixelScale(zoom);
 		drawr.loadNearbyChunks();
-		document.getElementById("zoom_list").blur();
-        document.getElementById("kittycanvas").focus();
+		$("zoom_list").blur();
+        $("kittycanvas").focus();
+		
+		if (zoom < 1){
+			$("kittycanvas").style.cursor = "not-allowed";
+		}else{ $("kittycanvas").style.cursor = "default";
+		}
 	}
 	
 	function setBrushBoxes(){
@@ -475,17 +480,12 @@
 				current_brushes.push(brush);
 				
 				if (brush.type == "brush"){
-					/*var bg_color = "rgb("+brush.color.r+","+brush.color.g+","+brush.color.b+")";
-					brush_boxes[i].style.background = "url('"+brush.img.src+"') no-repeat center";
-					brush_boxes[i].style.backgroundColor = bg_color;*/
                     brush_boxes[i].style.background = "url('" + brush.sized_images[4].src + "') no-repeat center";
 				}else if (brush.type == "stamp"){
 					brush_boxes[i].style.background = "url('"+brush.img.src+"') no-repeat center";
-					brush_boxes[i].style.backgroundColor = "";
 				}
 			}else{
 				brush_boxes[i].style.background = "";
-				brush_boxes[i].style.backgroundColor = "";
 			}
 		}
 		fixSelectedBrush();
@@ -506,8 +506,8 @@
 	}
 	
 	function minimizeUI(){
-		dui = document.getElementById("drawr_ui");
-		mdui = document.getElementById("minimized_ui");
+		dui = $("drawr_ui");
+		mdui = $("minimized_ui");
 		if (dui.style.display != "none"){
 			dui.style.display = "none";
 			mdui.style.display = "block";
@@ -523,12 +523,12 @@
 	}
 	
 	function toggleMinimizeUI(){
-		a = document.getElementById("adv_tab");
+		a = $("adv_tab");
 		if (a.style.display != "none"){
 			a.style.display = "none";
 		}else{
-			dui = document.getElementById("drawr_ui");
-			mdui = document.getElementById("minimized_ui");
+			dui = $("drawr_ui");
+			mdui = $("minimized_ui");
 			if (dui.style.display != "none"){
 				dui.style.display = "none";
 				mdui.style.display = "block";
@@ -540,7 +540,7 @@
 	}
     
     function toggleAdv(){
-        a = document.getElementById("adv_tab");
+        a = $("adv_tab");
         if(a.style.display != "none"){
             a.style.display = "none";
         }else{
@@ -581,9 +581,8 @@
     }
     
     function get_room(){
-        return document.getElementById("room").value.replace(/\&/, "");
+        return $("room").value.replace(/\&/, "");
     }
-    
     
     
     
@@ -602,7 +601,7 @@
     var do_updatingu = 1;
     function toggle_update(){
         do_updatingu = !do_updatingu;
-        document.getElementById("toggle_update").value = "update: " + (do_updatingu ? "on" : "off");
+        $("toggle_update").value = "update: " + (do_updatingu ? "on" : "off");
     }
     
     function update(){

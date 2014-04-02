@@ -14,7 +14,7 @@ function DrawrChunk(drawr_map){
     drawLine(this.ctx, "purple", 1, drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, 1);
 }
 DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
-    DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size);
+	if (canvas_zoom >= 1) DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size);
 }
 DrawrChunk.prototype.load = function(numx, numy, drawr_client){
     var img = new Image();
