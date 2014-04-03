@@ -95,8 +95,12 @@ DrawrClient.prototype.addPoint = function(x, y, brush, size){
                 brush = brush.getBrush();
             }
             var path = DrawrBrushes.brushToPath(brush, size);
-            var rgb = brush.color.r + ":" + brush.color.g + ":" + brush.color.b;
-            this.socket.send("ADDPOINTBR:" + x + ":" + y + ":" + path + ":" + size + ":" + rgb);
+            if(brush.type == "brush"){
+                var rgb = brush.color.r + ":" + brush.color.g + ":" + brush.color.b;
+                this.socket.send("ADDPOINTBR:" + x + ":" + y + ":" + path + ":" + size + ":" + rgb);
+            }else if(brush.type == "stamp"){
+                this.socket.send("ADDSTAMPBR:" + x + ":" + y + ":" + path + ":" + size + ":" + rgb);
+            }
         }else{
             this.socket.send("ADDPOINT:" + x + ":" + y);
         }
@@ -117,7 +121,7 @@ DrawrClient.prototype.addPointLocal = function(numx, numy, localx, localy, brush
             var loc = localx + ":" + localy;
             var path = DrawrBrushes.brushToPath(brush, size);
             var rgb = brush.color.r + ":" + brush.color.g + ":" + brush.color.b;
-            this.socket.send("ADDPOINTBR:" + chunk + ":" + loc + ":" + path + ":" + size + ":" + rgb);
+            this.socket.send("ADDPOINTLOCALBR:" + chunk + ":" + loc + ":" + path + ":" + size + ":" + rgb);
         }else{
             var chunk = numx + ":" + numy;
             var loc = localx + ":" + localy;
