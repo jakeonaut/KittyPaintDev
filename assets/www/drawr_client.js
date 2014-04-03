@@ -97,9 +97,13 @@ DrawrClient.prototype.addPoint = function(x, y, brush, size){
             var path = DrawrBrushes.brushToPath(brush, size);
             if(brush.type == "brush"){
                 var rgb = brush.color.r + ":" + brush.color.g + ":" + brush.color.b;
-                this.socket.send("ADDPOINTBR:" + x + ":" + y + ":" + path + ":" + size + ":" + rgb);
+				var message = "ADDPOINTBR:" + x + ":" + y + ":" + path + ":" + size + ":" + rgb;
+				console.log("Sending: " + message);
+                this.socket.send(message);
             }else if(brush.type == "stamp"){
-                this.socket.send("ADDSTAMPBR:" + x + ":" + y + ":" + path + ":" + size + ":" + rgb);
+				var message = "ADDSTAMPBR:" + x + ":" + y + ":" + path + ":" + size;
+				console.log("Sending: " + message);
+                this.socket.send(message);
             }
         }else{
             this.socket.send("ADDPOINT:" + x + ":" + y);

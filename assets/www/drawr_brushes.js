@@ -34,7 +34,7 @@ function DrawrBrushes(onload_continuation){
 				var temp_img = new Image();
 				var brush_obj = {
 					img: temp_img,
-					name: name + j,
+					name: name,
                     sizes: [],
 					sized_images: [],
 					color: this.named_colors[j],
@@ -138,7 +138,7 @@ DrawrBrushes.prototype.setBrushSize = function(size){
 
 DrawrBrushes.brushToPath = function(brush, size){
     if(brush.type == "brush"){
-        return "brushes/"+name+"/"+size+".png";
+        return "brushes/"+brush.name+"/"+size+".png";
     }else{
         return brush.path;
     }
