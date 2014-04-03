@@ -68,7 +68,26 @@ DrawrClient.prototype.setBrush = function(brush, size){
     }
 }
 
-DrawrClient.prototype.addPoint = function(numx, numy, localx, localy, brush, size){
+DrawrClient.prototype.addPoint = function(x, y, brush, size){
+    if(this.isConnected()){
+        if(brush){
+            if(!size){
+                size = brush.getBrushSize();
+                brush = brush.getBrush();
+            }
+            var path = DrawrBrushes.brushToPath(brush, size);
+            var rgb = brush.color.r + ":" + brush.color.g + ":" + brush.color.b;
+            this.socket.send("ADDPOINTBR:" + x + ":" + y + ":" + path + ":" + size + ":" + rgb);
+        }else{
+            this.socket.send("ADDPOINT:" + x + ":" + y);
+        }
+    }else{
+        //console.log("ADDPOINT: not connected");
+    }
+}
+
+DrawrClient.prototype.addPointLocal = function(numx, numy, localx, localy, brush, size){
+    // not yet (aka no longer) supported, because it's dumb
     if(this.isConnected()){
         if(brush){
             if(!size){
@@ -83,7 +102,7 @@ DrawrClient.prototype.addPoint = function(numx, numy, localx, localy, brush, siz
         }else{
             var chunk = numx + ":" + numy;
             var loc = localx + ":" + localy;
-            this.socket.send("ADDPOINT:" + chunk + ":" + loc);
+            this.socket.send("ADDPOINTLOCAL:" + chunk + ":" + loc);
         }
     }else{
         //console.log("SETBRUSH: not connected");

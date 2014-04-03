@@ -248,12 +248,13 @@ DrawrMap.prototype.addPoint = function(x,y,brush,size){
                     chunk.addPoint(localx, localy, brush,size);
                     
                     /***** I FEEL LIKE THIS SHOULD BE ABSTRACTED BETTER *****/
-                    // make new thread
+                    /*// make new thread
                     (function(chunk_numx, chunk_numy, localx, localy, brush, size){
                         setTimeout( function(){
                             self.drawr_client.addPoint(chunk_numx, chunk_numy, localx, localy, brush, size);
                         }, 0);
                     })(chunk_numx, chunk_numy, localx, localy, brush, size);
+                    */
                 }else{
                     console.log("Chunk not loaded: (" + chunk_numx + ", " + chunk_numy + ")");
                 }
@@ -261,7 +262,13 @@ DrawrMap.prototype.addPoint = function(x,y,brush,size){
             }
         }
     }
-    
+    /***** I FEEL LIKE THIS SHOULD BE ABSTRACTED BETTER *****/
+    // make new thread
+    (function(gamex, gamey, brush, size){
+        setTimeout( function(){
+            self.drawr_client.addPoint(gamex, gamey, brush, size);
+        }, 0);
+    })(gamex, gamey, brush, size);
 }
 
 DrawrMap.prototype.oldAddPoint = function(x,y,brush){
