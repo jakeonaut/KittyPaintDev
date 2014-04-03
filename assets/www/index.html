@@ -459,9 +459,8 @@
         b.value > 255 && (b.value = 255) || b.value < 0 && (b.value = 0);
         
         DrawrBrushes.setBrushColor(brush, r.value, g.value, b.value);
-		
-		brush_boxes[index].style.background = "url('" + brush.sized_images[4].src + "') no-repeat center";
-		$("minimized_brush_box").style.background = brush_boxes[index].style.background;
+		brush_boxes[brush_index].style.background = "url('" + brush.sized_images[4].src + "') no-repeat center";
+		$("minimized_brush_box").style.background = brush_boxes[brush_index].style.background;
 	}
 	
 	function select_zoom(){
