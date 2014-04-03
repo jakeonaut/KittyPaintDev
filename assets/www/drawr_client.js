@@ -2,7 +2,9 @@
 
 function DrawrClient(server){
     this.server = server || "localhost:27182";
-    
+}
+
+DrawrClient.prototype.start = function(){
     if("WebSocket" in window){
         this.socket = new WebSocket("ws://" + this.server);
         var self = this;
@@ -29,19 +31,25 @@ function DrawrClient(server){
     }
 }
 
+DrawrClient.prototype.stop = function(){
+    if(this.isConnected()){
+        this.socket.close();
+    }
+}
+
 DrawrClient.prototype.getServer = function(){
     return this.server;
 }
 
 DrawrClient.prototype.isConnected = function(){
-    return this.socket.readyState == 1;
+    return this.socket && this.socket.readyState == 1;
 }
 
 DrawrClient.prototype.sendPing = function(){
     if(this.isConnected()){
         this.socket.send("PING");
     }else{
-        console.log("PING: not connected - STOPPING");
+        //console.log("PING: not connected - STOPPING");
         clearInterval(this.ping_timer);
     }
 }
@@ -56,7 +64,7 @@ DrawrClient.prototype.setBrush = function(brush, size){
         var rgb = brush.color.r + ":" + brush.color.g + ":" + brush.color.b;
         this.socket.send("SETBRUSH:" + path + ":" + size + ":" + rgb);
     }else{
-        console.log("SETBRUSH: not connected");
+        //console.log("SETBRUSH: not connected");
     }
 }
 
@@ -78,7 +86,7 @@ DrawrClient.prototype.addPoint = function(numx, numy, localx, localy, brush, siz
             this.socket.send("ADDPOINT:" + chunk + ":" + loc);
         }
     }else{
-        console.log("SETBRUSH: not connected");
+        //console.log("SETBRUSH: not connected");
     }
 }
 
@@ -86,7 +94,7 @@ DrawrClient.prototype.setViewPort = function(numx1, numy1, numx2, numy2){
     if(this.isConnected()){
         this.socket.send("UPDATESFOR:" + numx1 + ":" + numy1 + ":" + numx2 + ":" + numy2);
     }else{
-        console.log("SETBRUSH: not connected");
+        //console.log("SETBRUSH: not connected");
     }
 }
 

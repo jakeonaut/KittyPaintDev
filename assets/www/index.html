@@ -201,7 +201,7 @@
 				</div>
                 <div class="button_holder">
                     server: <input type="text" id="server_url" class="server_box" value="127.0.0.1:27182"/>
-                    <input type="button" value="set" onClick="set_server();"/>
+                    <input type="button" value="connect" onClick="set_server();"/>
                 </div>
 				<br/>
 				<div class="button_holder">
@@ -575,7 +575,9 @@
             server = drawr_client.server;
             $("server_url").value = server;
         }
+        drawr_client.stop();
         drawr_client.server = server;
+        drawr_client.start();
     }
     
     function get_room(){

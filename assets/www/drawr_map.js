@@ -1,3 +1,5 @@
+
+
 function DrawrChunk(drawr_map){
     this.canvas = document.createElement("canvas");
     this.canvas.width = this.width = drawr_map.chunk_block_size;
@@ -8,10 +10,6 @@ function DrawrChunk(drawr_map){
     this.ctx.mozImageSmoothingEnabled = false;
     this.ctx.webkitImageSmoothingEnabled = false;
     
-    drawLine(this.ctx, "yellow", 1, 1, drawr_map.chunk_block_size - 1, 1, 1);
-    drawLine(this.ctx, "red", drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, 1, 1);
-    drawLine(this.ctx, "green", 1, 1, 1, drawr_map.chunk_block_size-1, 1);
-    drawLine(this.ctx, "purple", 1, drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, drawr_map.chunk_block_size-1, 1);
 }
 DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
 	DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size);
@@ -23,6 +21,15 @@ DrawrChunk.prototype.load = function(numx, numy, drawr_client){
     var self = this;
     img.onload = function(){
         self.ctx.drawImage(img, 0, 0);
+        var w = self.canvas.width;
+        drawLine(self.ctx, "yellow", 1, 1, w - 1, 1, 1);
+        drawLine(self.ctx, "red", w-1, w-1, w-1, 1, 1);
+        drawLine(self.ctx, "green", 1, 1, 1, w-1, 1);
+        drawLine(self.ctx, "purple", 1, w-1, w-1, w-1, 1);
+        /////////*********
+        self.ctx.fillStyle = "red";
+        self.ctx.font = "italic 10px Verdana";
+        self.ctx.fillText("(" + numx + "," + numy + ")", 5, 15);
     };
 }
 
@@ -32,7 +39,6 @@ function DrawrMap(drawr_client){
 	this.chunk_block_size = 256;
 	this.per_pixel_scaling = 2; // pixel is 2x2
 	this.chunk_onscreen_size = this.chunk_block_size * this.per_pixel_scaling;
-	// TODO: MAYBE disable double scaling on small screens??
 	
     // hash of chunks - not array because we need negative and positive locations, and to be able to skip some
     this.chunks = {}; // keyed by xth chunk, value is a hash keyed by yth chunk
@@ -40,12 +46,6 @@ function DrawrMap(drawr_client){
     
     this.offsetX = 0; // offset in client pixels of top left of chunk (0,0)
     this.offsetY = 0;
-    
-    for(var i=-1; i<2; ++i){
-        for(var j=-1; j<2; ++j){
-            this.loadChunk(i,j);
-        }
-    }
 }
 
 DrawrMap.prototype.getIngameOffsetX = function(){
@@ -94,6 +94,16 @@ DrawrMap.prototype.unloadChunk = function(chunk_numx, chunk_numy){
     }
 }
 
+DrawrMap.prototype.isChunkLoaded = function(chunk_numx, chunk_numy){
+    if(this.chunks.hasOwnProperty(chunk_numx) &&
+       this.chunks[chunk_numx].hasOwnProperty(chunk_numy) &&
+       this.chunks[chunk_numx][chunk_numy]){
+        return true;
+    }else{
+        return false;
+    }
+}
+
 DrawrMap.prototype.foreachChunk = function(block){
     for(var numx in this.chunks){
         if(this.chunks.hasOwnProperty(numx)){
@@ -125,14 +135,49 @@ DrawrMap.prototype.loadNearbyChunks = function(viewer_radius){
     var str = "load (" + chunk_min_x + "," + chunk_min_y + ") -> (" + chunk_max_x + "," + chunk_max_y + ") ";
     var didit = false;
     
-    for(var i=chunk_min_x; i <= chunk_max_x; ++i){
+    /*for(var i=chunk_min_x; i <= chunk_max_x; ++i){
         for(var j=chunk_min_y; j <= chunk_max_y; ++j){
             if(!this.isChunkLoaded(i, j)){
                 this.loadChunk(i,j);
                 str += "[" + i + "," + j + "] ";didit = true;
             }
         }
+    }*/
+    
+    // load from the center out
+    var center_x = Math.floor((chunk_max_x + chunk_min_x)/2);
+    var center_y = Math.floor((chunk_max_y + chunk_min_y)/2);
+    var total_layers = Math.max(chunk_max_x - center_x, chunk_max_y - center_y) + 1;
+    
+    var chunks_written = []; // store the chunks already written to, to avoid redundancy
+    var self = this;
+    var load = function(x,y){ // helper function - load chunk only if we haven't already loaded it yet in this call to loadNearbyChunks
+        var chunk_written_id = x + ":" + y;
+        if(chunks_written.indexOf(chunk_written_id) < 0){
+            chunks_written.push(chunk_written_id);
+            if(!self.isChunkLoaded(x, y)){
+                self.loadChunk(x,y);
+                str += "[" + x + "," + y + "] ";didit = true;
+            }
+        }
+    };
+    for(var layer=0; layer<total_layers; ++layer){
+        var y_top = center_y - layer;
+        var y_bot = center_y + layer;
+        var x_left = center_x - layer;
+        var x_right = center_x + layer;
+        // load top and bottom rows of this layer, around already loaded layers
+        for(var x = x_left; x <= x_right; ++x){
+            load(x, y_top);
+            load(x, y_bot);
+        }
+        // load left and right sides of this layer, around already loaded layers
+        for(var y = y_top; y <= y_bot; ++y){
+            load(x_left, y);
+            load(x_right, y);
+        }
     }
+    
     didit && console.log(str);
 }
 
@@ -173,20 +218,10 @@ DrawrMap.prototype.addPointRelative = function(x, y, screenOffsetX, screenOffset
     this.addPoint(relx, rely, brush);
 }
 
-DrawrMap.prototype.isChunkLoaded = function(chunk_numx, chunk_numy){
-    if(this.chunks.hasOwnProperty(chunk_numx) &&
-       this.chunks[chunk_numx].hasOwnProperty(chunk_numy) &&
-       this.chunks[chunk_numx][chunk_numy]){
-        return true;
-    }else{
-        return false;
-    }
-}
-
   
 DrawrMap.prototype.addPoint = function(x,y,brush,size){
     
-    if(this.per_pixel_scaling < 1) return;
+    // if(this.per_pixel_scaling < 1) return; // don't do this while we're in dev mode
     
     x = x - this.offsetX;
     y = y - this.offsetY;
