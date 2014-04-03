@@ -2,6 +2,7 @@
 
 function DrawrClient(server){
     this.server = server || "localhost:27182";
+    this.chunk_update_callback = function(){};
 }
 
 DrawrClient.prototype.start = function(){
@@ -23,11 +24,16 @@ DrawrClient.prototype.start = function(){
         };
         
         this.socket.onmessage = function(e){
-            var rec_msg = e.data.replace(/<.*?>/g,"");
-            console.log("DrawrClient recv: " + rec_msg);
+            self.handleMessage(e);
         };
         
         this.ping_timer = setInterval(function(){ self.sendPing(); }, 5000);
+    }
+}
+
+DrawrClient.prototype.addEventListener = function(event, callback){
+    if(event == "onupdate"){
+        this.chunk_update_callback = callback;
     }
 }
 
@@ -51,6 +57,19 @@ DrawrClient.prototype.sendPing = function(){
     }else{
         //console.log("PING: not connected - STOPPING");
         clearInterval(this.ping_timer);
+    }
+}
+
+DrawrClient.prototype.handleMessage = function(e){
+    var rec_msg = e.data;
+    console.log("DrawrClient recv: " + rec_msg);
+    var msg = rec_msg.split(":");
+    if(msg[0] == "UPDATE"){
+        if(msg.length >= 3){
+            var numx = msg[1];
+            var numy = msg[2];
+            this.chunk_update_callback(numx, numy);
+        }
     }
 }
 

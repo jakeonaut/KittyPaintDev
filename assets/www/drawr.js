@@ -14,6 +14,7 @@ function KittyDrawr(canvas_id, brushes, drawr_client, debug_id){
     this.stage.height = window.innerHeight;
     
     this.drawr_client = drawr_client;
+    
     this.drawr_brushes = brushes || new DrawrBrushes();
     this.drawr_map = new DrawrMap(this.drawr_client);
     

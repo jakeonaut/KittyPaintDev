@@ -10,6 +10,9 @@ KittyDrawr.prototype.setup_mouse = function(){
     
     this.addEventListener("mapmove", function(){ self_reference.loadNearbyChunks();} ); // custom event listener
     
+    // network events
+    this.drawr_client.addEventListener("onupdate", function(x,y){ self_reference.drawr_map.loadChunk(x,y); });
+    
     var movefunc = function(e){ self_reference.mousemoveEvent(e); };
     var downfunc = function(e){ self_reference.mousedownEvent(e); };
     var upfunc = function(e){ self_reference.mouseupEvent(e); };

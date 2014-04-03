@@ -10,6 +10,9 @@ function DrawrChunk(drawr_map){
     this.ctx.mozImageSmoothingEnabled = false;
     this.ctx.webkitImageSmoothingEnabled = false;
     
+    this.ctx.fillStyle = "black";
+    this.ctx.font = "bold 20px Verdana";
+    this.ctx.fillText("[loading]", this.width / 2 - 50, this.width / 2 - 10);
 }
 DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
 	DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size);
