@@ -10,6 +10,10 @@ function DrawrChunk(drawr_map){
     this.ctx.mozImageSmoothingEnabled = false;
     this.ctx.webkitImageSmoothingEnabled = false;
     
+    /*this.trying_load = 0;
+    this.trying_load_time = 0;
+    this.try_load_timeout = 1000; // after this many ms, give up on previous attempts at onload*/
+    
     this.ctx.fillStyle = "black";
     this.ctx.font = "bold 20px Verdana";
     this.ctx.fillText("[loading]", this.width / 2 - 50, this.width / 2 - 10);
@@ -18,12 +22,21 @@ DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
 	DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size);
 }
 DrawrChunk.prototype.load = function(numx, numy, drawr_client){
+    /*if(this.trying_load && now() - this.trying_load_time < this.try_load_timeout){
+        return 0;
+    }*/
+
     var img = new Image();
     var server = drawr_client.getServer();
     img.src = "http://" + server + "/chunk?" + numx + "&" + numy + "&" + Math.random();
+    //this.trying_load = 1;
+    //this.trying_load_time = now();
+    
     var self = this;
     img.onload = function(){
         self.ctx.drawImage(img, 0, 0);
+        //this.trying_load = 0;
+        
         var w = self.canvas.width;
         drawLine(self.ctx, "yellow", 1, 1, w - 1, 1, 1);
         drawLine(self.ctx, "red", w-1, w-1, w-1, 1, 1);
