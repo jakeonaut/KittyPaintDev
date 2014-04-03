@@ -365,21 +365,21 @@
 		if (brush.type == "stamp"){
 			var index = 1;
 			size_boxes[0].className = "disabled_select_box";
-			if (brush.size >= 8){ 
+			if (brush.img.width >= 8){ 
 				index = 2;
 				size_boxes[1].className = "disabled_select_box";
 			}
-			if (brush.size >= 16){ 
+			if (brush.img.width >= 16){ 
 				index = 3;
 				size_boxes[2].className = "disabled_select_box";
 			}
-			if (brush.size >= 32){ 
+			if (brush.img.width >= 32){ 
 				index = 4;
 				size_boxes[3].className = "disabled_select_box";
 			}
 		
-			if (brush_size < brush.size){
-				brush_size = brush.size;
+			if (brush_size < brush.img.width){
+				brush_size = brush.img.width;
 				brush_size_index = index;
 			}
 		}
@@ -389,7 +389,7 @@
 	function selectBrushSize(index, size){
 		var brush = brushes.getBrush();
 		if (brush.type == "stamp"){
-			if (size < brush.size) return;
+			if (size < brush.img.width) return;
 		}
 		
 		for (var i=0; i<size_boxes.length;++i){

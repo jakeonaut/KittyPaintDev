@@ -13,11 +13,9 @@ function DrawrBrushes(onload_continuation){
 		{r: 128, g: 128, b: 128},	//grey
 		{r: 255, g: 255, b: 255},	//white
 	];
-    //this.brush_names = ["circle1", "circle4","circle8","circle16","circle32","bar8"];
 	this.brush_names = ["circle","cat","cat32","kappa","custom"]; //"dota"];
     this.brush_types = ["brush","stamp","stamp","stamp"]; //"stamp"];
 	this.brush_variations = [this.named_colors.length, 4, 1, 1, 0]; //102];
-	this.brush_sizes = [32, 16, 32, 32, 16]; //32];
 	
 	this.selected_brush = 0;
     this.brush_size = 1;
@@ -34,11 +32,9 @@ function DrawrBrushes(onload_continuation){
 			if (type == "brush"){
 				var sized_images = [];
 				var temp_img = new Image();
-				//temp_img.src = "brushes/" + name + "/" + name + ".png"; // this image is never used now? i think
 				var brush_obj = {
 					img: temp_img,
 					name: name + j,
-					size: 0, // is this used?
                     sizes: [],
 					sized_images: [],
 					color: this.named_colors[j],
@@ -81,7 +77,6 @@ function DrawrBrushes(onload_continuation){
 					img: temp_img, 
 					name: brush_name, 
                     path: "brushes/" + name + "/" + j + ".png",
-					size: this.brush_sizes[i],
 					sized_images: null,
 					color: {r: 255, g: 255, b: 255},
 					type: type, 
@@ -191,11 +186,6 @@ DrawrBrushes.draw = function(ctx, x, y, brush, size){
     //console.trace();
 	var s = Math.floor(size/2);
 	if (brush.type == "brush"){
-		/*index = 0;
-		if (size == 4) 			index = 1;
-		else if (size == 8) 	index = 2;
-		else if (size == 16) 	index = 3;
-		else if (size == 32) 	index = 4;*/
         var index = brush.sizes.indexOf(size);
 		
         if(index >= 0){
