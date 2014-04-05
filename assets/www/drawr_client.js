@@ -116,7 +116,7 @@ DrawrClient.prototype.addPoint = function(x, y, brush, size){
 				DEBUG_MODE_GLOBAL && console.log("Sending: " + message);
                 this.socket.send(message);
             }else if(brush.type == "stamp"){
-				var message = "ADDSTAMPBR:" + x + ":" + y + ":" + path + ":" + size + ":" + brush.img.width;
+				var message = "ADDSTAMPBR:" + x + ":" + y + ":" + path + ":" + size;
 				DEBUG_MODE_GLOBAL && console.log("Sending: " + message);
                 this.socket.send(message);
             }
