@@ -12,6 +12,7 @@ KittyDrawr.prototype.setup_mouse = function(){
     
     // network events
     this.drawr_client.addEventListener("onupdate", function(x,y){ self_reference.drawr_map.loadChunk(x,y); });
+    this.drawr_client.addEventListener("onchunk", function(x,y,bin){ self_reference.drawr_map.setChunk(x,y,bin); });
     
     var movefunc = function(e){ self_reference.mousemoveEvent(e); };
     var downfunc = function(e){ self_reference.mousedownEvent(e); };

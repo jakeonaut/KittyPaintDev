@@ -3,6 +3,7 @@
 function DrawrClient(server){
     this.server = server || "localhost:27182";
     this.chunk_update_callback = function(){};
+    this.chunk_sent_callback = function(){};
 }
 
 DrawrClient.prototype.start = function(){
@@ -34,6 +35,8 @@ DrawrClient.prototype.start = function(){
 DrawrClient.prototype.addEventListener = function(event, callback){
     if(event == "onupdate"){
         this.chunk_update_callback = callback;
+    }else if(event == "onchunk"){
+        this.chunk_sent_callback = callback;
     }
 }
 
@@ -62,14 +65,26 @@ DrawrClient.prototype.sendPing = function(){
 
 DrawrClient.prototype.handleMessage = function(e){
     var rec_msg = e.data;
-    console.log("DrawrClient recv: " + rec_msg);
     var msg = rec_msg.split(":");
     if(msg[0] == "UPDATE"){
+        console.log("DrawrClient recv: " + rec_msg);
         if(msg.length >= 3){
             var numx = msg[1];
             var numy = msg[2];
             this.chunk_update_callback(numx, numy);
         }
+    }else if(msg[0] == "CHUNK"){
+        // websockets doesn't support binary data yet -.-
+        // "WebSocket connection to 'ws://127.0.0.1:27182/' failed: Could not decode a text frame as UTF-8."
+        if(msg.length >= 4){
+            var numx = msg[1];
+            var numy = msg[2];
+            var offset = msg[0].length + msg[1].length + msg[2].length + 3;
+            var binary_img = msg.substr(offset);
+            this.chunk_sent_callback(numx, numy, binary_img);
+        }
+    }else{
+        console.log("DrawrClient recv [unknown]: " + rec_msg);
     }
 }
 

@@ -1,6 +1,7 @@
 
 
 function DrawrChunk(drawr_map){
+    this.drawr_map = drawr_map;
     this.canvas = document.createElement("canvas");
     this.canvas.width = this.width = drawr_map.chunk_block_size;
     this.canvas.height = this.height = drawr_map.chunk_block_size;
@@ -21,12 +22,17 @@ function DrawrChunk(drawr_map){
 DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
 	DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size);
 }
-DrawrChunk.prototype.load = function(numx, numy, drawr_client){
+DrawrChunk.prototype.load = function(numx, numy){
+    var server = this.drawr_map.drawr_client.getServer();
+    var url = "http://" + server + "/chunk?" + numx + "&" + numy + "&" + Math.random();
+    this.setImageUrl(url);
+
+
     /*if(this.trying_load && now() - this.trying_load_time < this.try_load_timeout){
         return 0;
     }*/
 
-    var img = new Image();
+    /*var img = new Image();
     var server = drawr_client.getServer();
     img.src = "http://" + server + "/chunk?" + numx + "&" + numy + "&" + Math.random();
     //this.trying_load = 1;
@@ -34,19 +40,35 @@ DrawrChunk.prototype.load = function(numx, numy, drawr_client){
     
     var self = this;
     img.onload = function(){
-        self.ctx.drawImage(img, 0, 0);
-        //this.trying_load = 0;
-        
-        var w = self.canvas.width;
-        drawLine(self.ctx, "yellow", 1, 1, w - 1, 1, 1);
-        drawLine(self.ctx, "red", w-1, w-1, w-1, 1, 1);
-        drawLine(self.ctx, "green", 1, 1, 1, w-1, 1);
-        drawLine(self.ctx, "purple", 1, w-1, w-1, w-1, 1);
-        /////////*********
-        self.ctx.fillStyle = "red";
-        self.ctx.font = "italic 10px Verdana";
-        self.ctx.fillText("(" + numx + "," + numy + ")", 5, 15);
+        self.setImage(img);
+    };*/
+}
+
+DrawrChunk.prototype.setImageUrl = function(url){
+    var img = new Image();
+    img.src = url;
+    //this.trying_load = 1;
+    //this.trying_load_time = now();
+    
+    var self = this;
+    img.onload = function(){
+        self.setImage(img, false);
     };
+}
+
+DrawrChunk.prototype.setImage = function(img){
+    this.ctx.drawImage(img, 0, 0);
+    //this.trying_load = 0;
+    
+    var w = this.canvas.width;
+    drawLine(this.ctx, "yellow", 1, 1, w - 1, 1, 1);
+    drawLine(this.ctx, "red", w-1, w-1, w-1, 1, 1);
+    drawLine(this.ctx, "green", 1, 1, 1, w-1, 1);
+    drawLine(this.ctx, "purple", 1, w-1, w-1, w-1, 1);
+    /////////*********
+    //self.ctx.fillStyle = "red";
+    //self.ctx.font = "italic 10px Verdana";
+    //self.ctx.fillText("(" + numx + "," + numy + ")", 5, 15);
 }
 
 
@@ -99,9 +121,20 @@ DrawrMap.prototype.loadChunk = function(chunk_numx, chunk_numy){
     if(!this.isChunkLoaded(chunk_numx, chunk_numy)){
         this.chunks[chunk_numx][chunk_numy] = new DrawrChunk(this);
     }
-    this.chunks[chunk_numx][chunk_numy].load(chunk_numx, chunk_numy, this.drawr_client);
+    this.chunks[chunk_numx][chunk_numy].load(chunk_numx, chunk_numy);
     
     this.chunks_loaded.push({x: chunk_numx, y: chunk_numy}); // this array isn't used i think, not necessary. will see.
+}
+
+DrawrMap.prototype.setChunk = function(chunk_numx, chunk_numy, bin_img){
+    var base64url = "data:image/png;base64," + btoa(bin_img);
+    if(!this.chunks.hasOwnProperty(chunk_numx)){
+        this.chunks[chunk_numx] = {};
+    }
+    if(!this.isChunkLoaded(chunk_numx, chunk_numy)){
+        this.chunks[chunk_numx][chunk_numy] = new DrawrChunk(this);
+    }
+    this.chunks[chunk_numx][chunk_numy].setImageUrl(base64url);
 }
 
 DrawrMap.prototype.unloadChunk = function(chunk_numx, chunk_numy){
