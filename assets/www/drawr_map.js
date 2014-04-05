@@ -37,13 +37,11 @@ DrawrChunk.prototype.load = function(numx, numy){
     /*if(this.trying_load && now() - this.trying_load_time < this.try_load_timeout){
         return 0;
     }*/
-
     /*var img = new Image();
     var server = drawr_client.getServer();
     img.src = "http://" + server + "/chunk?" + numx + "&" + numy + "&" + Math.random();
     //this.trying_load = 1;
     //this.trying_load_time = now();
-    
     var self = this;
     img.onload = function(){
         self.setImage(img);
@@ -53,8 +51,6 @@ DrawrChunk.prototype.load = function(numx, numy){
 DrawrChunk.prototype.setImageUrl = function(url){
     var img = new Image();
     img.src = url;
-    //this.trying_load = 1;
-    //this.trying_load_time = now();
     
     var self = this;
     img.onload = function(){
@@ -64,18 +60,17 @@ DrawrChunk.prototype.setImageUrl = function(url){
 
 DrawrChunk.prototype.setImage = function(img){
     this.ctx.drawImage(img, 0, 0);
-    //this.trying_load = 0;
     
-    var w = this.canvas.width;
-    drawLine(this.ctx, "yellow", 1, 1, w - 1, 1, 1);
-    drawLine(this.ctx, "red", w-1, w-1, w-1, 1, 1);
-    drawLine(this.ctx, "green", 1, 1, 1, w-1, 1);
-    drawLine(this.ctx, "purple", 1, w-1, w-1, w-1, 1);
-    /////////*********
-    //self.ctx.fillStyle = "red";
-    //self.ctx.font = "italic 10px Verdana";
-    //self.ctx.fillText("(" + numx + "," + numy + ")", 5, 15);
+    if(DEBUG_MODE_GLOBAL){
+        var w = this.canvas.width;
+        drawLine(this.ctx, "yellow", 1, 1, w - 1, 1, 1);
+        drawLine(this.ctx, "red", w-1, w-1, w-1, 1, 1);
+        drawLine(this.ctx, "green", 1, 1, 1, w-1, 1);
+        drawLine(this.ctx, "purple", 1, w-1, w-1, w-1, 1);
+    }
 }
+
+
 
 
 function DrawrMap(drawr_client, offline_mode){
@@ -244,7 +239,7 @@ DrawrMap.prototype.loadNearbyChunks = function(viewer_radius){
         }
     }
     
-    didit && console.log(str);
+    didit && DEBUG_MODE_GLOBAL && console.log(str);
 }
 
 DrawrMap.prototype.freeFarChunks = function(viewer_radius){
@@ -274,7 +269,7 @@ DrawrMap.prototype.freeFarChunks = function(viewer_radius){
         }
     });
     
-    didit && console.log(str);
+    didit && DEBUG_MODE_GLOBAL && console.log(str);
 }
 
 DrawrMap.prototype.addPointRelative = function(x, y, screenOffsetX, screenOffsetY, brush){

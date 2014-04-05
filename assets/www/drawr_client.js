@@ -20,7 +20,7 @@ DrawrClient.prototype.start = function(){
             alert("server connection closed");
         };
         this.socket.onerror = function(e){
-            console.log(e.toString());
+            console.log("socket error. " + e.toString());
             // disconnect + reconnect?
         };
         
@@ -67,7 +67,7 @@ DrawrClient.prototype.handleMessage = function(e){
     var rec_msg = e.data;
     var msg = rec_msg.split(":");
     if(msg[0] == "UPDATE"){
-        console.log("DrawrClient recv: " + rec_msg);
+        DEBUG_MODE_GLOBAL && console.log("DrawrClient recv: " + rec_msg);
         if(msg.length >= 3){
             var numx = msg[1];
             var numy = msg[2];
@@ -84,7 +84,7 @@ DrawrClient.prototype.handleMessage = function(e){
             this.chunk_sent_callback(numx, numy, binary_img);
         }
     }else{
-        console.log("DrawrClient recv [unknown]: " + rec_msg);
+        DEBUG_MODE_GLOBAL && console.log("DrawrClient recv [unknown]: " + rec_msg);
     }
 }
 
@@ -113,11 +113,11 @@ DrawrClient.prototype.addPoint = function(x, y, brush, size){
             if(brush.type == "brush"){
                 var rgb = brush.color.r + ":" + brush.color.g + ":" + brush.color.b;
 				var message = "ADDPOINTBR:" + x + ":" + y + ":" + path + ":" + size + ":" + rgb;
-				console.log("Sending: " + message);
+				DEBUG_MODE_GLOBAL && console.log("Sending: " + message);
                 this.socket.send(message);
             }else if(brush.type == "stamp"){
 				var message = "ADDSTAMPBR:" + x + ":" + y + ":" + path + ":" + size;
-				console.log("Sending: " + message);
+				DEBUG_MODE_GLOBAL && console.log("Sending: " + message);
                 this.socket.send(message);
             }
         }else{
