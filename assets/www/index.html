@@ -588,6 +588,9 @@
         drawr_client.stop();
         drawr_client.server = server;
         drawr_client.start();
+        
+        drawr.drawr_map.setOfflineMode(0);
+        drawr.refresh();
     }
     
     function get_room(){

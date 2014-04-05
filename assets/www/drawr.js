@@ -16,7 +16,7 @@ function KittyDrawr(canvas_id, brushes, drawr_client, debug_id){
     this.drawr_client = drawr_client;
     
     this.drawr_brushes = brushes || new DrawrBrushes();
-    this.drawr_map = new DrawrMap(this.drawr_client);
+    this.drawr_map = new DrawrMap(this.drawr_client, 1);
     
     this.setup_fps();
     this.setup_mouse();
@@ -72,6 +72,10 @@ KittyDrawr.prototype.writeDebug = function(){
     if(this.debug_div){
         this.debug_div.innerHTML += this.debug_string;
     }
+}
+
+KittyDrawr.prototype.refresh = function(){
+    this.drawr_map.refresh(Math.max(this.getWidth(), this.getHeight()));
 }
 
 KittyDrawr.prototype.loadNearbyChunks = function(){

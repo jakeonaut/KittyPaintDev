@@ -1,7 +1,9 @@
 
 
-function DrawrChunk(drawr_map){
+function DrawrChunk(drawr_map, offline_mode){
     this.drawr_map = drawr_map;
+    this.offline_mode = offline_mode;
+    
     this.canvas = document.createElement("canvas");
     this.canvas.width = this.width = drawr_map.chunk_block_size;
     this.canvas.height = this.height = drawr_map.chunk_block_size;
@@ -15,17 +17,21 @@ function DrawrChunk(drawr_map){
     this.trying_load_time = 0;
     this.try_load_timeout = 1000; // after this many ms, give up on previous attempts at onload*/
     
-    this.ctx.fillStyle = "black";
-    this.ctx.font = "bold 20px Verdana";
-    this.ctx.fillText("[loading]", this.width / 2 - 50, this.width / 2 - 10);
+    if(!this.offline_mode){
+        this.ctx.fillStyle = "black";
+        this.ctx.font = "bold 20px Verdana";
+        this.ctx.fillText("[loading]", this.width / 2 - 50, this.width / 2 - 10);
+    }
 }
 DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
 	DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size);
 }
 DrawrChunk.prototype.load = function(numx, numy){
-    var server = this.drawr_map.drawr_client.getServer();
-    var url = "http://" + server + "/chunk?" + numx + "&" + numy + "&" + Math.random();
-    this.setImageUrl(url);
+    if(!this.offline_mode){
+        var server = this.drawr_map.drawr_client.getServer();
+        var url = "http://" + server + "/chunk?" + numx + "&" + numy + "&" + Math.random();
+        this.setImageUrl(url);
+    }
 
 
     /*if(this.trying_load && now() - this.trying_load_time < this.try_load_timeout){
@@ -72,8 +78,10 @@ DrawrChunk.prototype.setImage = function(img){
 }
 
 
-function DrawrMap(drawr_client){
+function DrawrMap(drawr_client, offline_mode){
     this.drawr_client = drawr_client;
+    this.offline_mode = offline_mode || 0;
+    
 	this.chunk_block_size = 256;
 	this.per_pixel_scaling = 2; // pixel is 2x2
 	this.chunk_onscreen_size = this.chunk_block_size * this.per_pixel_scaling;
@@ -84,6 +92,10 @@ function DrawrMap(drawr_client){
     
     this.offsetX = 0; // offset in client pixels of top left of chunk (0,0)
     this.offsetY = 0;
+}
+
+DrawrMap.prototype.setOfflineMode = function(offline_mode){
+    this.offline_mode = offline_mode;
 }
 
 DrawrMap.prototype.getIngameOffsetX = function(){
@@ -119,7 +131,7 @@ DrawrMap.prototype.loadChunk = function(chunk_numx, chunk_numy){
         this.chunks[chunk_numx] = {};
     }
     if(!this.isChunkLoaded(chunk_numx, chunk_numy)){
-        this.chunks[chunk_numx][chunk_numy] = new DrawrChunk(this);
+        this.chunks[chunk_numx][chunk_numy] = new DrawrChunk(this, this.offline_mode);
     }
     this.chunks[chunk_numx][chunk_numy].load(chunk_numx, chunk_numy);
     
@@ -132,7 +144,7 @@ DrawrMap.prototype.setChunk = function(chunk_numx, chunk_numy, bin_img){
         this.chunks[chunk_numx] = {};
     }
     if(!this.isChunkLoaded(chunk_numx, chunk_numy)){
-        this.chunks[chunk_numx][chunk_numy] = new DrawrChunk(this);
+        this.chunks[chunk_numx][chunk_numy] = new DrawrChunk(this, this.offline_mode);
     }
     this.chunks[chunk_numx][chunk_numy].setImageUrl(base64url);
 }
@@ -165,6 +177,11 @@ DrawrMap.prototype.foreachChunk = function(block){
             }
         }
     }
+}
+
+DrawrMap.prototype.refresh = function(viewer_radius){
+    this.chunks = {};
+    this.loadNearbyChunks(viewer_radius);
 }
 
 DrawrMap.prototype.loadNearbyChunks = function(viewer_radius){
