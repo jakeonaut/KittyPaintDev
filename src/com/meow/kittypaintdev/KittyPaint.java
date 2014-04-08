@@ -20,7 +20,7 @@ public class KittyPaint extends Activity {
 		WebSettings webSettings = mainWebView.getSettings();
 		webSettings.setJavaScriptEnabled(true);
 		
-		mainWebView.setInitialScale(100);
+		//mainWebView.setInitialScale(100);
 		
 		mainWebView.addJavascriptInterface(new WebAppInterface(this), "Android");
 		mainWebView.loadUrl("file:///android_asset/www/index.html");
