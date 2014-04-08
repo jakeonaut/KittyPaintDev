@@ -1,6 +1,8 @@
 package com.meow.kittypaintdev;
 
 
+import android.os.Build;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -10,7 +12,7 @@ import android.webkit.WebView;
 
 public class KittyPaint extends Activity {
 
-	@SuppressLint("SetJavaScriptEnabled")
+	@SuppressLint({ "SetJavaScriptEnabled", "NewApi" })
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -19,6 +21,9 @@ public class KittyPaint extends Activity {
 		WebView mainWebView = (WebView) findViewById(R.id.main_webview);
 		WebSettings webSettings = mainWebView.getSettings();
 		webSettings.setJavaScriptEnabled(true);
+		
+		if (Build.VERSION.SDK_INT >= VERSION_CODES.JELLY_BEAN) 
+			  mainWebView.getSettings().setAllowUniversalAccessFromFileURLs(true);
 		
 		//mainWebView.setInitialScale(100);
 		
