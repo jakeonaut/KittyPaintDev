@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
     
+	<link rel="shortcut icon" href="../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="css/default.css"/>
     <link rel="stylesheet" type="text/css" href="css/login.css"/>
 </head>
@@ -112,7 +113,7 @@
 					<div class="select_box" id="stamp_box" onClick="toggleStampUI();" 
 						style="background: url('brushes/createstamp.png')"></div>
             
-					<div style="line-height:32px;float:right;text-align:center;">
+					<div style="line-height:32px;float:left;text-align:center;margin-left:20px;">
 						<div>
 						<span>Zoom: </span>
 						<select id="zoom_list" onchange="select_zoom();">
@@ -153,22 +154,15 @@
                     <div id="debug">-<br/>-<br/>-</div>
                 </div>
             </span>
-			
-			<div id="edit_stamp_ui" style="display:none;">
-				<canvas id="stampcanvas" oncontextmenu="return false;" style="margin-top:10px;border:solid black 1px;">
-					Pls upgrade browser
-				</canvas><br/><br/>
-				<div style="display:inline;">
-					<input type="button" value="Save" id="save_stamp" onClick="return false;"/>
-					<input type="button" value="Clear" id="clear_stamp" onClick="return false;"/>
-				</div>
-			</div>
         </div>
 
         <canvas id="kittycanvas" oncontextmenu="return false;">
             Pls upgrade browser
         </canvas>
-    
+		
+		<canvas id="stampcanvas" oncontextmenu="return false;" style="display:none;">
+			Pls upgrade browser
+		</canvas>
     </center>
 
 </body>
@@ -471,10 +465,12 @@
 	}
 	
 	function toggleStampUI(){
-		if ($("edit_stamp_ui").style.display != "none"){
-			$("edit_stamp_ui").style.display = "none";
+		if ($("stampcanvas").style.display != "none"){
+			$("stampcanvas").style.display = "none";
+			$("kittycanvas").style.display = "block";
 		}else{
-			$("edit_stamp_ui").style.display = "block";
+			$("stampcanvas").style.display = "block";
+			$("kittycanvas").style.display = "none";
 		}
 	}
 	
