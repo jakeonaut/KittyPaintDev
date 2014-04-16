@@ -96,20 +96,8 @@
 						<div class="select_box" id="size_box3" onClick="selectBrushSize(3,16);">16</div>
 						<div class="select_box" id="size_box4" onClick="selectBrushSize(4,32);">32</div>
 					</div>
-					<div id="color_picker" style="line-height:32px;display:none;">
-						<div class="color_pick_part">&nbsp;<b>R</b> 
-							<input id="color_r" type="text" style="width:36px;text-align:right;" onkeypress="editColor();" onkeyup="editColor();">
-                        </div>
-						<div class="color_pick_part">&nbsp;<b>G</b> 
-							<input id="color_g" type="text" style="width:36px;text-align:right;" onkeypress="editColor();" onkeyup="editColor();">
-                        </div>
-						<div class="color_pick_part">&nbsp;<b>B</b> 
-							<input id="color_b" type="text" style="width:36px;text-align:right;margin-right:1px;" onkeypress="editColor();" onkeyup="editColor();">
-                            &nbsp;
-						</div>
-					</div>
-					<div class="select_box" id="color_box" onClick="toggleColorPicker();">
-					</div>
+					<input type="color" class="select_box" id="color_box" onchange="editColor();">
+					</input>
 					<div class="select_box" id="stamp_box" onClick="toggleStampUI();" 
 						style="background: url('brushes/createstamp.png')"></div>
             
@@ -275,6 +263,7 @@
         Android.showToast(toast);
     }
 	
+	/***NOT SETUP***/
 	function fixSelectedBrush(){
 		if (brush_index >= current_brushes.length){
 			for (var i=0; i<brush_boxes.length;++i){
@@ -357,36 +346,11 @@
 		var edit_color = $("color_box");
 		var brush = brushes.getBrush();
 		if (brush.type == "brush"){
-			edit_color.style.background = "url('brushes/editcolor.png')";
 			edit_color.className = "select_box";
-			
-			$("color_r").value = brush.color.r;
-			$("color_g").value = brush.color.g;
-			$("color_b").value = brush.color.b;
+			edit_color.value = rgbToHex(brush.color.r, brush.color.g, brush.color.b);
+			edit_color.style.backgroundColor = ""+edit_color.value;
 		}else if (brush.type == "stamp"){
-			edit_color.style.background = "url('brushes/editcolordisabled.png')";
 			edit_color.className = "disabled_select_box";
-			
-			$("size_picker").style.display = "inline";
-			$("color_picker").style.display = "none";
-		}
-	}
-	
-	function toggleColorPicker(){
-		var brush = brushes.getBrush();
-		if (brush.type == "stamp") return false;
-		
-		sp = $("size_picker");
-		cp = $("color_picker");
-		if (sp.style.display != "none"){
-			sp.style.display = "none";
-			cp.style.display = "inline";
-            $("color_r").blur();
-            $("color_g").blur();
-            $("color_b").blur();
-		}else{
-			sp.style.display = "inline";
-			cp.style.display = "none";
 		}
 	}
 	
@@ -394,17 +358,20 @@
 		var brush = brushes.getBrush();
 		if (brush.type == "stamp") return false;		
 		
-		var r = $("color_r");
-		var g = $("color_g");
-		var b = $("color_b");
+		var color = hexToRgb($("color_box").value);
 		
-        r.value > 255 && (r.value = 255) || r.value < 0 && (r.value = 0);
-        g.value > 255 && (g.value = 255) || g.value < 0 && (g.value = 0);
-        b.value > 255 && (b.value = 255) || b.value < 0 && (b.value = 0);
+		var r = color.r;
+		var g = color.g;
+		var b = color.b;
+		
+        r > 255 && (r = 255) || r < 0 && (r = 0);
+        g > 255 && (g = 255) || g < 0 && (g = 0);
+        b > 255 && (b = 255) || b < 0 && (b = 0);
         
-        DrawrBrushes.setBrushColor(brush, r.value, g.value, b.value);
+        DrawrBrushes.setBrushColor(brush, r, g, b);
 		brush_boxes[brush_index].style.background = "url('" + brush.sized_images[4].src + "') no-repeat center";
 		$("minimized_brush_box").style.background = brush_boxes[brush_index].style.background;
+		fixBrushColorEdit();
 	}
 	
 	function select_zoom(){

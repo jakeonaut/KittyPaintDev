@@ -70,12 +70,15 @@ body {
     cursor:pointer;
     line-height: 32px;
 }
-.color_pick_part{
-    float:left;
-    margin-right:3px;
-    margin-bottom:3px;
-    height:32px;
+#color_box::-webkit-color-swatch{
+	border: none;
 }
+#color_box{
+	width:34px;
+	height:34px;
+	border: solid black 1px;
+}
+
 .selected_box{
     width: 32px;
     height: 32px;

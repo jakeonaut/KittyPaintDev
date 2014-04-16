@@ -7,9 +7,9 @@ function DrawrBrushes(onload_continuation){
 		{r: 255, g: 128, b: 0},		//orange
 		{r: 255, g: 0, b: 0},		//red
 		{r: 128, g: 64, b: 0},		//brown
-		{r: 255, g: 0, b: 255},		//fuschia
+		{r: 164, g: 0, b: 164},		//purple
 		{r: 0, g: 0, b: 255},		//blue
-		{r: 0, g: 255, b: 0},		//bright green
+		{r: 0, g: 164, b: 0},		//green
 		{r: 128, g: 128, b: 128},	//grey
 		{r: 255, g: 255, b: 255},	//white
 	];
@@ -165,16 +165,10 @@ DrawrBrushes.setImageColor = function(img, size, r, g, b){
 }
 
 DrawrBrushes.setBrushColor = function(brush, r, g, b){
-    if(r && g && b){
-        if(r < 0 || g < 0 || b < 0 || r > 255 || g > 255 || b > 255) return 0;
-        brush.color.r = r;
-        brush.color.g = g;
-        brush.color.b = b;
-    }else{
-        brush.color.r = r.r;
-        brush.color.g = r.g;
-        brush.color.b = r.b;
-    }
+    if(r < 0 || g < 0 || b < 0 || r > 255 || g > 255 || b > 255) return 0;
+    brush.color.r = r;
+    brush.color.g = g;
+    brush.color.b = b;
     
     for(var k=0; k<brush.sizes.length; ++k){
         var img = DrawrBrushes.setImageColor(brush.sized_images[k], brush.sizes[k], brush.color.r, brush.color.g, brush.color.b);
