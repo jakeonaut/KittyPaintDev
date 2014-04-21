@@ -3,6 +3,7 @@
 function DrawrChunk(drawr_map, offline_mode){
     this.drawr_map = drawr_map;
     this.offline_mode = offline_mode;
+    this.ascii_mode = 0; // easter egg
     
     this.canvas = document.createElement("canvas");
     this.canvas.width = this.width = drawr_map.chunk_block_size;
@@ -417,6 +418,9 @@ DrawrMap.prototype.draw = function(ctx){
         var onscreenx = chunk_numx * self.chunk_onscreen_size + self.offsetX;
         var onscreeny = chunk_numy * self.chunk_onscreen_size + self.offsetY;
         var chunk_canvas = self.chunks[chunk_numx][chunk_numy].canvas;
+        if(self.ascii_mode){
+            chunk_canvas = draw_as_ascii(self.chunks[chunk_numx][chunk_numy].ctx);
+        }
         ctx.drawImage(chunk_canvas, onscreenx, onscreeny, self.chunk_onscreen_size, self.chunk_onscreen_size);
     });
 }
