@@ -1,19 +1,19 @@
 
 
-function draw_as_ascii(ctx_from){
+function draw_as_ascii(data, size){
     //drawr.drawr_map.ascii_mode = 1
     
     var tcanvas = document.createElement("canvas");
     var ctx = tcanvas.getContext("2d");
     
-    var w = tcanvas.width = ctx_from.canvas.width;
-    var h = tcanvas.height = ctx_from.canvas.height;
+    var w = tcanvas.width = size;
+    var h = tcanvas.height = size;
     
     var font_height = 12; //Math.ceil(w / 16);
     ctx.font = font_height + "px monospace";
     var font_width = ctx.measureText("M").width;
     
-    var img_data = ctx_from.getImageData(0, 0, w, h);
+    //var data = new Uint8Array(ctx_from.getImageData(0, 0, w, h).data.buffer);
     
     for(var x=0; x<w; x += font_width){
         for(var y=0; y<h; y += font_height){
@@ -25,7 +25,7 @@ function draw_as_ascii(ctx_from){
             if(dy + y > h){
                 dy = h % font_height;
             }
-            var style = style_for_data(img_data, w, x, y, dx, dy);
+            var style = style_for_data(data, w, x, y, dx, dy);
             
             if(style.ch != " "){
                 ctx.fillStyle = style.style;
@@ -62,23 +62,25 @@ function rgbToHsl(r, g, b){
     return [Math.floor(h * 360), Math.floor(s * 100), Math.floor(l * 100)];
 }
 
-function style_for_data(img_data, width, x, y, dx, dy){
+function style_for_data(data, width, x, y, dx, dy){
     var gradient = ["M","N","D","B","O","Z","$","I","7","?","+","=","~",":",",",".", " "];
     var avg_r = 0;
     var avg_g = 0;
     var avg_b = 0;
     
-    for(var i=0; i<dx; ++i){
-        for(var j=0; j<dy; ++j){
+    var c = 0;
+    for(var i=0; i<dx; i += 3){
+        for(var j=0; j<dy; j += 3){
+            c += 1;
             var offset = (j+y)*4 * width + (i+x);
-            avg_r += img_data.data[offset];
-            avg_g += img_data.data[offset+1];
-            avg_b += img_data.data[offset+2];
+            avg_r += data[offset];
+            avg_g += data[offset+1];
+            avg_b += data[offset+2];
         }
     }
-    avg_r /= dx*dy;
-    avg_g /= dx*dy;
-    avg_b /= dx*dy;
+    avg_r /= c;//dx*dy;
+    avg_g /= c;//dx*dy;
+    avg_b /= c;//dx*dy;
     
     var hsl = rgbToHsl(avg_r, avg_g, avg_b);
     

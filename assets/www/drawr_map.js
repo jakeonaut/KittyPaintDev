@@ -3,12 +3,12 @@
 function DrawrChunk(drawr_map, offline_mode){
     this.drawr_map = drawr_map;
     this.offline_mode = offline_mode;
-    this.ascii_mode = 0; // easter egg
     
     this.canvas = document.createElement("canvas");
     this.canvas.width = this.width = drawr_map.chunk_block_size;
     this.canvas.height = this.height = drawr_map.chunk_block_size;
     this.ctx = this.canvas.getContext("2d");
+    this.data_cache = drawr_map.ascii_mode ? this.updateCache() : 0; // cache is only used for ascii mode, remove y/n
     
     this.ctx.imageSmoothingEnabled = false;
     this.ctx.mozImageSmoothingEnabled = false;
@@ -24,8 +24,22 @@ function DrawrChunk(drawr_map, offline_mode){
         this.ctx.fillText("[loading]", this.width / 2 - 50, this.width / 2 - 10);
     }
 }
+DrawrChunk.prototype.updateCache = function(){
+    // cache is only used for ascii mode, remove y/n
+    this.data_cache = this.ctx.getImageData(0,0,this.width,this.height).data;//.buffer.slice(0);
+}
+DrawrChunk.prototype.getDataCache = function(){ // cache is only used for ascii mode, remove y/n
+    //return this.ctx.getImageData(0,0,this.width,this.height).data;
+    if(!this.data_cache){
+        this.updateCache();
+    }
+    return this.data_cache;
+}
 DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
 	DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size);
+    if(this.drawr_map.ascii_mode){
+        this.updateCache(); // cache is only used for ascii mode, remove y/n
+    }
 }
 DrawrChunk.prototype.load = function(numx, numy){
     if(!this.offline_mode){
@@ -77,6 +91,7 @@ DrawrChunk.prototype.setImage = function(img){
 function DrawrMap(drawr_client, offline_mode){
     this.drawr_client = drawr_client;
     this.offline_mode = offline_mode || 0;
+    this.ascii_mode = 0; // easter egg
     
 	this.chunk_block_size = 256;
 	this.per_pixel_scaling = 2; // pixel is 2x2
@@ -417,11 +432,13 @@ DrawrMap.prototype.draw = function(ctx){
     this.foreachChunk(function(chunk_numx, chunk_numy){
         var onscreenx = chunk_numx * self.chunk_onscreen_size + self.offsetX;
         var onscreeny = chunk_numy * self.chunk_onscreen_size + self.offsetY;
-        var chunk_canvas = self.chunks[chunk_numx][chunk_numy].canvas;
         if(self.ascii_mode){
-            chunk_canvas = draw_as_ascii(self.chunks[chunk_numx][chunk_numy].ctx);
+            var chunk_canvas = draw_as_ascii(self.chunks[chunk_numx][chunk_numy].getDataCache(), self.chunk_block_size);
+            ctx.drawImage(chunk_canvas, onscreenx, onscreeny, self.chunk_onscreen_size, self.chunk_onscreen_size);
+        }else{
+            var chunk_canvas = self.chunks[chunk_numx][chunk_numy].canvas;
+            ctx.drawImage(chunk_canvas, onscreenx, onscreeny, self.chunk_onscreen_size, self.chunk_onscreen_size);
         }
-        ctx.drawImage(chunk_canvas, onscreenx, onscreeny, self.chunk_onscreen_size, self.chunk_onscreen_size);
     });
 }
 
