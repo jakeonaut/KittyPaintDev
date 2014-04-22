@@ -70,6 +70,9 @@ body {
     cursor:pointer;
     line-height: 32px;
 }
+#stampholder{
+	z-index: 3;
+}
 #color_box::-webkit-color-swatch{
 	border: none;
 }

@@ -8,9 +8,6 @@ function StampDrawr(canvas_id, brushes){
 	this.ctx['webkitImageSmoothingEnabled'] = false;
 	this.ctx['msImageSmoothingEnabled'] = false;
     
-    this.stage.width = window.innerWidth;
-    this.stage.height = window.innerWidth;
-    
     this.drawr_brushes = brushes || new DrawrBrushes();
     this.drawr_map = new DrawrMap();
     
@@ -25,14 +22,37 @@ function StampDrawr(canvas_id, brushes){
         self_reference.update();
     }, this.frame_time);*/
 	
-	
-	this.ctx.fillStyle = "rgb(0,255,255)";
-    this.ctx.fillRect(0,0,this.getWidth(),this.getHeight());
 	this.canvas_pixelated_size = 16;
-	this.pixel_size = this.getWidth()/this.canvas_pixelated_size;
+	this.pixel_size = 32;
+	this.resize();
+}
+
+StampDrawr.prototype.resize = function(){
+	this.stage.width = window.innerWidth-128;
+    this.stage.height = window.innerHeight-128;
+	var top_frame = 128;
+	var left_frame = 128;
+	var right_frame = (this.pixel_size*this.canvas_pixelated_size);
+	var bottom_frame = (this.pixel_size*this.canvas_pixelated_size);
+	
+	//Draw frame
+	this.ctx.fillStyle = "rgb(164,164,164)";
+    this.ctx.fillRect(0,0,this.getWidth(),this.getHeight());
+	
+	//Draw sprite area
+	/*this.pixel_size = (this.getWidth()-frame_size*2)/this.canvas_pixelated_size;
+	if (this.getWidth() > this.getHeight()){
+		this.pixel_size = (this.getHeight()-frame_size*2)/this.canvas_pixelated_size;
+	}*/
+	this.ctx.fillStyle = "rgb(255,255,255)";
+	this.ctx.fillRect(left_frame, top_frame, right_frame, bottom_frame);
+	
+	//Draw lines seperating pixels
 	for (var i = 0; i <= this.canvas_pixelated_size; ++i){		
-		drawLine(this.ctx,"black",1,(i)*this.pixel_size,this.getWidth()-1,(i)*this.pixel_size,1);
-		drawLine(this.ctx,"black",(i)*this.pixel_size, 1,(i)*this.pixel_size,this.getHeight()-1,1);
+		//vertical line
+		drawLine(this.ctx,"black",left_frame,top_frame+(i)*this.pixel_size,left_frame+right_frame, top_frame+(i)*this.pixel_size,1);
+		//horizontal line
+		drawLine(this.ctx,"black",left_frame+(i)*this.pixel_size, top_frame,left_frame+(i)*this.pixel_size,top_frame+bottom_frame,1);
 	}
 }
 

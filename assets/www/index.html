@@ -148,9 +148,11 @@
             Pls upgrade browser
         </canvas>
 		
-		<canvas id="stampcanvas" oncontextmenu="return false;" style="display:none;">
+		<div id="stampholder" class="login_box" style="display:none;">
+			<canvas id="stampcanvas" oncontextmenu="return false;">
 			Pls upgrade browser
-		</canvas>
+			</canvas>
+		</div>
     </center>
 
 </body>
@@ -212,23 +214,30 @@
     
     
 	/******* SETUP *******/
-    var brushes = new DrawrBrushes(function(){  // maybe we need a loading screen for this
-		//Load Brushes
-        num_brush_box_pages = Math.ceil(brushes.getBrushes().length/num_available_brush_boxes);
-		setBrushBoxes();
-    });
-    
-    var drawr_client = new DrawrClient("127.0.0.1:27182");
-    
-    var drawr = new KittyDrawr("kittycanvas", brushes, drawr_client, "debug");
-	drawr.addEventListener("mapmove", update_position_box);
+	var brushes;
+	var drawr_client;
+	var drawr;
+	var stampdrawr;
 	
-	var stampdrawr = new StampDrawr("stampcanvas", brushes, "debug");
+	window.onload = function(){
+		brushes = new DrawrBrushes(function(){  // maybe we need a loading screen for this
+			//Load Brushes
+			num_brush_box_pages = Math.ceil(brushes.getBrushes().length/num_available_brush_boxes);
+			setBrushBoxes();
+		});
     
+		drawr_client = new DrawrClient("127.0.0.1:27182");
+    
+		drawr = new KittyDrawr("kittycanvas", brushes, drawr_client, "debug");
+		drawr.addEventListener("mapmove", update_position_box);
+	
+		stampdrawr = new StampDrawr("stampcanvas", brushes, "debug");
+		
+		ui_onresize();
+	}
     
     var default_onresize = window.onresize || function(){};
     window.onresize = function(){ ui_onresize(); default_onresize(); }
-    ui_onresize();
     function ui_onresize(){
         // see if the line of brush boxes wraps around. if so, hide the ones that go too far past the edge, so it stays 1 row.
         var brush_box_row1 = $("brush_box0").offsetTop;
@@ -260,6 +269,7 @@
         num_available_brush_boxes = count_row1_boxes;
 		num_brush_box_pages = Math.ceil(brushes.getBrushes().length/num_available_brush_boxes);
 		setBrushBoxes();
+		//stampdrawr.resize();
     }
 
     function showAndroidToast(toast) {
@@ -435,29 +445,25 @@
 	}
 	
 	function toggleStampUI(){
-		if ($("stampcanvas").style.display != "none"){
-			$("stampcanvas").style.display = "none";
-			$("kittycanvas").style.display = "block";
+		if ($("stampholder").style.display != "none"){
+			$("stampholder").style.display = "none";
 		}else{
-			$("stampcanvas").style.display = "block";
-			$("kittycanvas").style.display = "none";
+			$("stampholder").style.display = "block";
 		}
 	}
 	
 	function toggleMinimizeUI(){
 		a = $("adv_tab");
-		if (a.style.display != "none"){
+		dui = $("drawr_ui");
+		mdui = $("minimized_ui");
+		if (dui.style.display == "none"){
+			dui.style.display = "block";
+			mdui.style.display = "none";
+		}else if (a.style.display != "none"){
 			a.style.display = "none";
 		}else{
-			dui = $("drawr_ui");
-			mdui = $("minimized_ui");
-			if (dui.style.display != "none"){
-				dui.style.display = "none";
-				mdui.style.display = "block";
-			}else{
-				dui.style.display = "block";
-				mdui.style.display = "none";
-			}
+			dui.style.display = "none";
+			mdui.style.display = "block";
 		}
 	}
     
