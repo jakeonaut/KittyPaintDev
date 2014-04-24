@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="css/default.css"/>
     <link rel="stylesheet" type="text/css" href="css/login.css"/>
 </head>
-<body>
+<body onclick="toggleZoomOff();">
 
     <!-- login_popup -->
     <div id="white_login_screen">&nbsp;</div>
@@ -98,20 +98,32 @@
 					</div>
 					<input type="color" class="select_box" id="color_box" onchange="editColor();">
 					</input>
-					<div class="select_box" id="stamp_box" onClick="toggleStampUI();" 
-						style="background: url('brushes/createstamp.png')"></div>
+					<div class="select_box" style="visibility:hidden;">:^)</div>
+					<div id="zoom_box" class="select_box" onclick="toggleZoom();event.stopPropagation();"
+						style="background: url('brushes/zoom.png'); line-height: 26px;">2</div>
+					<div id="zoom_menu" style="position:absolute;top:0px;left:0px;display:none;">
+						<div onclick="select_zoom(1);toggleZoom();">1</div>
+						<div onclick="select_zoom(2);toggleZoom();">2</div>
+						<div onclick="select_zoom(4);toggleZoom();">4</div>
+						<div onclick="select_zoom(8);toggleZoom();">8</div>
+						<div onclick="select_zoom(16);toggleZoom();">16</div>
+					</div>
+					
+						
+						
+					<!--<select id="zoom_list" class="select_box" onchange="select_zoom();" style="background: url('brushes/zoom.png'); line-height: 20px;">-->
+						<!--option>0.5</option-->
+						<!--<option>1</option>
+						<option>2</option>
+						<option>4</option>
+						<option>8</option>
+						<option>16</option>
+					</select>-->
+					<!--<div class="select_box" id="stamp_box" onClick="toggleStampUI();" 
+						style="background: url('brushes/createstamp.png')"></div>-->
             
 					<div style="line-height:32px;float:left;text-align:center;margin-left:20px;">
 						<div>
-						<span>Zoom: </span>
-						<select id="zoom_list" onchange="select_zoom();">
-							<!--option>0.5</option-->
-							<option>1</option>
-							<option>2</option>
-							<option>4</option>
-							<option>8</option>
-							<option>16</option>
-						</select>
 						&nbsp;
 						<div style="display:inline;">
 							<input type="button" value="&ndash;" id="toggle_min_tab" onClick="toggleMinimizeUI();"/>
@@ -210,7 +222,7 @@
         size_boxes[i] = $("size_box"+i);
     }
 	//TODO:: Update this selectedIndex if we update the zoom select options
-    $("zoom_list").selectedIndex = 1;
+    /*$("zoom_list").selectedIndex = 1;*/
     
     
 	/******* SETUP *******/
@@ -277,6 +289,25 @@
     }
 	
 	/***NOT SETUP***/
+	function toggleZoom(){
+		if ($("zoom_menu").style.display == "none"){
+			$("zoom_menu").style.left = $("zoom_box").offsetLeft;
+			$("zoom_menu").style.top = $("zoom_box").offsetTop + 33;
+			$("zoom_menu").style.display = "block";
+			$("zoom_box").style.border = "1px solid #4444ff";
+		}else{
+			$("zoom_menu").style.display = "none";
+			$("zoom_box").style.border = "1px solid black";
+		}
+	}
+	
+	function toggleZoomOff(){
+		if ($("zoom_menu").style.display != "none"){
+			$("zoom_menu").style.display = "none";
+			$("zoom_box").style.border = "1px solid black";
+		}
+	}
+	
 	function fixSelectedBrush(){
 		if (brush_index >= current_brushes.length){
 			for (var i=0; i<brush_boxes.length;++i){
@@ -393,11 +424,11 @@
 		fixBrushColorEdit();
 	}
 	
-	function select_zoom(){
-		var zoom = $("zoom_list").value;
+	function select_zoom(zoom){
+		$("zoom_box").innerHTML = zoom;
 		drawr.changePixelScale(zoom);
 		drawr.loadNearbyChunks();
-		$("zoom_list").blur();
+		$("zoom_menu").blur();
         $("kittycanvas").focus();
 		
 		if (zoom < 1){
