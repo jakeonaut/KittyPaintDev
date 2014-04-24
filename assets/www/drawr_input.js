@@ -95,12 +95,16 @@ KittyDrawr.prototype.handleKeys = function(){
         if(this.keyspressed[keyCode]){
             if(keyCode == this.KEY_LEFT){
                 this.drawr_map.moveX(dist_moved);
+                this.screenmove_callback();
             }else if(keyCode == this.KEY_UP){
                 this.drawr_map.moveY(dist_moved);
+                this.screenmove_callback();
             }else if(keyCode == this.KEY_RIGHT){
                 this.drawr_map.moveX(-dist_moved);
+                this.screenmove_callback();
             }else if(keyCode == this.KEY_DOWN){
                 this.drawr_map.moveY(-dist_moved);
+                this.screenmove_callback();
             }
         }
     }
