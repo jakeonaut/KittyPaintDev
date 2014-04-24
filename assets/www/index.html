@@ -360,10 +360,16 @@
 		var brush = brushes.getBrush();
 		if (brush.type == "brush"){
 			edit_color.className = "select_box";
+			edit_color.type="color";
 			edit_color.value = rgbToHex(brush.color.r, brush.color.g, brush.color.b);
+			edit_color.readOnly = false;
 			edit_color.style.backgroundColor = ""+edit_color.value;
 		}else if (brush.type == "stamp"){
 			edit_color.className = "disabled_select_box";
+			edit_color.type="";
+			edit_color.value="";
+			edit_color.readOnly = true;
+			edit_color.style.backgroundColor = "#888888";
 		}
 	}
 	
