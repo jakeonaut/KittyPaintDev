@@ -15,7 +15,7 @@ function DrawrBrushes(onload_continuation){
 	];
 	this.brush_names = ["circle","square","cat","kappa","custom"]; //"dota"];
     this.brush_types = ["brush","brush","stamp","stamp","stamp"]; //"stamp"];
-	this.brush_variations = [this.named_colors.length, this.named_colors.length, 4, 1, 0]; //102];
+	this.brush_variations = [this.named_colors.length, this.named_colors.length, 4, 2, 0]; //102];
 	
 	this.selected_brush = 0;
     this.brush_size = 1;

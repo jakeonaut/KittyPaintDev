@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="css/default.css"/>
     <link rel="stylesheet" type="text/css" href="css/login.css"/>
 </head>
-<body onclick="toggleZoomOff();">
+<body onclick="toggleZoomOff();toggleSizeOff();">
 
     <!-- login_popup -->
     <div id="white_login_screen">&nbsp;</div>
@@ -52,6 +52,7 @@
                     </ul>
                     On desktop:
                     <ul>
+
                         <li><b>Left click</b> to draw</li>
                         <li><b>Right click</b> and drag or <b>middle click</b> and drag to move</li>
                         <li>OR <b>hold m and move mouse</b> to move</li>
@@ -67,7 +68,7 @@
     </div>
     
     <!-- DRAWR -->
-    <center>
+    <center id="drawr_drawr">	
 		<div id="minimized_ui" class="drawr_ui" style="width:35px;height:35px;display:none;" onClick="toggleMinimizeUI();">
 			<div class="selected_box" id="minimized_brush_box">&nbsp;</div>
 		</div>
@@ -98,29 +99,27 @@
 					</div>
 					<input type="color" class="select_box" id="color_box" onchange="editColor();">
 					</input>
-					<div class="select_box" style="visibility:hidden;">:^)</div>
-					<div id="zoom_box" class="select_box" onclick="toggleZoom();event.stopPropagation();"
-						style="background: url('brushes/zoom.png'); line-height: 26px;">2</div>
-					<div id="zoom_menu" style="position:absolute;top:0px;left:0px;display:none;">
-						<div onclick="select_zoom(1);toggleZoom();">1</div>
-						<div onclick="select_zoom(2);toggleZoom();">2</div>
-						<div onclick="select_zoom(4);toggleZoom();">4</div>
-						<div onclick="select_zoom(8);toggleZoom();">8</div>
-						<div onclick="select_zoom(16);toggleZoom();">16</div>
+					<div class="select_box" id="stamp_box" onClick="toggleStampUI();" 
+						style="background: url('brushes/createstamp.png')"></div>
+					<div id="zoom_picker">
+						<div id="zoom_box" class="select_box" onclick="toggleZoom();event.stopPropagation();"
+							style="background: url('brushes/zoom.png'); line-height: 26px;">2</div>
+						<div id="zoom_menu" class="drop_menu" style="position:absolute;top:0px;left:0px;display:none;">
+							<div onclick="select_zoom(1);toggleZoom();">1</div>
+							<div onclick="select_zoom(2);toggleZoom();">2</div>
+							<div onclick="select_zoom(4);toggleZoom();">4</div>
+							<div onclick="select_zoom(8);toggleZoom();">8</div>
+							<div onclick="select_zoom(16);toggleZoom();">16</div>
+						</div>
 					</div>
-					
-						
-						
-					<!--<select id="zoom_list" class="select_box" onchange="select_zoom();" style="background: url('brushes/zoom.png'); line-height: 20px;">-->
-						<!--option>0.5</option-->
-						<!--<option>1</option>
-						<option>2</option>
-						<option>4</option>
-						<option>8</option>
-						<option>16</option>
-					</select>-->
-					<!--<div class="select_box" id="stamp_box" onClick="toggleStampUI();" 
-						style="background: url('brushes/createstamp.png')"></div>-->
+					<div id="stamp_size_picker" style="display:none;">
+						<div id="size_box" class="select_box" onclick="toggleSize();event.stopPropagation();"
+							style="background: url('brushes/size.png'); line-height: 26px;">16</div>
+						<div id="size_menu" class="drop_menu" style="position:absolute;top:0px;left:0px;display:none;">
+							<div onclick="select_size(16);toggleSize();">16</div>
+							<div onclick="select_size(32);toggleSize();">32</div>
+						</div>
+					</div>
             
 					<div style="line-height:32px;float:left;text-align:center;margin-left:20px;">
 						<div>
@@ -160,13 +159,10 @@
             Pls upgrade browser
         </canvas>
 		
-		<div id="stampholder" class="login_box" style="display:none;">
-			<canvas id="stampcanvas" oncontextmenu="return false;">
+        <canvas id="stampcanvas" oncontextmenu="return false;">
 			Pls upgrade browser
-			</canvas>
-		</div>
+		</canvas>
     </center>
-
 </body>
 
 <!-- UI SCRIPTS -->
@@ -177,10 +173,12 @@
 <script type="text/javascript" src="md5_crypt.js"></script>
 <script type="text/javascript" src="drawr_brushes.js"></script>
 <script type="text/javascript" src="drawr_map.js"></script>
-<script type="text/javascript" src="stampdrawr.js"></script>
 <script type="text/javascript" src="drawr_client.js"></script>
 <script type="text/javascript" src="drawr.js"></script>
 <script type="text/javascript" src="drawr_input.js"></script>
+<script type="text/javascript" src="stampscripts/stampdrawr_map.js"></script>
+<script type="text/javascript" src="stampscripts/stampdrawr.js"></script>
+<script type="text/javascript" src="stampscripts/stampdrawr_input.js"></script>
 
 <!-- !! -->
 <script type="text/javascript" src="dumb/ascii.js"></script>
@@ -281,7 +279,7 @@
         num_available_brush_boxes = count_row1_boxes;
 		num_brush_box_pages = Math.ceil(brushes.getBrushes().length/num_available_brush_boxes);
 		setBrushBoxes();
-		//stampdrawr.resize();
+		stampdrawr.resize();
     }
 
     function showAndroidToast(toast) {
@@ -305,6 +303,25 @@
 		if ($("zoom_menu").style.display != "none"){
 			$("zoom_menu").style.display = "none";
 			$("zoom_box").style.border = "1px solid black";
+		}
+	}
+	
+	function toggleSize(){
+		if ($("size_menu").style.display == "none"){
+			$("size_menu").style.left = $("size_box").offsetLeft;
+			$("size_menu").style.top = $("size_box").offsetTop + 33;
+			$("size_menu").style.display = "block";
+			$("size_box").style.border = "1px solid #4444ff";
+		}else{
+			$("size_menu").style.display = "none";
+			$("size_box").style.border = "1px solid black";
+		}
+	}
+	
+	function toggleSizeOff(){
+		if ($("size_menu").style.display != "none"){
+			$("size_menu").style.display = "none";
+			$("size_box").style.border = "1px solid black";
 		}
 	}
 	
@@ -437,6 +454,14 @@
 		}
 	}
 	
+	function select_size(size){
+		$("size_box").innerHTML = size;
+		stampdrawr.changeCanvasSize(size);
+		//drawr.loadNearbyChunks();
+		$("size_menu").blur();
+        $("stampcanvas").focus();
+	}
+	
 	function setBrushBoxes(){
 		current_brushes = [];
 		var brush_list = brushes.getBrushes();
@@ -482,10 +507,18 @@
 	}
 	
 	function toggleStampUI(){
-		if ($("stampholder").style.display != "none"){
-			$("stampholder").style.display = "none";
+		if ($("stampcanvas").style.display != "none"){
+			$("stampcanvas").style.display = "none";
+			$("stamp_size_picker").style.display = "none";
+			
+			$("kittycanvas").style.display = "block";
+			$("zoom_picker").style.display = "block";
 		}else{
-			$("stampholder").style.display = "block";
+			$("stampcanvas").style.display = "block";
+			$("stamp_size_picker").style.display = "block";
+			
+			$("kittycanvas").style.display = "none";
+			$("zoom_picker").style.display = "none";
 		}
 	}
 	

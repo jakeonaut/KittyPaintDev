@@ -348,7 +348,7 @@ DrawrMap.prototype.addPoint = function(x,y,brush,size){
     })(gamex, gamey, brush, size);
 }
 
-DrawrMap.prototype.oldAddPoint = function(x,y,brush){
+/*DrawrMap.prototype.oldAddPoint = function(x,y,brush){
     // DEPRECATED - will incorrectly draw near the edge of chunks
     // find where to add to chunk
     var gamex = Math.floor(x/this.per_pixel_scaling); // convert to ingame (big) pixels
@@ -364,7 +364,7 @@ DrawrMap.prototype.oldAddPoint = function(x,y,brush){
     }else{
         console.log("Chunk not loaded: (" + chunk_numx + ", " + chunk_numy + ")");
     }
-}
+}*/
 
 DrawrMap.prototype.getChunkLocalCoordinates = function(gamex, gamey, chunk_nums_affected, brush){
     // calculate pixel location in local coordinates of each of the 4 possible chunks.
