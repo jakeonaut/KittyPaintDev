@@ -8,7 +8,6 @@ function DrawrChunk(drawr_map, offline_mode){
     this.canvas.width = this.width = drawr_map.chunk_block_size;
     this.canvas.height = this.height = drawr_map.chunk_block_size;
     this.ctx = this.canvas.getContext("2d");
-    this.data_cache = drawr_map.ascii_mode ? this.updateCache() : 0; // cache is only used for ascii mode, remove y/n
     
     this.ctx.imageSmoothingEnabled = false;
     this.ctx.mozImageSmoothingEnabled = false;
@@ -24,22 +23,9 @@ function DrawrChunk(drawr_map, offline_mode){
         this.ctx.fillText("[loading]", this.width / 2 - 50, this.width / 2 - 10);
     }
 }
-DrawrChunk.prototype.updateCache = function(){
-    // cache is only used for ascii mode, remove y/n
-    this.data_cache = this.ctx.getImageData(0,0,this.width,this.height).data;//.buffer.slice(0);
-}
-DrawrChunk.prototype.getDataCache = function(){ // cache is only used for ascii mode, remove y/n
-    //return this.ctx.getImageData(0,0,this.width,this.height).data;
-    if(!this.data_cache){
-        this.updateCache();
-    }
-    return this.data_cache;
-}
+
 DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
 	DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size);
-    if(this.drawr_map.ascii_mode){
-        this.updateCache(); // cache is only used for ascii mode, remove y/n
-    }
 }
 DrawrChunk.prototype.load = function(numx, numy){
     if(!this.offline_mode){
@@ -91,7 +77,6 @@ DrawrChunk.prototype.setImage = function(img){
 function DrawrMap(drawr_client, offline_mode){
     this.drawr_client = drawr_client;
     this.offline_mode = offline_mode || 0;
-    this.ascii_mode = 0; // easter egg
     
 	this.chunk_block_size = 256;
 	this.per_pixel_scaling = 2; // pixel is 2x2
@@ -348,24 +333,6 @@ DrawrMap.prototype.addPoint = function(x,y,brush,size){
     })(gamex, gamey, brush, size);
 }
 
-/*DrawrMap.prototype.oldAddPoint = function(x,y,brush){
-    // DEPRECATED - will incorrectly draw near the edge of chunks
-    // find where to add to chunk
-    var gamex = Math.floor(x/this.per_pixel_scaling); // convert to ingame (big) pixels
-    var gamey = Math.floor(y/this.per_pixel_scaling);
-    var chunk_numx = Math.floor(gamex / this.chunk_block_size); // calculate which chunk this pixel is in
-    var chunk_numy = Math.floor(gamey / this.chunk_block_size);
-    var chunk_localx = gamex % this.chunk_block_size; // pixel location in chunk local coordinates
-    var chunk_localy = gamey % this.chunk_block_size; 
-    
-    if(this.isChunkLoaded(chunk_numx, chunk_numy)){
-        var chunk = this.chunks[chunk_numx][chunk_numy];
-        chunk.addPoint(chunk_localx, chunk_localy, brush);
-    }else{
-        console.log("Chunk not loaded: (" + chunk_numx + ", " + chunk_numy + ")");
-    }
-}*/
-
 DrawrMap.prototype.getChunkLocalCoordinates = function(gamex, gamey, chunk_nums_affected, brush){
     // calculate pixel location in local coordinates of each of the 4 possible chunks.
     // getChunksAffected will always return in this order: topleft, bottomleft, topright, bottomright 
@@ -417,13 +384,7 @@ DrawrMap.prototype.getChunksAffected = function(gamex, gamey, brush, size){
     return chunks_found;
 }
 
-DrawrMap.prototype.draw = function(ctx){
-    /*ctx.imageSmoothingEnabled = false;
-    ctx.mozImageSmoothingEnabled = false;
-    ctx.webkitImageSmoothingEnabled = false;
-    ctx.drawImage(this.canvas, 0, 0, this.chunk_block_size*this.per_pixel_scaling, this.chunk_block_size*this.per_pixel_scaling); //x, y, width, height
-    */
-    
+DrawrMap.prototype.draw = function(ctx){    
     ctx.imageSmoothingEnabled = false;
     ctx.mozImageSmoothingEnabled = false;
     ctx.webkitImageSmoothingEnabled = false;
@@ -431,14 +392,9 @@ DrawrMap.prototype.draw = function(ctx){
     var self = this;
     this.foreachChunk(function(chunk_numx, chunk_numy){
         var onscreenx = chunk_numx * self.chunk_onscreen_size + self.offsetX;
-        var onscreeny = chunk_numy * self.chunk_onscreen_size + self.offsetY;
-        if(self.ascii_mode){
-            var chunk_canvas = draw_as_ascii(self.chunks[chunk_numx][chunk_numy].getDataCache(), self.chunk_block_size);
-            ctx.drawImage(chunk_canvas, onscreenx, onscreeny, self.chunk_onscreen_size, self.chunk_onscreen_size);
-        }else{
-            var chunk_canvas = self.chunks[chunk_numx][chunk_numy].canvas;
-            ctx.drawImage(chunk_canvas, onscreenx, onscreeny, self.chunk_onscreen_size, self.chunk_onscreen_size);
-        }
+        var onscreeny = chunk_numy * self.chunk_onscreen_size + self.offsetY;	
+		var chunk_canvas = self.chunks[chunk_numx][chunk_numy].canvas;
+		ctx.drawImage(chunk_canvas, onscreenx, onscreeny, self.chunk_onscreen_size, self.chunk_onscreen_size);
     });
 }
 

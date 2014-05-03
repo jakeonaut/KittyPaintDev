@@ -177,7 +177,10 @@ DrawrBrushes.setBrushColor = function(brush, r, g, b){
 }
 
 DrawrBrushes.draw = function(ctx, x, y, brush, size){
-    //console.trace();
+	ctx.imageSmoothingEnabled = false;
+    ctx.mozImageSmoothingEnabled = false;
+    ctx.webkitImageSmoothingEnabled = false;
+
 	var s = Math.floor(size/2);
 	if (brush.type == "brush"){
         var index = brush.sizes.indexOf(size);
@@ -187,6 +190,7 @@ DrawrBrushes.draw = function(ctx, x, y, brush, size){
             ctx.drawImage(brush_img, x-s, y-s, size, size);
         }
 	}else if (brush.type == "stamp"){
+		console.log("Stamp", brush.img.width, size, x-s, y-s);
 		var brush_img = brush.img;
 		
 		ctx.drawImage(brush_img, x-s, y-s, size, size);

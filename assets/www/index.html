@@ -101,6 +101,7 @@
 					</input>
 					<div class="select_box" id="stamp_box" onClick="toggleStampUI();" 
 						style="background: url('brushes/createstamp.png')"></div>
+						
 					<div id="zoom_picker">
 						<div id="zoom_box" class="select_box" onclick="toggleZoom();event.stopPropagation();"
 							style="background: url('brushes/zoom.png'); line-height: 26px;">2</div>
@@ -110,14 +111,6 @@
 							<div onclick="select_zoom(4);toggleZoom();">4</div>
 							<div onclick="select_zoom(8);toggleZoom();">8</div>
 							<div onclick="select_zoom(16);toggleZoom();">16</div>
-						</div>
-					</div>
-					<div id="stamp_size_picker" style="display:none;">
-						<div id="size_box" class="select_box" onclick="toggleSize();event.stopPropagation();"
-							style="background: url('brushes/size.png'); line-height: 26px;">16</div>
-						<div id="size_menu" class="drop_menu" style="position:absolute;top:0px;left:0px;display:none;">
-							<div onclick="select_size(16);toggleSize();">16</div>
-							<div onclick="select_size(32);toggleSize();">32</div>
 						</div>
 					</div>
             
@@ -131,6 +124,31 @@
 						</div>
 					</div>
                 </div>
+				<div style="overflow: auto; display:none;" id="stamp_options">
+					<div class="select_box" style="visibility:hidden;"> :^) </div>
+					<div class="select_box" style="visibility:hidden;"> :^) </div>
+					<div class="select_box" style="visibility:hidden;"> :^) </div>
+					<div class="select_box" style="visibility:hidden;"> :^) </div>
+					<div class="select_box" style="visibility:hidden;"> :^) </div>
+					
+					<div class="select_box" id="mini_stamp_box" style="cursor:default;">
+						<canvas id="ministampcanvas" oncontextmenu="return false;" width="32px" height="32px">
+							Pls upgrade browser
+						</canvas>
+					</div>
+					<div id="stamp_size_picker">
+						<div id="size_box" class="select_box" onclick="toggleSize();event.stopPropagation();"
+							style="background: url('brushes/size.png'); line-height: 26px;">16</div>
+						<div id="size_menu" class="drop_menu" style="position:absolute;top:0px;left:0px;display:none;">
+							<div onclick="select_size(16);toggleSize();">16</div>
+							<div onclick="select_size(32);toggleSize();">32</div>
+						</div>
+					</div>
+					<div class="select_box">save</div>
+					<div class="select_box" onclick="stampdrawr.clearCanvas();">clear</div>
+					<div class="select_box">erase</div>
+					<div class="select_box">:^)</div>
+				</div>
             </div>
 			
             <span id="adv_tab" style="display:none;">
@@ -167,6 +185,8 @@
 
 <!-- UI SCRIPTS -->
 <script type="text/javascript" src="login_popup.js"></script>
+<script type="text/javascript" src="ui_toggles.js"></script>
+<script type="text/javascript" src="ui_fixer_selectors.js"></script>
 
 <!-- DRAWR SCRIPTS -->
 <script type="text/javascript" src="utils.js"></script>
@@ -241,7 +261,7 @@
 		drawr = new KittyDrawr("kittycanvas", brushes, drawr_client, "debug");
 		drawr.addEventListener("mapmove", update_position_box);
 	
-		stampdrawr = new StampDrawr("stampcanvas", brushes, "debug");
+		stampdrawr = new StampDrawr("stampcanvas", "ministampcanvas", brushes, "debug");
 		
 		ui_onresize();
 	}
@@ -286,205 +306,7 @@
         Android.showToast(toast);
     }
 	
-	/***NOT SETUP***/
-	function toggleZoom(){
-		if ($("zoom_menu").style.display == "none"){
-			$("zoom_menu").style.left = $("zoom_box").offsetLeft;
-			$("zoom_menu").style.top = $("zoom_box").offsetTop + 33;
-			$("zoom_menu").style.display = "block";
-			$("zoom_box").style.border = "1px solid #4444ff";
-		}else{
-			$("zoom_menu").style.display = "none";
-			$("zoom_box").style.border = "1px solid black";
-		}
-	}
-	
-	function toggleZoomOff(){
-		if ($("zoom_menu").style.display != "none"){
-			$("zoom_menu").style.display = "none";
-			$("zoom_box").style.border = "1px solid black";
-		}
-	}
-	
-	function toggleSize(){
-		if ($("size_menu").style.display == "none"){
-			$("size_menu").style.left = $("size_box").offsetLeft;
-			$("size_menu").style.top = $("size_box").offsetTop + 33;
-			$("size_menu").style.display = "block";
-			$("size_box").style.border = "1px solid #4444ff";
-		}else{
-			$("size_menu").style.display = "none";
-			$("size_box").style.border = "1px solid black";
-		}
-	}
-	
-	function toggleSizeOff(){
-		if ($("size_menu").style.display != "none"){
-			$("size_menu").style.display = "none";
-			$("size_box").style.border = "1px solid black";
-		}
-	}
-	
-	function fixSelectedBrush(){
-		if (brush_index >= current_brushes.length){
-			for (var i=0; i<brush_boxes.length;++i){
-				if (i < current_brushes.length){
-					brush_index = i;
-				}else{
-					brush_boxes[i].className = "disabled_select_box";
-				}
-			}
-		}else{
-			for (var i=current_brushes.length-1; i < brush_boxes.length;++i){
-				brush_boxes[i].className = "disabled_select_box";
-			}
-		}
-	}
-	
-	function selectBrush(index){
-		if (index >= current_brushes.length) return;
-		for (var i=0; i<current_brushes.length;++i){
-			brush_boxes[i].className = "select_box";
-		}
-		
-		brushes.selectBrush(index+(num_available_brush_boxes*brush_box_page));
-		brush_boxes[index].className = "selected_box";
-		$("minimized_brush_box").style.background = brush_boxes[index].style.background;
-		brush_index = index;
-			
-		fixBrushSize();
-		fixBrushColorEdit();
-        
-        drawr_client.setBrush(brushes); // abstract this better maybe
-	}
-	
-	function fixBrushSize(){
-		for (var i=0; i<size_boxes.length; ++i){
-			size_boxes[i].className = "select_box";
-		}
-		var brush = brushes.getBrush();
-		if (brush.type == "stamp"){
-			var index = 1;
-			size_boxes[0].className = "disabled_select_box";
-			if (brush.img.width >= 8){ 
-				index = 2;
-				size_boxes[1].className = "disabled_select_box";
-			}
-			if (brush.img.width >= 16){ 
-				index = 3;
-				size_boxes[2].className = "disabled_select_box";
-			}
-			if (brush.img.width >= 32){ 
-				index = 4;
-				size_boxes[3].className = "disabled_select_box";
-			}
-		
-			if (brush_size < brush.img.width){
-				brush_size = brush.img.width;
-				brush_size_index = index;
-			}
-		}
-		selectBrushSize(brush_size_index, brush_size);
-	}
-	
-	function selectBrushSize(index, size){
-		var brush = brushes.getBrush();
-		if (brush.type == "stamp"){
-			if (size < brush.img.width) return;
-		}
-		
-		for (var i=0; i<size_boxes.length;++i){
-			if (size_boxes[i].className != "disabled_select_box")
-				size_boxes[i].className = "select_box";
-		}
-		size_boxes[index].className = "selected_box";
-		brush_size_index = index;
-		brush_size = size;
-		brushes.setBrushSize(size);
-	}
-	
-	function fixBrushColorEdit(){
-		var edit_color = $("color_box");
-		var brush = brushes.getBrush();
-		if (brush.type == "brush"){
-			edit_color.className = "select_box";
-			edit_color.type="color";
-			edit_color.value = rgbToHex(brush.color.r, brush.color.g, brush.color.b);
-			edit_color.readOnly = false;
-			edit_color.style.backgroundColor = ""+edit_color.value;
-		}else if (brush.type == "stamp"){
-			edit_color.className = "disabled_select_box";
-			edit_color.type="";
-			edit_color.value="";
-			edit_color.readOnly = true;
-			edit_color.style.backgroundColor = "#888888";
-		}
-	}
-	
-	function editColor(){
-		var brush = brushes.getBrush();
-		if (brush.type == "stamp") return false;		
-		
-		var color = hexToRgb($("color_box").value);
-		
-		var r = color.r;
-		var g = color.g;
-		var b = color.b;
-		
-        r > 255 && (r = 255) || r < 0 && (r = 0);
-        g > 255 && (g = 255) || g < 0 && (g = 0);
-        b > 255 && (b = 255) || b < 0 && (b = 0);
-        
-        DrawrBrushes.setBrushColor(brush, r, g, b);
-		brush_boxes[brush_index].style.background = "url('" + brush.sized_images[4].src + "') no-repeat center";
-		$("minimized_brush_box").style.background = brush_boxes[brush_index].style.background;
-		fixBrushColorEdit();
-	}
-	
-	function select_zoom(zoom){
-		$("zoom_box").innerHTML = zoom;
-		drawr.changePixelScale(zoom);
-		drawr.loadNearbyChunks();
-		$("zoom_menu").blur();
-        $("kittycanvas").focus();
-		
-		if (zoom < 1){
-			$("kittycanvas").style.cursor = "not-allowed";
-		}else{ $("kittycanvas").style.cursor = "default";
-		}
-	}
-	
-	function select_size(size){
-		$("size_box").innerHTML = size;
-		stampdrawr.changeCanvasSize(size);
-		//drawr.loadNearbyChunks();
-		$("size_menu").blur();
-        $("stampcanvas").focus();
-	}
-	
-	function setBrushBoxes(){
-		current_brushes = [];
-		var brush_list = brushes.getBrushes();
-		for (var i=0; i<num_available_brush_boxes;++i){
-			var real_brush_index = i+(num_available_brush_boxes*brush_box_page);
-			if (real_brush_index < brush_list.length){
-				var brush = brush_list[real_brush_index];
-				current_brushes.push(brush);
-				
-				if (brush.type == "brush"){
-                    brush_boxes[i].style.background = "url('" + brush.sized_images[4].src + "') no-repeat center";
-				}else if (brush.type == "stamp"){
-					brush_boxes[i].style.background = "url('"+brush.img.src+"') no-repeat center";
-				}
-			}else{
-				brush_boxes[i].style.background = "";
-			}
-		}
-		fixSelectedBrush();
-		selectBrush(brush_index);
-		selectBrushSize(brush_size_index, brush_size);
-	}
-	
+	/***NOT SETUP***/	
 	function prevBrushPage(){
 		brush_box_page--;
 		if (brush_box_page < 0) brush_box_page = num_brush_box_pages-1;
@@ -496,55 +318,6 @@
 		if (brush_box_page >= num_brush_box_pages) brush_box_page = 0;
 		setBrushBoxes();
 	}
-	
-	function minimizeUI(){
-		dui = $("drawr_ui");
-		mdui = $("minimized_ui");
-		if (dui.style.display != "none"){
-			dui.style.display = "none";
-			mdui.style.display = "block";
-		}
-	}
-	
-	function toggleStampUI(){
-		if ($("stampcanvas").style.display != "none"){
-			$("stampcanvas").style.display = "none";
-			$("stamp_size_picker").style.display = "none";
-			
-			$("kittycanvas").style.display = "block";
-			$("zoom_picker").style.display = "block";
-		}else{
-			$("stampcanvas").style.display = "block";
-			$("stamp_size_picker").style.display = "block";
-			
-			$("kittycanvas").style.display = "none";
-			$("zoom_picker").style.display = "none";
-		}
-	}
-	
-	function toggleMinimizeUI(){
-		a = $("adv_tab");
-		dui = $("drawr_ui");
-		mdui = $("minimized_ui");
-		if (dui.style.display == "none"){
-			dui.style.display = "block";
-			mdui.style.display = "none";
-		}else if (a.style.display != "none"){
-			a.style.display = "none";
-		}else{
-			dui.style.display = "none";
-			mdui.style.display = "block";
-		}
-	}
-    
-    function toggleAdv(){
-        a = $("adv_tab");
-        if(a.style.display != "none"){
-            a.style.display = "none";
-        }else{
-            a.style.display = "inline";
-        }
-    }
     
     function teleport_go(){
         var waypointstr = $("tele_waypoint").value;

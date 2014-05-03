@@ -3,11 +3,11 @@ function KittyDrawr(canvas_id, brushes, drawr_client, debug_id){
     this.stage = document.getElementById(canvas_id);
     this.debug_div = debug_id && document.getElementById(debug_id) || 0;
     this.ctx = this.stage.getContext("2d");
-	this.ctx['imageSmoothingEnabled'] = false;
+	/*this.ctx['imageSmoothingEnabled'] = false;
 	this.ctx['mozImageSmoothingEnabled'] = false;
 	this.ctx['oImageSmoothingEnabled'] = false;
 	this.ctx['webkitImageSmoothingEnabled'] = false;
-	this.ctx['msImageSmoothingEnabled'] = false;
+	this.ctx['msImageSmoothingEnabled'] = false;*/
     this.ctx.fillStyle = "black";
     
     this.stage.width = window.innerWidth;

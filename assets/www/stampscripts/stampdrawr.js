@@ -1,12 +1,9 @@
-function StampDrawr(canvas_id, brushes){
+function StampDrawr(canvas_id, mini_canvas_id, brushes){
     this.stage = document.getElementById(canvas_id);
+	this.mini_stage = document.getElementById(mini_canvas_id);
     //this.debug_div = debug_id && document.getElementById(debug_id) || 0;
     this.ctx = this.stage.getContext("2d");
-	this.ctx['imageSmoothingEnabled'] = false;
-	this.ctx['mozImageSmoothingEnabled'] = false;
-	this.ctx['oImageSmoothingEnabled'] = false;
-	this.ctx['webkitImageSmoothingEnabled'] = false;
-	this.ctx['msImageSmoothingEnabled'] = false;
+	this.mini_ctx = this.mini_stage.getContext("2d");
 	
 	this.stage.width = window.innerWidth;
     this.stage.height = window.innerHeight;
@@ -25,8 +22,6 @@ function StampDrawr(canvas_id, brushes){
     this.setup_mouse();
     
     this.update_lock = false;
-    
-    //this.loadNearbyChunks();
     
     var self_reference = this;
     this.game_loop = setInterval(function(){
@@ -49,6 +44,11 @@ StampDrawr.prototype.changeCanvasSize = function(size){
 	this.real_size = this.canvas_pixelated_size * this.pixel_size;
 	this.resize();
 	this.drawr_map.resizeCanvas(size);
+}
+
+StampDrawr.prototype.clearCanvas = function(){
+	this.mini_ctx.clearRect(0, 0, 32, 32);
+	this.drawr_map.clearCanvas();
 }
 
 StampDrawr.prototype.resize = function(){
@@ -109,7 +109,7 @@ StampDrawr.prototype.update = function(){
     this.ctx.fillRect(0,0,this.getWidth(),this.getHeight());
     
     // blit drawr_map to screen
-    this.drawr_map.draw(this.ctx, this.offsetX, this.offsetY);
+    this.drawr_map.draw(this.ctx, this.mini_ctx, this.offsetX, this.offsetY);
 	this.showGrid();
     
     // OPTIMIZE THIS. have it draw to a bitmap, and then just print that, then update the bitmap on changes to drawrObjects
