@@ -27,6 +27,8 @@ function selectBrush(index){
 		
 	fixBrushSize();
 	fixBrushColorEdit();
+	turnOffStampErase();
+	turnOffEyeDrop();
 	
 	drawr_client.setBrush(brushes); // abstract this better maybe
 }
@@ -78,6 +80,7 @@ function selectBrushSize(index, size){
 
 function fixBrushColorEdit(){
 	var edit_color = $("color_box");
+	var eyedrop = $("eyedrop_box");
 	var brush = brushes.getBrush();
 	if (brush.type == "brush"){
 		edit_color.className = "select_box";
@@ -85,12 +88,23 @@ function fixBrushColorEdit(){
 		edit_color.value = rgbToHex(brush.color.r, brush.color.g, brush.color.b);
 		edit_color.readOnly = false;
 		edit_color.style.backgroundColor = ""+edit_color.value;
+		
+		if (eyedrop.className == "disabled_select_box"){
+			eyedrop.className = "select_box";
+			eyedrop.readOnly = false;
+			eyedrop.style.background = "url('brushes/eyedrop.png')";
+		}
 	}else if (brush.type == "stamp"){
 		edit_color.className = "disabled_select_box";
 		edit_color.type="";
 		edit_color.value="";
 		edit_color.readOnly = true;
 		edit_color.style.backgroundColor = "#888888";
+		
+		turnOffEyeDrop();
+		eyedrop.className = "disabled_select_box";
+		eyedrop.readOnly = true;
+		eyedrop.style.background = "url('brushes/eyedropdisabled.png')";
 	}
 }
 
@@ -153,7 +167,9 @@ function setBrushBoxes(){
 			brush_boxes[i].style.background = "";
 		}
 	}
-	fixSelectedBrush();
-	selectBrush(brush_index);
-	selectBrushSize(brush_size_index, brush_size);
+	if ($("stamp_erase_box").className !== "selected_box"){
+		fixSelectedBrush();
+		selectBrush(brush_index);
+		selectBrushSize(brush_size_index, brush_size);
+	}
 }

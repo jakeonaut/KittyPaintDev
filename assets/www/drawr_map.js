@@ -24,8 +24,19 @@ function DrawrChunk(drawr_map, offline_mode){
     }
 }
 
-DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
-	DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size);
+DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size, eye_drop){
+	if (!eye_drop){
+		DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size);
+	}else{
+		var imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+		var data = imageData.data;
+		var c = this.canvas.width;
+		var ci = (local_y*c + local_x)*4;
+		var hex = rgbToHex(data[ci], data[ci+1], data[ci+2]);
+		$("color_box").value = hex;
+		editColor();
+		turnOffEyeDrop();
+	}
 }
 DrawrChunk.prototype.load = function(numx, numy){
     if(!this.offline_mode){
@@ -82,12 +93,18 @@ function DrawrMap(drawr_client, offline_mode){
 	this.per_pixel_scaling = 2; // pixel is 2x2
 	this.chunk_onscreen_size = this.chunk_block_size * this.per_pixel_scaling;
 	
+	this.eye_drop = false;
+	
     // hash of chunks - not array because we need negative and positive locations, and to be able to skip some
     this.chunks = {}; // keyed by xth chunk, value is a hash keyed by yth chunk
     this.chunks_loaded = [];
     
     this.offsetX = 0; // offset in client pixels of top left of chunk (0,0)
     this.offsetY = 0;
+}
+
+DrawrMap.prototype.toggleEyeDrop = function(){
+	this.eye_drop = !this.eye_drop;
 }
 
 DrawrMap.prototype.setOfflineMode = function(offline_mode){
@@ -307,7 +324,7 @@ DrawrMap.prototype.addPoint = function(x,y,brush,size){
                     var chunk = this.chunks[chunk_numx][chunk_numy];
                     var localx = chunks_local_coords[i].x;
                     var localy = chunks_local_coords[i].y;
-                    chunk.addPoint(localx, localy, brush,size);
+                    chunk.addPoint(localx, localy, brush,size, this.eye_drop);
                     
                     /***** I FEEL LIKE THIS SHOULD BE ABSTRACTED BETTER *****/
                     /*// make new thread

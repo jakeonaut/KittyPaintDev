@@ -154,7 +154,8 @@ KittyDrawr.prototype.mousemoveEvent = function(e){
         this.drawr_map.moveY(dy);
     }else if(e.which == 1 || e.touches && e.touches.length <= 1){
         if(this.mousedown){
-            this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
+			if (!this.eye_drop)
+				this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
         }
     }else if(e.which || e.touches && e.touches.length > 1){
         var dx = this.mousex - this.mouselastx;
@@ -201,7 +202,9 @@ KittyDrawr.prototype.mouseupEvent = function(e){
     
     if(e.which == 1 || e.touches && e.touches.length <= 1){
         this.mousedown = false;
-        this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
+		if (!this.eye_drop)
+			this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
+		else this.eye_drop = false;
     }
     
     e.preventDefault(); //prevent mouse drag from trying to drag webpage

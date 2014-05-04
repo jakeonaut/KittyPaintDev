@@ -190,7 +190,6 @@ DrawrBrushes.draw = function(ctx, x, y, brush, size){
             ctx.drawImage(brush_img, x-s, y-s, size, size);
         }
 	}else if (brush.type == "stamp"){
-		console.log("Stamp", brush.img.width, size, x-s, y-s);
 		var brush_img = brush.img;
 		
 		ctx.drawImage(brush_img, x-s, y-s, size, size);

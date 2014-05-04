@@ -10,6 +10,7 @@ function StampDrawr(canvas_id, mini_canvas_id, brushes){
 	this.offsetX = 0;
 	this.offsetY = 0;
 	this.resize();
+	this.eye_drop = false;
 	
 	this.canvas_pixelated_size = 16;
 	this.pixel_size = 32;
@@ -51,6 +52,15 @@ StampDrawr.prototype.clearCanvas = function(){
 	this.drawr_map.clearCanvas();
 }
 
+StampDrawr.prototype.toggleStampErase = function(){
+	this.drawr_map.toggleStampErase();
+}
+
+StampDrawr.prototype.toggleEyeDrop = function(){
+	this.eye_drop = true;
+	this.drawr_map.toggleEyeDrop();
+}
+
 StampDrawr.prototype.resize = function(){
 	console.log(window.innerWidth, window.innerHeight);
 	this.stage.width = window.innerWidth;
@@ -68,9 +78,9 @@ StampDrawr.prototype.resize = function(){
     this.ctx.fillRect(0,0,this.getWidth(),this.getHeight());*/
 }
 
-StampDrawr.prototype.showGrid = function(){
-	var top_frame = this.offsetY;
-	var left_frame = this.offsetX;
+StampDrawr.prototype.showGrid = function(offset_x, offset_y){
+	var top_frame = this.offsetY + offset_y;
+	var left_frame = this.offsetX + offset_x;
 	var right_frame = (this.pixel_size*this.canvas_pixelated_size);
 	var bottom_frame = (this.pixel_size*this.canvas_pixelated_size);
 	
@@ -110,7 +120,7 @@ StampDrawr.prototype.update = function(){
     
     // blit drawr_map to screen
     this.drawr_map.draw(this.ctx, this.mini_ctx, this.offsetX, this.offsetY);
-	this.showGrid();
+	this.showGrid(this.drawr_map.getOffsetX(), this.drawr_map.getOffsetY());
     
     // OPTIMIZE THIS. have it draw to a bitmap, and then just print that, then update the bitmap on changes to drawrObjects
 

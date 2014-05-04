@@ -113,6 +113,8 @@
 							<div onclick="select_zoom(16);toggleZoom();">16</div>
 						</div>
 					</div>
+					<div class="select_box" id="eyedrop_box" onClick="toggleEyeDrop();" 
+						style="background: url('brushes/eyedrop.png')"></div>
             
 					<div style="line-height:32px;float:left;text-align:center;margin-left:20px;">
 						<div>
@@ -146,7 +148,7 @@
 					</div>
 					<div class="select_box">save</div>
 					<div class="select_box" onclick="stampdrawr.clearCanvas();">clear</div>
-					<div class="select_box">erase</div>
+					<div id="stamp_erase_box" class="select_box" onclick="toggleStampErase();">erase</div>
 					<div class="select_box">:^)</div>
 				</div>
             </div>

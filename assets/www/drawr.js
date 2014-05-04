@@ -9,6 +9,7 @@ function KittyDrawr(canvas_id, brushes, drawr_client, debug_id){
 	this.ctx['webkitImageSmoothingEnabled'] = false;
 	this.ctx['msImageSmoothingEnabled'] = false;*/
     this.ctx.fillStyle = "black";
+	this.eye_drop = false;
     
     this.stage.width = window.innerWidth;
     this.stage.height = window.innerHeight;
@@ -31,6 +32,11 @@ function KittyDrawr(canvas_id, brushes, drawr_client, debug_id){
     this.game_loop = setInterval(function(){
         self_reference.update();
     }, this.frame_time);
+}
+
+KittyDrawr.prototype.toggleEyeDrop = function(){
+	this.eye_drop = true;
+	this.drawr_map.toggleEyeDrop();
 }
 
 KittyDrawr.prototype.setup_fps = function(){
