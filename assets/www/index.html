@@ -112,6 +112,13 @@
 							<div onclick="select_zoom(8);toggleZoom();">8</div>
 							<div onclick="select_zoom(16);toggleZoom();">16</div>
 						</div>
+						<div id="stamp_zoom_menu" class="drop_menu" style="position:absolute;top:0px;left:0px;display:none;">
+							<!--<div onclick="select_stamp_zoom(4);toggleZoom();">4</div>
+							<div onclick="select_stamp_zoom(8);toggleZoom();">8</div>-->
+							<div onclick="select_stamp_zoom(16);toggleZoom();">16</div>
+							<div onclick="select_stamp_zoom(32);toggleZoom();">32</div>
+							<div onclick="select_stamp_zoom(64);toggleZoom();">64</div>
+						</div>
 					</div>
 					<div class="select_box" id="eyedrop_box" onClick="toggleEyeDrop();" 
 						style="background: url('brushes/eyedrop.png')"></div>
@@ -179,7 +186,7 @@
             Pls upgrade browser
         </canvas>
 		
-        <canvas id="stampcanvas" oncontextmenu="return false;">
+        <canvas id="stampcanvas" oncontextmenu="return false;" style="display:none;">
 			Pls upgrade browser
 		</canvas>
     </center>
@@ -230,6 +237,8 @@
 	var brush_size_index = 2;
 	var brush_size = 8;
 	var auto_hide_ui = false;
+	var zoom = 2;
+	var stamp_zoom = 32;
 	
 	function toggleAutoHideUI(){
 		auto_hide_ui = !auto_hide_ui;
@@ -264,6 +273,9 @@
 		drawr.addEventListener("mapmove", update_position_box);
 	
 		stampdrawr = new StampDrawr("stampcanvas", "ministampcanvas", brushes, "debug");
+		if (window.innerWidth < 32*16 || window.innerHeight < 32*16){
+			select_stamp_zoom(16);
+		}
 		
 		ui_onresize();
 	}

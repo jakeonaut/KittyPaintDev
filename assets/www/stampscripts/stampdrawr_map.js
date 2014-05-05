@@ -36,13 +36,20 @@ StampDrawrMap.prototype.toggleEyeDrop = function(){
 }
 
 StampDrawrMap.prototype.resizeCanvas = function(size){
-	var temp_canvas = this.canvas;
+	var temp_canvas = document.createElement('canvas');
+	temp_canvas.width = this.canvas.width;
+	temp_canvas.height = this.canvas.height;
+	var temp_ctx = temp_canvas.getContext("2d");
+	temp_ctx.drawImage(this.canvas, 0, 0, this.canvas.width, this.canvas.height);
+	
 	this.canvas_size = size;
 	this.chunk_onscreen_size = this.canvas_size * this.per_pixel_scaling;
 	this.canvas.width = this.width = size;
 	this.canvas.height = this.height = size;
 	
-	this.ctx.drawImage(temp_canvas, 0, 0, this.chunk_onscreen_size, this.chunk_onscreen_size);
+	var diff = (this.canvas.width - temp_canvas.width)/2;
+	this.ctx.drawImage(temp_canvas, diff, diff, temp_canvas.width, temp_canvas.height);
+	this.has_user_erased = true;
 }
 
 StampDrawrMap.prototype.setOfflineMode = function(offline_mode){

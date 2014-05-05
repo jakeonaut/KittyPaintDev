@@ -128,7 +128,8 @@ function editColor(){
 	fixBrushColorEdit();
 }
 
-function select_zoom(zoom){
+function select_zoom(selected_zoom){
+	zoom = selected_zoom;
 	$("zoom_box").innerHTML = zoom;
 	drawr.changePixelScale(zoom);
 	drawr.loadNearbyChunks();
@@ -141,10 +142,17 @@ function select_zoom(zoom){
 	}
 }
 
+function select_stamp_zoom(zoom){
+	stamp_zoom = zoom;
+	$("zoom_box").innerHTML = zoom;
+	stampdrawr.changePixelScale(zoom);
+	$("stamp_zoom_menu").blur();
+	$("stampcanvas").focus();
+}
+
 function select_size(size){
 	$("size_box").innerHTML = size;
 	stampdrawr.changeCanvasSize(size);
-	//drawr.loadNearbyChunks();
 	$("size_menu").blur();
 	$("stampcanvas").focus();
 }
@@ -171,5 +179,15 @@ function setBrushBoxes(){
 		fixSelectedBrush();
 		selectBrush(brush_index);
 		selectBrushSize(brush_size_index, brush_size);
+	}
+}
+
+function fixZoom(){
+	if ($("stampcanvas").style.display !== "none"){
+		$("zoom_box").innerHTML = zoom;
+	}
+	
+	else{
+		$("zoom_box").innerHTML = stamp_zoom;
 	}
 }

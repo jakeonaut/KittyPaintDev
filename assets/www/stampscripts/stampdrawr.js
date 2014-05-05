@@ -40,7 +40,6 @@ StampDrawr.prototype.setup_fps = function(){
 }
 
 StampDrawr.prototype.changeCanvasSize = function(size){
-	//alert("TODO: StampDrawr.changeCanvasSize (stampdrawr.js)");
 	this.canvas_pixelated_size = size;
 	this.real_size = this.canvas_pixelated_size * this.pixel_size;
 	this.resize();
@@ -62,7 +61,6 @@ StampDrawr.prototype.toggleEyeDrop = function(){
 }
 
 StampDrawr.prototype.resize = function(){
-	console.log(window.innerWidth, window.innerHeight);
 	this.stage.width = window.innerWidth;
     this.stage.height = window.innerHeight;
 	this.offsetX = Math.floor((this.stage.width - this.real_size)/2);

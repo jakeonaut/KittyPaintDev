@@ -1,4 +1,4 @@
- StampDrawr.prototype.setup_mouse = function(){
+StampDrawr.prototype.setup_mouse = function(){
     this.mousex = this.mousey = 0;
     this.mouselastx = this.mouselasty = 0;
     this.mousedown = 0;
@@ -37,6 +37,8 @@ StampDrawr.prototype.screenResizeEvent = function(){
 }
 
 StampDrawr.prototype.changePixelScale = function(pixel_scale){
+	this.pixel_size = pixel_scale;
+	
 	//store ingameoffsets before scaling and reset to those stored offsets
     var dmap = this.drawr_map;
     var old_pixel_scale = dmap.per_pixel_scaling;
@@ -51,8 +53,22 @@ StampDrawr.prototype.changePixelScale = function(pixel_scale){
 	dmap.chunk_onscreen_size = dmap.chunk_block_size * dmap.per_pixel_scaling;
     
     // new deltas in ingame coordinates after resize
-    var zoomDeltaX = Math.floor(this.getWidth()/2 / dmap.per_pixel_scaling);
-    var zoomDeltaY = Math.floor(this.getHeight()/2 / dmap.per_pixel_scaling);
+	var p = pixel_scale/old_pixel_scale;
+    var zoomDeltaX = Math.floor((this.getWidth()/2 / dmap.per_pixel_scaling) * (p));
+    var zoomDeltaY = Math.floor((this.getHeight()/2 / dmap.per_pixel_scaling) * (p));
+	var q = 0;
+	if (old_pixel_scale === 16){
+		if (p === 2) q = -8;
+		else if (p === 4) q = -12;
+	}else if (old_pixel_scale === 32){
+		if (p === 0.5) q = 8;
+		else if (p === 2) q = -4;
+	}else if (old_pixel_scale === 64){
+		if (p === 0.25) q = 12;
+		else if (p === 0.5) q = 4;
+	}
+	zoomDeltaX += (q);
+	zoomDeltaY += (q);
 	
 	dmap.setIngameOffsetX(center_offsetX + zoomDeltaX);
 	dmap.setIngameOffsetY(center_offsetY + zoomDeltaY);
@@ -141,6 +157,7 @@ StampDrawr.prototype.mousedownEvent = function(e){
 		if (auto_hide_ui) minimizeUI();
 		////editColor(); // xxxxxx
         this.mousedown = true;
+		this.eye_drop = false;
         this.drawr_map.addPointRelative(this.mousex, this.mousey, this.offsetX, this.offsetY, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
     }
     

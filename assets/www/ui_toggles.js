@@ -1,19 +1,42 @@
 function toggleZoom(){
-	if ($("zoom_menu").style.display == "none"){
-		$("zoom_menu").style.left = $("zoom_box").offsetLeft;
-		$("zoom_menu").style.top = $("zoom_box").offsetTop + 33;
-		$("zoom_menu").style.display = "block";
-		$("zoom_box").style.border = "1px solid #4444ff";
-	}else{
-		$("zoom_menu").style.display = "none";
-		$("zoom_box").style.border = "1px solid black";
+	if ($("stampcanvas").style.display == "none"){
+		if ($("zoom_menu").style.display == "none"){
+			$("zoom_menu").style.left = $("zoom_box").offsetLeft;
+			$("zoom_menu").style.top = $("zoom_box").offsetTop + 33;
+			$("zoom_menu").style.display = "block";
+			$("zoom_box").style.border = "1px solid #4444ff";
+		}else{
+			$("zoom_menu").style.display = "none";
+			$("zoom_box").style.border = "1px solid black";
+		}
+	}
+	
+	else{
+		if ($("stamp_zoom_menu").style.display == "none"){
+			$("stamp_zoom_menu").style.left = $("zoom_box").offsetLeft;
+			$("stamp_zoom_menu").style.top = $("zoom_box").offsetTop + 33;
+			$("stamp_zoom_menu").style.display = "block";
+			$("zoom_box").style.border = "1px solid #4444ff";
+		}else{
+			$("stamp_zoom_menu").style.display = "none";
+			$("zoom_box").style.border = "1px solid black";
+		}
 	}
 }
 
 function toggleZoomOff(){
-	if ($("zoom_menu").style.display != "none"){
-		$("zoom_menu").style.display = "none";
-		$("zoom_box").style.border = "1px solid black";
+	if ($("stampcanvas").style.display == "none"){
+		if ($("zoom_menu").style.display != "none"){
+			$("zoom_menu").style.display = "none";
+			$("zoom_box").style.border = "1px solid black";
+		}
+	}
+	
+	else{
+		if ($("stamp_zoom_menu").style.display != "none"){
+			$("stamp_zoom_menu").style.display = "none";
+			$("zoom_box").style.border = "1px solid black";
+		}
 	}
 }
 
@@ -47,6 +70,9 @@ function minimizeUI(){
 
 function toggleStampUI(){
 	turnOffStampErase();
+	fixZoom();
+	toggleSizeOff();
+	toggleZoomOff();
 	if ($("stampcanvas").style.display != "none"){
 		$("stampcanvas").style.display = "none";
 		$("stamp_options").style.display = "none";
@@ -64,6 +90,8 @@ function toggleMinimizeUI(){
 	a = $("adv_tab");
 	dui = $("drawr_ui");
 	mdui = $("minimized_ui");
+	toggleSizeOff();
+	toggleZoomOff();
 	if (dui.style.display == "none"){
 		dui.style.display = "block";
 		mdui.style.display = "none";
@@ -77,6 +105,8 @@ function toggleMinimizeUI(){
 
 function toggleAdv(){
 	a = $("adv_tab");
+	toggleSizeOff();
+	toggleZoomOff();
 	if(a.style.display != "none"){
 		a.style.display = "none";
 	}else{
