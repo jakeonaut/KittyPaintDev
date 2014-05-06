@@ -54,10 +54,14 @@ body {
 .arrow_box{
     width: 32px;
     height: 32px;
-    line-height:32px;
-    text-align: center;
-    padding: 1px;
-    float: left;
+    /*border: solid black 1px;*/
+	margin:1px;
+    color: black;
+    float:left;
+    margin-right:4px;
+    margin-bottom:4px;
+    cursor:pointer;
+    line-height: 32px;
 }
 .select_box{
     width: 32px;

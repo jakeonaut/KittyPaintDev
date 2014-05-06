@@ -12,13 +12,15 @@ import android.webkit.WebView;
 
 public class KittyPaint extends Activity {
 
+	WebView mainWebView;
+	
 	@SuppressLint({ "SetJavaScriptEnabled", "NewApi" })
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_kitty_paint);
 
-		WebView mainWebView = (WebView) findViewById(R.id.main_webview);
+		mainWebView = (WebView) findViewById(R.id.main_webview);
 		WebSettings webSettings = mainWebView.getSettings();
 		webSettings.setJavaScriptEnabled(true);
 		
@@ -36,6 +38,18 @@ public class KittyPaint extends Activity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.kitty_paint, menu);
 		return true;
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState ){
+		super.onSaveInstanceState(outState);
+		mainWebView.saveState(outState);
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState){
+		super.onRestoreInstanceState(savedInstanceState);
+		mainWebView.restoreState(savedInstanceState);
 	}
 
 }

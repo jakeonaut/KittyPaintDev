@@ -75,7 +75,7 @@
         <div id="drawr_ui" class="drawr_ui">
             <div class="button_holder">
                 <div style="overflow: auto;">
-                    <a href="#" style="margin-right:3px;" class="arrow_box" onClick="prevBrushPage(); return false;">&lt;&lt;</a>
+                    <div class="arrow_box" onClick="prevBrushPage(); return false;">&lt;&lt;</div>
                     <div class="select_box" id="brush_box0" onClick="selectBrush(0);">&nbsp;</div>
                     <div class="select_box" id="brush_box1" onClick="selectBrush(1);">&nbsp;</div>
                     <div class="select_box" id="brush_box2" onClick="selectBrush(2);">&nbsp;</div>
@@ -86,7 +86,7 @@
                     <div class="select_box" id="brush_box7" onClick="selectBrush(7);">&nbsp;</div>
                     <div class="select_box" id="brush_box8" onClick="selectBrush(8);">&nbsp;</div>
                     <div class="select_box" id="brush_box9" onClick="selectBrush(9);">&nbsp;</div>
-                    <a href="#" class="arrow_box" id="right_brush_arrow" onClick="nextBrushPage(); return false;">&gt;&gt;</a>
+                    <div class="arrow_box" id="right_brush_arrow" onClick="nextBrushPage(); return false;">&gt;&gt;</div>
                 </div>
 				
 				<div style="overflow: auto;">
@@ -123,7 +123,7 @@
 					<div class="select_box" id="eyedrop_box" onClick="toggleEyeDrop();" 
 						style="background: url('brushes/eyedrop.png')"></div>
             
-					<div style="line-height:32px;float:left;text-align:center;margin-left:20px;">
+					<div style="line-height:32px;float:left;text-align:center;">
 						<div>
 						&nbsp;
 						<div style="display:inline;">
@@ -303,7 +303,7 @@
             }
 		}
         //hide 1 more brush_box if the arrow button is moved to next line too!
-        if($("right_brush_arrow").offsetTop != brush_box_row1){
+        if($("right_brush_arrow").offsetTop-1 != brush_box_row1){
             if(count_row1_boxes > 2){ // make sure we actually have a button to hide
                 count_row1_boxes -= 1;
                 $("brush_box"+count_row1_boxes).style.display = "none";
@@ -331,6 +331,15 @@
 		brush_box_page++;
 		if (brush_box_page >= num_brush_box_pages) brush_box_page = 0;
 		setBrushBoxes();
+	}
+	
+	$("tele_waypoint").onkeypress = function(e){
+		if (!e) e = window.event; 
+		var keyCode = e.keyCode || e.which; 
+		if (keyCode == '13'){ 
+			teleport_go(); 
+			return false; 
+		} 
 	}
     
     function teleport_go(){
