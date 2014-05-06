@@ -39,6 +39,16 @@ StampDrawr.prototype.setup_fps = function(){
     this.fpsLastUpdate = now();
 }
 
+StampDrawr.prototype.saveImage = function(){
+	var image = this.drawr_map.saveImage();
+	if (image === false){
+		alert("Empty Stamp or No updates since last save.");
+	}else{
+		this.drawr_brushes.addCustomStamp(image);
+		setBrushBoxes();
+	}
+}
+
 StampDrawr.prototype.changeCanvasSize = function(size){
 	this.canvas_pixelated_size = size;
 	this.real_size = this.canvas_pixelated_size * this.pixel_size;

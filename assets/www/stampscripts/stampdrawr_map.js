@@ -21,7 +21,15 @@ function StampDrawrMap(chunk_block_size, pixel_size){
     this.offsetY = 0;
 }
 
+StampDrawrMap.prototype.saveImage = function(){
+	if (this.has_user_drawn){
+		this.has_user_drawn = false;
+		return this.canvas.toDataURL("image/png");
+	}else return false;
+}
+
 StampDrawrMap.prototype.clearCanvas = function(){
+	this.has_user_drawn = false;
     this.ctx.clearRect(0,0,this.chunk_onscreen_size,this.chunk_onscreen_size);
 	this.ctx.fillStyle = "rgba(255,255,255,0)";
     this.ctx.fillRect(0,0,this.chunk_onscreen_size,this.chunk_onscreen_size);
@@ -146,6 +154,7 @@ StampDrawrMap.prototype.draw = function(ctx, mini_ctx, offset_x, offset_y){
 	var h = this.canvas.height;
 	var p = this.per_pixel_scaling;
 	var q = Math.floor(p/2);
+	var is_clear = true;
 	for (var i = 0; i < data.length; i += 4){
 		var j = i/4;
 		if (data[i+3] === 0){			
@@ -157,9 +166,13 @@ StampDrawrMap.prototype.draw = function(ctx, mini_ctx, offset_x, offset_y){
 			ctx.fillRect(offset_x+(j%w*p)+q, offset_y+(Math.floor(j/h)*p), q, q);
 			ctx.fillRect(offset_x+(j%w*p), offset_y+(Math.floor(j/h)*p)+q, q, q);
 		}else{
+			is_clear = false;
 			ctx.drawImage(this.canvas, j%w, Math.floor(j/h), 1, 1, 
 				offset_x+((j%w)*p), offset_y+(Math.floor(j/h)*p), p, p);
 		}
+	}
+	if (is_clear){
+		this.has_user_drawn = false;
 	}
 
 	if (this.has_user_erased){

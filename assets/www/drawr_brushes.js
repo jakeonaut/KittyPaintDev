@@ -16,6 +16,7 @@ function DrawrBrushes(onload_continuation){
 	this.brush_names = ["circle","square","cat","kappa","custom"]; //"dota"];
     this.brush_types = ["brush","brush","stamp","stamp","stamp"]; //"stamp"];
 	this.brush_variations = [this.named_colors.length, this.named_colors.length, 4, 2, 0]; //102];
+	this.custom_index = 4;
 	
 	this.selected_brush = 0;
     this.brush_size = 1;
@@ -23,6 +24,7 @@ function DrawrBrushes(onload_continuation){
     
     this.count_to_load = 0;
     this.count_loaded = 0;
+	
     
 	//load brushes and stamps
 	for(var i=0; i<this.brush_names.length; ++i){
@@ -95,6 +97,25 @@ function DrawrBrushes(onload_continuation){
 			}
 		}
 	}
+}
+
+DrawrBrushes.prototype.addCustomStamp = function(image_src){
+	var image = new Image();
+	image.src = image_src;
+	var index = this.brush_variations[this.custom_index];
+	this.brush_variations[this.custom_index]++;
+	var brush_name = "custom" + index;
+	
+	var brush_obj = {
+		img: image, 
+		name: brush_name, 
+		path: "brushes/custom/" + index + ".png",
+		sized_images: null,
+		color: {r: 255, g: 255, b: 255},
+		type: "stamp", 
+		loaded: 1
+	};
+	this.brushes.push(brush_obj);
 }
 
 DrawrBrushes.prototype.getDefaultPath = function(){
