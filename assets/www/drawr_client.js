@@ -102,7 +102,7 @@ DrawrClient.prototype.setBrush = function(brush, size){
     }
 }
 
-DrawrClient.prototype.addPoint = function(x, y, brush, size){
+DrawrClient.prototype.addPoint = function(x, y, brush, size, modes){
     if(this.isConnected()){
         if(brush){
             if(!size){
@@ -112,11 +112,11 @@ DrawrClient.prototype.addPoint = function(x, y, brush, size){
             var path = DrawrBrushes.brushToPath(brush, size);
             if(brush.type == "brush"){
                 var rgb = brush.color.r + ":" + brush.color.g + ":" + brush.color.b;
-				var message = "ADDPOINTBR:" + x + ":" + y + ":" + path + ":" + size + ":" + rgb;
+				var message = "ADDPOINTBR:" + x + ":" + y + ":" + path + ":" + size + ":" + rgb + ":" + modes.pattern_mode + ":" + modes.blend_mode;
 				DEBUG_MODE_GLOBAL && console.log("Sending: " + message);
                 this.socket.send(message);
             }else if(brush.type == "stamp"){
-				var message = "ADDSTAMPBR:" + x + ":" + y + ":" + path + ":" + size;
+				var message = "ADDSTAMPBR:" + x + ":" + y + ":" + path + ":" + size + ":" + modes.pattern_mode + ":" + modes.blend_mode;
 				DEBUG_MODE_GLOBAL && console.log("Sending: " + message);
                 this.socket.send(message);
             }

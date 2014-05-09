@@ -1,3 +1,65 @@
+function toggleAutoHideUI(){
+	auto_hide_ui = !auto_hide_ui;
+	if ($("auto_hide_ui").className === "select_box"){
+		$("auto_hide_ui").className = "selected_box";
+		$("auto_hide_ui").style.background = "url('brushes/hide.png')";
+	}else{
+		$("auto_hide_ui").className = "select_box";
+		$("auto_hide_ui").style.background = "url('brushes/unhide.png')";
+	}
+}
+
+function debug_toggle(){
+        if(!DEBUG_MODE_GLOBAL){
+            DEBUG_MODE_GLOBAL = 1;
+            $("debug_toggle").style.background = "url('brushes/debug.png')";
+			$("debug_toggle").className = "selected_box";
+        }else{
+            DEBUG_MODE_GLOBAL = 0;
+            $("debug_toggle").style.background = "url('brushes/bug.png')";
+			$("debug_toggle").className = "select_box";
+        }
+    }
+	
+function toggleBrushSize(){
+	if ($("brush_size_menu").style.display == "none"){
+		$("brush_size_menu").style.left = $("brush_size_box").offsetLeft;
+		$("brush_size_menu").style.top = $("brush_size_box").offsetTop + 33;
+		$("brush_size_menu").style.display = "block";
+		$("brush_size_box").style.border = "1px solid #4444ff";
+	}else{
+		$("brush_size_menu").style.display = "none";
+		$("brush_size_box").style.border = "1px solid black";
+	}
+}
+
+function toggleBrushSizeOff(){
+	if ($("brush_size_menu").style.display != "none"){
+		$("brush_size_menu").style.display = "none";
+		$("brush_size_box").style.border = "1px solid black";
+	}
+}
+
+function togglePattern(){
+	drawr.togglePattern();
+	stampdrawr.togglePattern();
+	if ($("pattern_box").className == "select_box"){
+		$("pattern_box").className = "selected_box";
+	}else{
+		$("pattern_box").className = "select_box";
+	}
+}
+
+function toggleBlend(){
+	drawr.toggleBlend();
+	stampdrawr.toggleBlend();
+	if ($("blend_box").className == "select_box"){
+		$("blend_box").className = "selected_box";
+	}else{
+		$("blend_box").className = "select_box";
+	}
+}
+
 function toggleZoom(){
 	if ($("stampcanvas").style.display == "none"){
 		if ($("zoom_menu").style.display == "none"){

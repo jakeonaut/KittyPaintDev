@@ -35,23 +35,23 @@ function selectBrush(index){
 
 function fixBrushSize(){
 	for (var i=0; i<size_boxes.length; ++i){
-		size_boxes[i].className = "select_box";
+		size_boxes[i].style.display = "block";
 	}
 	var brush = brushes.getBrush();
 	if (brush.type == "stamp"){
 		var index = 1;
-		size_boxes[0].className = "disabled_select_box";
+		size_boxes[0].style.display = "none";
 		if (brush.img.width >= 8){ 
 			index = 2;
-			size_boxes[1].className = "disabled_select_box";
+			size_boxes[1].style.display = "none";
 		}
 		if (brush.img.width >= 16){ 
 			index = 3;
-			size_boxes[2].className = "disabled_select_box";
+			size_boxes[2].style.display = "none";
 		}
 		if (brush.img.width >= 32){ 
 			index = 4;
-			size_boxes[3].className = "disabled_select_box";
+			size_boxes[3].style.display = "none";
 		}
 	
 		if (brush_size < brush.img.width){
@@ -67,12 +67,7 @@ function selectBrushSize(index, size){
 	if (brush.type == "stamp"){
 		if (size < brush.img.width) return;
 	}
-	
-	for (var i=0; i<size_boxes.length;++i){
-		if (size_boxes[i].className != "disabled_select_box")
-			size_boxes[i].className = "select_box";
-	}
-	size_boxes[index].className = "selected_box";
+	$("brush_size_box").innerHTML = size;
 	brush_size_index = index;
 	brush_size = size;
 	brushes.setBrushSize(size);

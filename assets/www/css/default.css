@@ -20,8 +20,8 @@ body {
     opacity: 0.8;
     filter:alpha(opacity:80);
     
-    top: 15px;
-    left: 15px;
+    top: 5px;
+    left: 5px;
     
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -110,7 +110,7 @@ body {
 .position_box {
     background-color: #FFF;
     border: 1px solid black;
-    width: 150px;
+    width: 120px;
     margin: 1px;
 }
 canvas {

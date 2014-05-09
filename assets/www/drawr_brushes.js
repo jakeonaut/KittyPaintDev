@@ -13,9 +13,9 @@ function DrawrBrushes(onload_continuation){
 		{r: 128, g: 128, b: 128},	//grey
 		{r: 255, g: 255, b: 255},	//white
 	];
-	this.brush_names = ["circle","square","cat","kappa","custom"]; //"dota"];
-    this.brush_types = ["brush","brush","stamp","stamp","stamp"]; //"stamp"];
-	this.brush_variations = [this.named_colors.length, this.named_colors.length, 4, 1, 0]; //102];
+	this.brush_names = ["circle","cat","kappa","custom"]; //"dota"];
+    this.brush_types = ["brush","stamp","stamp","stamp"]; //"stamp"];
+	this.brush_variations = [this.named_colors.length, 4, 1, 0]; //102];
 	this.custom_index = 4;
 	
 	this.selected_brush = 0;
@@ -197,22 +197,42 @@ DrawrBrushes.setBrushColor = function(brush, r, g, b){
     }
 }
 
-DrawrBrushes.draw = function(ctx, x, y, brush, size){
+DrawrBrushes.draw = function(ctx, x, y, brush, size, pattern, blend){
 	ctx.imageSmoothingEnabled = false;
     ctx.mozImageSmoothingEnabled = false;
     ctx.webkitImageSmoothingEnabled = false;
+	
+	if (blend) ctx.globalCompositeOperation = "lighten";
 
+	var brush_img;
 	var s = Math.floor(size/2);
 	if (brush.type == "brush"){
         var index = brush.sizes.indexOf(size);
 		
         if(index >= 0){
-            var brush_img = brush.sized_images[index];
-            ctx.drawImage(brush_img, x-s, y-s, size, size);
+            brush_img = brush.sized_images[index];
         }
 	}else if (brush.type == "stamp"){
-		var brush_img = brush.img;
-		
-		ctx.drawImage(brush_img, x-s, y-s, size, size);
+		brush_img = brush.img;
 	}
+	
+	if (brush_img){
+		if (pattern){
+			var px = Math.floor((x)/size)*size;
+			var py = Math.floor((y)/size)*size;
+			//var pat = ctx.createPattern(brush_img, "repeat");
+			//ctx.fillStyle = pat;
+			//ctx.fillRect(x-s, y-s, size, size);
+			if (brush.type == "stamp"){
+				ctx.drawImage(brush_img, px, py, size, size);
+			}else{
+				ctx.fillStyle = rgbToHex(brush.color.r, brush.color.g, brush.color.b);
+				ctx.fillRect(px, py, size, size);
+			}
+		}else{
+			ctx.drawImage(brush_img, x-s, y-s, size, size);
+		}
+	}
+	
+	ctx.globalCompositeOperation = "source-over";
 }

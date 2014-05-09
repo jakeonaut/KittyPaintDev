@@ -34,6 +34,14 @@ function KittyDrawr(canvas_id, brushes, drawr_client, debug_id){
     }, this.frame_time);
 }
 
+KittyDrawr.prototype.togglePattern = function(){
+	this.drawr_map.togglePattern();
+}
+
+KittyDrawr.prototype.toggleBlend = function(){
+	this.drawr_map.toggleBlend();
+}
+
 KittyDrawr.prototype.toggleEyeDrop = function(){
 	this.eye_drop = true;
 	this.drawr_map.toggleEyeDrop();

@@ -24,15 +24,14 @@ function DrawrChunk(drawr_map, offline_mode){
     }
 }
 
-DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size, eye_drop){
-	if (!eye_drop){
-		DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size);
+DrawrChunk.prototype.addPoint = function(local_x,local_y,brush,size){
+	if (!this.drawr_map.eye_drop){
+		DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size, this.drawr_map.pattern_mode, this.drawr_map.blend_mode);
 	}else{
-		var imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+		//EYE DROP
+		var imageData = this.ctx.getImageData(local_x, local_y, 1, 1);
 		var data = imageData.data;
-		var c = this.canvas.width;
-		var ci = (local_y*c + local_x)*4;
-		var hex = rgbToHex(data[ci], data[ci+1], data[ci+2]);
+		var hex = rgbToHex(data[0], data[1], data[2]);
 		$("color_box").value = hex;
 		editColor();
 		turnOffEyeDrop();
@@ -93,6 +92,8 @@ function DrawrMap(drawr_client, offline_mode){
 	this.per_pixel_scaling = 2; // pixel is 2x2
 	this.chunk_onscreen_size = this.chunk_block_size * this.per_pixel_scaling;
 	
+	this.pattern_mode = false;
+	this.blend_mode = false;
 	this.eye_drop = false;
 	
     // hash of chunks - not array because we need negative and positive locations, and to be able to skip some
@@ -101,6 +102,14 @@ function DrawrMap(drawr_client, offline_mode){
     
     this.offsetX = 0; // offset in client pixels of top left of chunk (0,0)
     this.offsetY = 0;
+}
+
+DrawrMap.prototype.togglePattern = function(){
+	this.pattern_mode = !this.pattern_mode;
+}
+
+DrawrMap.prototype.toggleBlend = function(){
+	this.blend_mode = !this.blend_mode;
 }
 
 DrawrMap.prototype.toggleEyeDrop = function(){
@@ -307,6 +316,11 @@ DrawrMap.prototype.addPoint = function(x,y,brush,size){
 
     var gamex = Math.floor(x/this.per_pixel_scaling); // convert to ingame (big) pixels
     var gamey = Math.floor(y/this.per_pixel_scaling);
+	
+	if (this.pattern_mode && !this.eye_drop){
+		gamex = Math.floor((gamex)/size)*size + (size/2);
+		gamey = Math.floor((gamey)/size)*size + (size/2);
+	}
     
     var chunks_affected = this.getChunksAffected(gamex, gamey, brush, size);
     var chunks_local_coords = this.getChunkLocalCoordinates(gamex, gamey, chunks_affected, brush);
@@ -324,7 +338,7 @@ DrawrMap.prototype.addPoint = function(x,y,brush,size){
                     var chunk = this.chunks[chunk_numx][chunk_numy];
                     var localx = chunks_local_coords[i].x;
                     var localy = chunks_local_coords[i].y;
-                    chunk.addPoint(localx, localy, brush,size, this.eye_drop);
+                    chunk.addPoint(localx, localy, brush,size);
                     
                     /***** I FEEL LIKE THIS SHOULD BE ABSTRACTED BETTER *****/
                     /*// make new thread
@@ -341,11 +355,13 @@ DrawrMap.prototype.addPoint = function(x,y,brush,size){
             }
         }
     }
+	
+	var modes = {pattern_mode: this.pattern_mode, blend_mode: this.blend_mode};
     /***** I FEEL LIKE THIS SHOULD BE ABSTRACTED BETTER *****/
     // make new thread
     (function(gamex, gamey, brush, size){
         setTimeout( function(){
-            self.drawr_client.addPoint(gamex, gamey, brush, size);
+            self.drawr_client.addPoint(gamex, gamey, brush, size, modes);
         }, 0);
     })(gamex, gamey, brush, size);
 }

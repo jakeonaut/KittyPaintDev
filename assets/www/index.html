@@ -8,7 +8,7 @@
     <link rel="stylesheet" type="text/css" href="css/default.css"/>
     <link rel="stylesheet" type="text/css" href="css/login.css"/>
 </head>
-<body onclick="toggleZoomOff();toggleSizeOff();">
+<body onclick="toggleBrushSizeOff();toggleZoomOff();toggleSizeOff();">
 
     <!-- login_popup -->
     <div id="white_login_screen">&nbsp;</div>
@@ -66,6 +66,27 @@
             </center></td></tr>
         </table>
     </div>
+	
+	<!--Connect to server_popup-->
+	<div id="connect_cover" style="display:none;">
+		<table border="0px" width="100%" height="100%">
+            <tr><td width="100%" height="100%"><center>
+                <div class="login_box">
+                    <center style="padding: 5px;"><b>Connect to a Server</b></center>
+					<center>
+						<input type="button" value="KittyPaint servers" onclick="login_server('kittypaint.no-ip.org:27182');$('connect_cover').style.display='none';"/>
+						<hr/>
+						<input type="button" value="localhost" onclick="login_server('127.0.0.1:27182');$('connect_cover').style.display='none';"/>
+						<hr/>
+						<input type="text" id="server_url" class="server_box" style="width:100px;" value="127.0.0.1:27182"/>
+						<input type="button" value="connect" onClick="set_server();$('connect_cover').style.display='none';"/>
+						<hr/>
+						<input type="button" value="cancel" onclick="$('connect_cover').style.display='none';"/>
+					</center>
+                </div>
+            </center></td></tr>
+        </table>
+	</div>
     
     <!-- DRAWR -->
     <center id="drawr_drawr">	
@@ -90,20 +111,35 @@
                 </div>
 				
 				<div style="overflow: auto;">
-					<div id="size_picker">
+					<!--<div id="size_picker">
 						<div class="select_box" id="size_box0" onClick="selectBrushSize(0,1);">1</div>
 						<div class="select_box" id="size_box1" onClick="selectBrushSize(1,4);">4</div>
 						<div class="select_box" id="size_box2" onClick="selectBrushSize(2,8);">8</div>
 						<div class="select_box" id="size_box3" onClick="selectBrushSize(3,16);">16</div>
 						<div class="select_box" id="size_box4" onClick="selectBrushSize(4,32);">32</div>
+					</div>-->
+					<div class="select_box" style="visibility:hidden;"> :^) </div>
+					<div id="size_picker">
+						<div title="brush size" id="brush_size_box" class="select_box" onclick="toggleBrushSize();event.stopPropagation();"
+							style="background: url('brushes/brush.png'); line-height: 26px;">8</div>
+						<div id="brush_size_menu" class="drop_menu" style="position:absolute;top:0px;left:0px;display:none;">
+							<div id="size_box0" onclick="selectBrushSize(0,1);toggleBrushSize();">1</div>
+							<div id="size_box1" onclick="selectBrushSize(1,4);toggleBrushSize();">4</div>
+							<div id="size_box2" onclick="selectBrushSize(2,8);toggleBrushSize();">8</div>
+							<div id="size_box3" onclick="selectBrushSize(3,16);toggleBrushSize();">16</div>
+							<div id="size_box4" onclick="selectBrushSize(4,32);toggleBrushSize();">32</div>
+						</div>
 					</div>
-					<input type="color" class="select_box" id="color_box" onchange="editColor();">
+					<input title="edit brush color" type="color" class="select_box" id="color_box" onchange="editColor();">
 					</input>
-					<div class="select_box" id="stamp_box" onClick="toggleStampUI();" 
-						style="background: url('brushes/createstamp.png')"></div>
-						
+					<div title="select color from canvas" class="select_box" id="eyedrop_box" onClick="toggleEyeDrop();" 
+						style="background: url('brushes/eyedrop.png')"></div>
+					<div title="pattern painting" class="select_box" id="pattern_box" onClick="togglePattern();" 
+						style="background: url('brushes/pattern.png')"></div>
+					<!--<div title="blend painting" class="select_box" id="blend_box" onClick="toggleBlend();" 
+						style="background: url('brushes/blend.png')"></div>-->
 					<div id="zoom_picker">
-						<div id="zoom_box" class="select_box" onclick="toggleZoom();event.stopPropagation();"
+						<div title="canvas zoom" id="zoom_box" class="select_box" onclick="toggleZoom();event.stopPropagation();"
 							style="background: url('brushes/zoom.png'); line-height: 26px;">2</div>
 						<div id="zoom_menu" class="drop_menu" style="position:absolute;top:0px;left:0px;display:none;">
 							<div onclick="select_zoom(1);toggleZoom();">1</div>
@@ -111,6 +147,7 @@
 							<div onclick="select_zoom(4);toggleZoom();">4</div>
 							<div onclick="select_zoom(8);toggleZoom();">8</div>
 							<div onclick="select_zoom(16);toggleZoom();">16</div>
+							<div onclick="select_zoom(32);toggleZoom();">32</div>
 						</div>
 						<div id="stamp_zoom_menu" class="drop_menu" style="position:absolute;top:0px;left:0px;display:none;">
 							<!--<div onclick="select_stamp_zoom(4);toggleZoom();">4</div>
@@ -120,17 +157,12 @@
 							<div onclick="select_stamp_zoom(64);toggleZoom();">64</div>
 						</div>
 					</div>
-					<div class="select_box" id="eyedrop_box" onClick="toggleEyeDrop();" 
-						style="background: url('brushes/eyedrop.png')"></div>
+					<div title="make custom stamp" class="select_box" id="stamp_box" onClick="toggleStampUI();" 
+						style="background: url('brushes/createstamp.png')"></div>
             
 					<div style="line-height:32px;float:left;text-align:center;">
-						<div>
-						&nbsp;
-						<div style="display:inline;">
-							<input type="button" value="&ndash;" id="toggle_min_tab" onClick="toggleMinimizeUI();"/>
-							<input type="button" value="+" id="toggle_max_tab" onClick="toggleAdv();"/>
-						</div>
-						</div>
+						<input title="minimize ui" type="button" value="&ndash;" id="toggle_min_tab" onClick="toggleMinimizeUI();"/>
+						<input title="advanced options" type="button" value="+" id="toggle_max_tab" onClick="toggleAdv();"/>
 					</div>
                 </div>
 				<div style="overflow: auto; display:none;" id="stamp_options">
@@ -140,45 +172,40 @@
 					<div class="select_box" style="visibility:hidden;"> :^) </div>
 					<div class="select_box" style="visibility:hidden;"> :^) </div>
 					
-					<div class="select_box" id="mini_stamp_box" style="cursor:default;">
+					<div title="preview" class="select_box" id="mini_stamp_box" style="cursor:default;">
 						<canvas id="ministampcanvas" oncontextmenu="return false;" width="32px" height="32px">
 							Pls upgrade browser
 						</canvas>
 					</div>
 					<div id="stamp_size_picker">
-						<div id="size_box" class="select_box" onclick="toggleSize();event.stopPropagation();"
+						<div title="custom stamp size" id="size_box" class="select_box" onclick="toggleSize();event.stopPropagation();"
 							style="background: url('brushes/size.png'); line-height: 26px;">16</div>
 						<div id="size_menu" class="drop_menu" style="position:absolute;top:0px;left:0px;display:none;">
 							<div onclick="select_size(16);toggleSize();">16</div>
 							<div onclick="select_size(32);toggleSize();">32</div>
 						</div>
 					</div>
-					<div class="select_box" onclick="stampdrawr.saveImage();">save</div>
-					<div class="select_box" onclick="stampdrawr.clearCanvas();">clear</div>
-					<div id="stamp_erase_box" class="select_box" onclick="toggleStampErase();">erase</div>
+					<div title="save stamp" class="select_box" onclick="stampdrawr.saveImage();">save</div>
+					<div title="clear canvas" class="select_box" onclick="stampdrawr.clearCanvas();">clear</div>
+					<div title="erase mode" id="stamp_erase_box" class="select_box" onclick="toggleStampErase();">erase</div>
 					<div class="select_box">:^)</div>
 				</div>
             </div>
 			
             <span id="adv_tab" style="display:none;">
-				<div class="button_holder">
-					auto-hide ui: <input id="auto_hide_ui" type="checkbox" onClick="toggleAutoHideUI();">
+				<div style="float:left;margin-left:10px;">
+					<div title="connect to server" class="select_box" style="background: url('brushes/connect.png')" onclick="$('connect_cover').style.display='block';"></div>
+					<div title="auto hide ui" class="select_box" id="auto_hide_ui" style="background: url('brushes/unhide.png')" onclick="toggleAutoHideUI();"></div>
+					<div title="toggle debug" class="select_box" id="debug_toggle" style="background: url('brushes/bug.png')" onclick="debug_toggle();"></div>
 				</div>
-                <div class="button_holder">
-                    server: <input type="text" id="server_url" class="server_box" value="127.0.0.1:27182"/>
-                    <input type="button" value="connect" onClick="set_server();"/>
+				<div class="button_holder" style="overflow-y:scroll; width:100px; height:32px; border:1px solid black; font-size:12px; font-family:monospace; text-align:left;">
+                    <div id="debug">-<br/>-<br/>-</div>
                 </div>
 				<br/>
 				<div class="button_holder">
                     <input type="text" id="tele_waypoint" class="position_box" placeholder="Enter waypoint..."/>
                     <input type="button" value="go" onclick="teleport_go();"/>
 				</div>
-				<div class="button_holder">
-                    <input type="button" value="debug: off" id="debug_toggle" onclick="debug_toggle();"/>
-                </div>
-                <div class="button_holder" style="overflow-y:scroll;height:3em;border: 1px solid black;">
-                    <div id="debug">-<br/>-<br/>-</div>
-                </div>
             </span>
         </div>
 
@@ -215,15 +242,6 @@
 <script type="text/javascript">
     
     var DEBUG_MODE_GLOBAL = 0;
-    function debug_toggle(){
-        if(!DEBUG_MODE_GLOBAL){
-            DEBUG_MODE_GLOBAL = 1;
-            $("debug_toggle").value = "debug: on";
-        }else{
-            DEBUG_MODE_GLOBAL = 0;
-            $("debug_toggle").value = "debug: off";
-        }
-    }
     
     var num_brush_boxes = 10;
     var num_available_brush_boxes = 10;
@@ -239,10 +257,6 @@
 	var auto_hide_ui = false;
 	var zoom = 2;
 	var stamp_zoom = 32;
-	
-	function toggleAutoHideUI(){
-		auto_hide_ui = !auto_hide_ui;
-	}
     
     for (var i=0; i<num_brush_boxes;++i){
         brush_boxes[i] = $("brush_box"+i);
@@ -331,6 +345,16 @@
 		brush_box_page++;
 		if (brush_box_page >= num_brush_box_pages) brush_box_page = 0;
 		setBrushBoxes();
+	}
+	
+	$("server_url").onkeypress = function(e){
+		if (!e) e = window.event;
+		var keyCode = e.keyCode || e.which;
+		if (keyCode == '13'){
+			set_server();
+			$('connect_cover').style.display='none';
+			return false;
+		}
 	}
 	
 	$("tele_waypoint").onkeypress = function(e){

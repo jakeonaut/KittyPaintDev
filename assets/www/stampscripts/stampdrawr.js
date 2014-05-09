@@ -46,6 +46,7 @@ StampDrawr.prototype.saveImage = function(){
 	}else{
 		this.drawr_brushes.addCustomStamp(image);
 		setBrushBoxes();
+		alert("Custom Stamp successfully saved :)");
 	}
 }
 
@@ -59,6 +60,14 @@ StampDrawr.prototype.changeCanvasSize = function(size){
 StampDrawr.prototype.clearCanvas = function(){
 	this.mini_ctx.clearRect(0, 0, 32, 32);
 	this.drawr_map.clearCanvas();
+}
+
+StampDrawr.prototype.togglePattern = function(){
+	this.drawr_map.togglePattern();
+}
+
+StampDrawr.prototype.toggleBlend = function(){
+	this.drawr_map.toggleBlend();
 }
 
 StampDrawr.prototype.toggleStampErase = function(){

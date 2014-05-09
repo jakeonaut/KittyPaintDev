@@ -15,6 +15,8 @@ function StampDrawrMap(chunk_block_size, pixel_size){
 	this.has_user_drawn = false;
 	this.has_user_erased = false;
 	this.erase_mode = false;
+	this.pattern_mode = false;
+	this.blend_mode = false;
 	this.eye_drop = false;
     
     this.offsetX = 0; // offset in client pixels of top left of chunk (0,0)
@@ -33,6 +35,14 @@ StampDrawrMap.prototype.clearCanvas = function(){
     this.ctx.clearRect(0,0,this.chunk_onscreen_size,this.chunk_onscreen_size);
 	this.ctx.fillStyle = "rgba(255,255,255,0)";
     this.ctx.fillRect(0,0,this.chunk_onscreen_size,this.chunk_onscreen_size);
+}
+
+StampDrawrMap.prototype.togglePattern = function(){
+	this.pattern_mode = !this.pattern_mode;
+}
+
+StampDrawrMap.prototype.toggleBlend = function(){
+	this.blend_mode = !this.blend_mode;
 }
 
 StampDrawrMap.prototype.toggleStampErase = function(){
@@ -131,7 +141,7 @@ StampDrawrMap.prototype.addPoint = function(x,y,brush,size){
 		editColor();
 		turnOffEyeDrop();
 	}else{
-		DrawrBrushes.draw(this.ctx, gamex, gamey, brush, size);
+		DrawrBrushes.draw(this.ctx, gamex, gamey, brush, size, this.pattern_mode, this.blend_mode);
 	}
 }
 
