@@ -183,8 +183,8 @@ KittyDrawr.prototype.mousedownEvent = function(e){
 		if (auto_hide_ui) minimizeUI();
 		////editColor(); // xxxxxx
         this.mousedown = true;
-		this.eye_drop = false;
-        this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
+		if (!this.eye_drop)
+			this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
     }
     
     e.preventDefault(); //prevent mouse drag from trying to drag webpage
@@ -203,9 +203,11 @@ KittyDrawr.prototype.mouseupEvent = function(e){
     
     if(e.which == 1 || e.touches && e.touches.length <= 1){
         this.mousedown = false;
-		if (!this.eye_drop)
+		if (this.eye_drop){
+			console.log("eeyedorop");
 			this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
-		else this.eye_drop = false;
+			this.eye_drop = false;
+		}
     }
     
     e.preventDefault(); //prevent mouse drag from trying to drag webpage

@@ -116,7 +116,12 @@ DrawrClient.prototype.addPoint = function(x, y, brush, size, modes){
 				DEBUG_MODE_GLOBAL && console.log("Sending: " + message);
                 this.socket.send(message);
             }else if(brush.type == "stamp"){
-				var message = "ADDSTAMPBR:" + x + ":" + y + ":" + path + ":" + size + ":" + modes.pattern_mode + ":" + modes.blend_mode;
+				var message;
+				if (path.indexOf("custom") >= 0){
+					message = "ADDCUSTOMBR:" + x + ":" + y + ":" + brush.img.src + ":" + size + ":" + modes.pattern_mode + ":" + modes.blend_mode;
+				}else{
+					message = "ADDSTAMPBR:" + x + ":" + y + ":" + path + ":" + size + ":" + modes.pattern_mode + ":" + modes.blend_mode;
+				}
 				DEBUG_MODE_GLOBAL && console.log("Sending: " + message);
                 this.socket.send(message);
             }
