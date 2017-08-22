@@ -28,10 +28,12 @@ function KittyDrawr(canvas_id, brushes, drawr_client, debug_id){
     
     this.loadNearbyChunks();
     
-    var self_reference = this;
-    this.game_loop = setInterval(function(){
-        self_reference.update();
-    }, this.frame_time);
+     this.game_loop = setInterval(() => this.update(), this.frame_time);
+}
+
+KittyDrawr.prototype.clear = function() {
+    this.ctx.fillStyle = "rgb(255,255,255)";
+    this.ctx.fillRect(0,0,this.getWidth(),this.getHeight());
 }
 
 KittyDrawr.prototype.togglePattern = function(){
@@ -93,14 +95,12 @@ KittyDrawr.prototype.refresh = function(){
 }
 
 KittyDrawr.prototype.loadNearbyChunks = function(){
-    this.drawr_map.loadNearbyChunks(Math.max(this.getWidth(), this.getHeight()));
+    // this.drawr_map.loadNearbyChunks(Math.max(this.getWidth(), this.getHeight()));
 }
 
 KittyDrawr.prototype.freeFarChunks = function(){
-    this.drawr_map.freeFarChunks(Math.max(this.getWidth(), this.getHeight()));
+    // this.drawr_map.freeFarChunks(Math.max(this.getWidth(), this.getHeight()));
 }
-
-
 
 KittyDrawr.prototype.update = function(){
     
@@ -124,7 +124,7 @@ KittyDrawr.prototype.update = function(){
     
     // HERE! TODO: optimize this, we don't have to redrawr everything every single frame
     this.ctx.fillStyle = "rgb(255,255,255)";
-    this.ctx.fillRect(0,0,this.getWidth(),this.getHeight());
+    // this.ctx.fillRect(0,0,this.getWidth(),this.getHeight());
     
     // blit drawr_map to screen
     this.drawr_map.draw(this.ctx);

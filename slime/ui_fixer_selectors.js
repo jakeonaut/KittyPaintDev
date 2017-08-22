@@ -33,6 +33,15 @@ function selectBrush(index){
 	drawr_client.setBrush(brushes); // abstract this better maybe
 }
 
+function clearCanvas() {
+	drawr.clear();
+	document.querySelector("#clear_box").style.background = "url('slime/brushes/unhide.png')";
+}
+
+function stopClearingCanvas() {
+	document.querySelector("#clear_box").style.background = "url('slime/brushes/hide.png')";
+}
+
 function fixBrushSize(){
 	for (var i=0; i<size_boxes.length; ++i){
 		size_boxes[i].style.display = "block";
