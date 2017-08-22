@@ -27,7 +27,6 @@ for (var i=0; i<num_size_boxes;++i){
 
 /******* SETUP *******/
 var brushes;
-var drawr_client;
 var drawr;
 var stampdrawr;
 
@@ -42,15 +41,11 @@ function loadStorage() {
     };
 
     const dataURL = localStorage.getItem("kittycanvas");
-    console.log("TRY TO LOAD!");
-    console.log(dataURL);
     if (dataURL) {
-        console.log("yup");
         const img = new Image();
         img.src = dataURL;
         img.onload = () => {
             console.log("successful load!");
-            console.log(drawr.ctx);
             drawr.ctx.drawImage(img, 0, 0);
             startSaving();
         }
@@ -66,9 +61,7 @@ window.onload = () => {
         setBrushBoxes();
     });
 
-    drawr_client = new DrawrClient("127.0.0.1:27182");
-
-    drawr = new KittyDrawr("kittycanvas", brushes, drawr_client, "debug");
+    drawr = new KittyDrawr("kittycanvas", brushes, "debug");
     drawr.addEventListener("mapmove", update_position_box);
 
     stampdrawr = new StampDrawr("stampcanvas", "ministampcanvas", brushes, "debug");

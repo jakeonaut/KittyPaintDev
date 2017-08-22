@@ -29,8 +29,6 @@ function selectBrush(index){
 	fixBrushColorEdit();
 	turnOffStampErase();
 	turnOffEyeDrop();
-	
-	drawr_client.setBrush(brushes); // abstract this better maybe
 }
 
 function clearCanvas() {
@@ -96,7 +94,7 @@ function fixBrushColorEdit(){
 		if (eyedrop.className == "disabled_select_box"){
 			eyedrop.className = "select_box";
 			eyedrop.readOnly = false;
-			eyedrop.style.background = "url('kittypaint/brushes/eyedrop.png')";
+			eyedrop.style.background = "url('slime/brushes/eyedrop.png')";
 		}
 	}else if (brush.type == "stamp"){
 		edit_color.className = "disabled_select_box";
@@ -108,7 +106,7 @@ function fixBrushColorEdit(){
 		turnOffEyeDrop();
 		eyedrop.className = "disabled_select_box";
 		eyedrop.readOnly = true;
-		eyedrop.style.background = "url('kittypaint/brushes/eyedropdisabled.png')";
+		eyedrop.style.background = "url('slime/brushes/eyedropdisabled.png')";
 	}
 }
 

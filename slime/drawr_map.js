@@ -1,19 +1,18 @@
-function DrawrMap(drawr_client, offline_mode){
-    this.drawr_client = drawr_client;
-    this.offline_mode = offline_mode || 0;
+function DrawrMap(){
+    this.paperSize = {
+        width: 320, // in px
+        height: 240, // in px
+    };
+	this.per_pixel_scaling = 2; // paper pixel is 2x2
     
-	this.chunk_block_size = 256;
-	this.per_pixel_scaling = 2; // pixel is 2x2
-    this.chunk_onscreen_size = this.chunk_block_size * this.per_pixel_scaling;
+    this.paper = document.createElement("canvas");
+    this.paper.width = this.width = this.paperSize.width;
+    this.paper.height = this.height = this.paperSize.height;
+    this.paperCtx = this.paper.getContext("2d");
     
-    this.canvas = document.createElement("canvas");
-    this.canvas.width = this.width = this.chunk_block_size;
-    this.canvas.height = this.height = this.chunk_block_size;
-    this.ctx = this.canvas.getContext("2d");
-    
-    this.ctx.imageSmoothingEnabled = false;
-    this.ctx.mozImageSmoothingEnabled = false;
-    this.ctx.webkitImageSmoothingEnabled = false;
+    this.paperCtx.imageSmoothingEnabled = false;
+    this.paperCtx.mozImageSmoothingEnabled = false;
+    this.paperCtx.webkitImageSmoothingEnabled = false;
 	
 	this.pattern_mode = false;
 	this.blend_mode = false;
@@ -21,6 +20,13 @@ function DrawrMap(drawr_client, offline_mode){
     
     this.offsetX = 0; // offset in client pixels of top left of chunk (0,0)
     this.offsetY = 0;
+}
+
+DrawrMap.prototype.getCanvasSize = function() {
+    return {
+        width: this.paperSize.width * this.per_pixel_scaling,
+        height: this.paperSize.height * this.per_pixel_scaling,
+    };
 }
 
 DrawrMap.prototype.togglePattern = function(){
@@ -33,10 +39,6 @@ DrawrMap.prototype.toggleBlend = function(){
 
 DrawrMap.prototype.toggleEyeDrop = function(){
 	this.eye_drop = !this.eye_drop;
-}
-
-DrawrMap.prototype.setOfflineMode = function(offline_mode){
-    this.offline_mode = offline_mode;
 }
 
 DrawrMap.prototype.getIngameOffsetX = function(){
@@ -64,17 +66,89 @@ DrawrMap.prototype.moveY = function(dist){
 }
 
 DrawrMap.prototype.addPointRelative = function(x, y, screenOffsetX, screenOffsetY, brush){
-    // x,y, offsets are true pixels per client
+    // x, y, offsets are true pixels per client
     var relx = x + screenOffsetX;
     var rely = y + screenOffsetY;
     this.addPoint(relx, rely, brush);
 }
 
-DrawrMap.prototype.addPoint = function(x,y,brush,size){
-    // if(this.per_pixel_scaling < 1) return; // don't do this while we're in dev mode
-    
+DrawrMap.prototype.normalizeCoordinates = function(x, y) {
     x = x - this.offsetX;
     y = y - this.offsetY;
+
+    x /= this.per_pixel_scaling;
+    y /= this.per_pixel_scaling;
+    return {x, y};
+}
+
+DrawrMap.prototype.startPath = function(x, y) {
+    this.lastCoords = this.normalizeCoordinates(x, y);
+}
+
+DrawrMap.prototype.endPath = function(x, y) {
+    this.lastCoords = undefined;
+}
+
+DrawrMap.prototype.drawLine = function(x, y, brush, size) {
+    let linePointX = this.lastCoords.x;
+    let linePointY = this.lastCoords.y;
+    const step = ~~(size / 2);
+
+    const VerticalLine = (linePointX, x, linePointY, y) => {
+        if (linePointY > y) {
+            let swap = y;
+            y = linePointY;
+            linePointY = swap;
+
+            swap = x;
+            x = linePointX;
+            linePointX = swap;
+        }
+
+        const slope = (x - linePointX) / (y - linePointY);
+        const base = linePointX - (slope * linePointY);
+        while (linePointY <= y) {
+            DrawrBrushes.draw(this.paperCtx, linePointX, linePointY, brush, size, this.pattern_mode, this.blend_mode);
+    
+            linePointX = ~~((slope * linePointY) + base);
+            linePointY += step;
+        }
+    };
+
+    // Vertical line
+    if (this.lastCoords.x == x) {
+        // Always force a "positive" line for calculations
+        VerticalLine(linePointX, x, linePointY, y);
+    }
+
+    // Always force a "positive" line for calculations
+    if (linePointX > x) {
+        let swap = x;
+        x = linePointX;
+        linePointX = swap;
+
+        swap = y;
+        y = linePointY;
+        linePointY = swap;
+    }
+    const slope = (y - linePointY) / (x - linePointX);
+    const base = linePointY - (slope * linePointX);
+    if (Math.abs(slope) > 1) {
+        VerticalLine(linePointX, x, linePointY, y);
+    } else {
+        while (linePointX <= x) {
+            DrawrBrushes.draw(this.paperCtx, linePointX, linePointY, brush, size, this.pattern_mode, this.blend_mode);
+
+            linePointX += step;
+            linePointY = ~~(base + (slope * linePointX));
+        }
+    } 
+}
+
+DrawrMap.prototype.addPoint = function(x, y, brush, size){
+    // if(this.per_pixel_scaling < 1) return; // don't do this while we're in dev mode
+    
+    ({x, y} = this.normalizeCoordinates(x, y));
 
     var gamex = Math.floor(x/this.per_pixel_scaling); // convert to ingame (big) pixels
     var gamey = Math.floor(y/this.per_pixel_scaling);
@@ -83,17 +157,17 @@ DrawrMap.prototype.addPoint = function(x,y,brush,size){
 		gamex = Math.floor((gamex)/size)*size + (size/2);
 		gamey = Math.floor((gamey)/size)*size + (size/2);
 	}
-    
-    var chunks_local_coords = this.getChunkLocalCoordinates(gamex, gamey, brush);
-    
-    var local_x = chunks_local_coords[0].x;
-    var local_y = chunks_local_coords[0].y;
+
     if (!this.eye_drop) {
-        DrawrBrushes.draw(this.ctx, local_x, local_y, brush, size, 
-            this.pattern_mode, this.blend_mode);
+        if (this.lastCoords) {
+            this.drawLine(x, y, brush, size);
+        }
+        DrawrBrushes.draw(this.paperCtx, x, y, brush, size, this.pattern_mode, this.blend_mode);
+        this.lastCoords = {x, y};
     } else {
         //EYE DROP
-        var imageData = this.ctx.getImageData(local_x, local_y, 1, 1);
+        // TODO(jaketrower): allow for eyedrop drag selection
+        var imageData = this.paperCtx.getImageData(x, y, 1, 1);
         var data = imageData.data;
         var hex = rgbToHex(data[0], data[1], data[2]);
         $("color_box").value = hex;
@@ -102,41 +176,23 @@ DrawrMap.prototype.addPoint = function(x,y,brush,size){
     }
 }
 
-DrawrMap.prototype.getChunkLocalCoordinates = function(gamex, gamey, brush){
-    // calculate pixel location in local coordinates of each of the 4 possible chunks.
-    // getChunksAffected will always return in this order: topleft, bottomleft, topright, bottomright 
-    // Preserve this order in this return
-    // this function will probably explode if brush size > this.chunk_block_size. that should never happen.
-    
-    // these are correct for the chunk where the *CENTER OF THE BRUSH* is
-    var chunk_general_localx = mod(gamex, this.chunk_block_size);
-    var chunk_general_localy = mod(gamey, this.chunk_block_size); 
-    
-    // calculate which chunk the *CENTER OF THE BRUSH* is in
-    var chunk_numx = Math.floor(gamex / this.chunk_block_size); 
-    var chunk_numy = Math.floor(gamey / this.chunk_block_size);
-    
-    var dx = chunk_numx;
-    var dy = chunk_numy;
-    return [{
-        x: chunk_general_localx + dx * this.chunk_block_size,
-        y: chunk_general_localy + dy * this.chunk_block_size,
-    }]; // this is beautiful
+DrawrMap.prototype.clear = function() {
+    this.paperCtx.fillStyle = "#ffffff";
+    const canvasSize = this.getCanvasSize();
+    this.paperCtx.fillRect(0, 0, canvasSize.width, canvasSize.height);
 }
 
 DrawrMap.prototype.draw = function(ctx){    
     ctx.imageSmoothingEnabled = false;
     ctx.mozImageSmoothingEnabled = false;
     ctx.webkitImageSmoothingEnabled = false;
-    
-    var onscreenx = this.offsetX;
-    var onscreeny = this.offsetY;	
+        
+    const canvasSize = this.getCanvasSize();
     ctx.drawImage(
-        this.canvas, 
-        onscreenx, 
-        onscreeny, 
-        this.chunk_onscreen_size, 
-        this.chunk_onscreen_size);
+        this.paper, 
+        0 /* x */,  0 /* y */, 
+        canvasSize.width, 
+        canvasSize.height);
 }
 
 

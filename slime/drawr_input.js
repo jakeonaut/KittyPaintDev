@@ -10,17 +10,13 @@ KittyDrawr.prototype.setup_mouse = function(){
     
     this.addEventListener("mapmove", () => self_reference.loadNearbyChunks()); // custom event listener
     
-    // network events
-    this.drawr_client.addEventListener("onupdate", function(x,y){ self_reference.drawr_map.loadChunk(x,y); });
-    this.drawr_client.addEventListener("onchunk", function(x,y,bin){ self_reference.drawr_map.setChunk(x,y,bin); });
-    
-    var movefunc = (e) => self_reference.mousemoveEvent(e);
     var downfunc = (e) => self_reference.mousedownEvent(e);
+    var movefunc = (e) => self_reference.mousemoveEvent(e);
     var upfunc = (e) => self_reference.mouseupEvent(e);
-    this.stage.addEventListener("mousemove", movefunc, false);
-    this.stage.addEventListener("touchmove", movefunc, false);
     this.stage.addEventListener("mousedown", downfunc, false);
     this.stage.addEventListener("touchstart", downfunc, false);
+    this.stage.addEventListener("mousemove", movefunc, false);
+    this.stage.addEventListener("touchmove", movefunc, false);
     this.stage.addEventListener("mouseup", upfunc, false);
     this.stage.addEventListener("touchend", upfunc, false);
     
@@ -140,6 +136,30 @@ KittyDrawr.prototype.getMouseY = function(e){
 }
 
 
+KittyDrawr.prototype.mousedownEvent = function(e){
+    this.mouselastx = this.mousex;
+    this.mouselasty = this.mousey;
+    this.mousex = this.getMouseX(e) || this.mousex;
+    this.mousey = this.getMouseY(e) || this.mousey;
+    
+    if(e.which == 1 || e.touches && e.touches.length <= 1){ //e.touchs if is only 1 touch
+		if (auto_hide_ui) minimizeUI();
+		////editColor(); // xxxxxx
+        this.mousedown = true;
+		if (!this.eye_drop) {
+            this.drawr_map.startPath(this.mousex, this.mousey);
+            this.drawr_map.addPoint(
+                this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
+        }
+    }
+    
+    e.preventDefault(); //prevent mouse drag from trying to drag webpage
+    if (e.stopPropagation) e.stopPropagation();
+    e.cancelBubble = true;
+    return false;
+}
+
+
 KittyDrawr.prototype.mousemoveEvent = function(e){
     this.mouselastx = this.mousex;
     this.mouselasty = this.mousey;
@@ -168,26 +188,6 @@ KittyDrawr.prototype.mousemoveEvent = function(e){
     return false;
 }
 
-KittyDrawr.prototype.mousedownEvent = function(e){
-    this.mouselastx = this.mousex;
-    this.mouselasty = this.mousey;
-    this.mousex = this.getMouseX(e) || this.mousex;
-    this.mousey = this.getMouseY(e) || this.mousey;
-    
-    if(e.which == 1 || e.touches && e.touches.length <= 1){ //e.touchs if is only 1 touch
-		if (auto_hide_ui) minimizeUI();
-		////editColor(); // xxxxxx
-        this.mousedown = true;
-		if (!this.eye_drop)
-			this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
-    }
-    
-    e.preventDefault(); //prevent mouse drag from trying to drag webpage
-    if (e.stopPropagation) e.stopPropagation();
-    e.cancelBubble = true;
-    return false;
-}
-
 KittyDrawr.prototype.mouseupEvent = function(e){
 	//return false;
     // getMouseX(e) may be undefined for a "touchend" event. if so, use previous value
@@ -199,7 +199,8 @@ KittyDrawr.prototype.mouseupEvent = function(e){
     if(e.which == 1 || e.touches && e.touches.length <= 1){
         this.mousedown = false;
 		if (this.eye_drop){
-			this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
+            this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
+            this.drawr_map.endPath();
 			this.eye_drop = false;
 		}
     }

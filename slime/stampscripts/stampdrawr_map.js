@@ -1,6 +1,4 @@
 function StampDrawrMap(chunk_block_size, pixel_size){
-    this.drawr_client = drawr_client;
-    
 	this.canvas_size = chunk_block_size;
 	this.per_pixel_scaling = pixel_size;
 	this.chunk_onscreen_size = this.canvas_size * this.per_pixel_scaling;

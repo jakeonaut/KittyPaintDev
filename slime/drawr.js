@@ -1,5 +1,5 @@
 
-function KittyDrawr(canvas_id, brushes, drawr_client, debug_id){
+function KittyDrawr(canvas_id, brushes, debug_id){
     this.stage = document.getElementById(canvas_id);
     this.debug_div = debug_id && document.getElementById(debug_id) || 0;
     this.ctx = this.stage.getContext("2d");
@@ -14,10 +14,8 @@ function KittyDrawr(canvas_id, brushes, drawr_client, debug_id){
     this.stage.width = window.innerWidth;
     this.stage.height = window.innerHeight;
     
-    this.drawr_client = drawr_client;
-    
     this.drawr_brushes = brushes || new DrawrBrushes();
-    this.drawr_map = new DrawrMap(this.drawr_client, 1);
+    this.drawr_map = new DrawrMap();
     
     this.setup_fps();
     this.setup_mouse();
@@ -34,6 +32,7 @@ function KittyDrawr(canvas_id, brushes, drawr_client, debug_id){
 KittyDrawr.prototype.clear = function() {
     this.ctx.fillStyle = "rgb(255,255,255)";
     this.ctx.fillRect(0,0,this.getWidth(),this.getHeight());
+    this.drawr_map.clear();
 }
 
 KittyDrawr.prototype.togglePattern = function(){
