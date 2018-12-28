@@ -1,6 +1,6 @@
 const DEFAULT_CANVAS_SIZE = {
-    width: 640,
-    height: 480,
+    width: window.innerWidth - 24,
+    height: window.innerHeight - 24,
 };
 
 function KittyDrawr(canvas_id, brushes, debug_id){
