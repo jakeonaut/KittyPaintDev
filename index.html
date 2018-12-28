@@ -1,10 +1,10 @@
 <html><head>
-    <title>minipaint_~;</title>
+    <title>KittyPaint!</title>
     
     <meta name="viewport" content="width=device-width" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
     
-	<link rel="shortcut icon" href="./favicon.ico" />
+	<link rel="shortcut icon" href="../favicon.ico" />
     <link rel="stylesheet" type="text/css" href="slime/css/default.css"/>
     <link rel="stylesheet" type="text/css" href="slime/css/login.css"/>
 </head>
@@ -17,7 +17,7 @@
         <tr><td width="100%" height="100%"><center>
             <div class="login_box">
                 <center>
-                    <b>Welcome to minipaint!</b>
+                    <b>Welcome to KittyPaint!</b>
                     <br/><br/>
                     <input type="button" value="How to use KittyPaint" onclick="$('howtouse_cover').style.display='block';"/>
                 <hr/>
@@ -63,6 +63,27 @@
             </center></td></tr>
         </table>
     </div>
+	
+	<!--Connect to server_popup-->
+	<div id="connect_cover" style="display:none;">
+		<table border="0px" width="100%" height="100%">
+            <tr><td width="100%" height="100%"><center>
+                <div class="login_box">
+                    <center style="padding: 5px;"><b>Connect to a Server</b></center>
+					<center>
+						<input type="button" value="KittyPaint servers" onclick="login_server('kittypaint.no-ip.org:27182');$('connect_cover').style.display='none';"/>
+						<hr/>
+						<input type="button" value="localhost" onclick="login_server('127.0.0.1:27182');$('connect_cover').style.display='none';"/>
+						<hr/>
+						<input type="text" id="server_url" class="server_box" style="width:100px;" value="127.0.0.1:27182"/>
+						<input type="button" value="connect" onClick="set_server();$('connect_cover').style.display='none';"/>
+						<hr/>
+						<input type="button" value="cancel" onclick="$('connect_cover').style.display='none';"/>
+					</center>
+                </div>
+            </center></td></tr>
+        </table>
+	</div>
     
     <!-- DRAWR -->
     <center id="drawr_drawr">	
@@ -135,9 +156,6 @@
 					</div>
 					<div title="make custom stamp" class="select_box" id="stamp_box" onClick="toggleStampUI();" 
 						style="background: url('slime/brushes/createstamp.png')"></div>
-					<div title="clear canvas" class="select_box" id="clear_box" onClick="clearCanvas();"
-						onmouseup="stopClearingCanvas();" onmouseout="stopClearingCanvas();"
-						style="background: url('slime/brushes/hide.png'); border-color: white; filter:invert(100%);"></div>
             
 					<div style="line-height:32px;float:left;text-align:center;">
 						<input title="minimize ui" type="button" value="&ndash;" id="toggle_min_tab" onClick="toggleMinimizeUI();"/>
@@ -212,6 +230,7 @@
 <script type="text/javascript" src="slime/md5_crypt.js"></script>
 <script type="text/javascript" src="slime/drawr_brushes.js"></script>
 <script type="text/javascript" src="slime/drawr_map.js"></script>
+<script type="text/javascript" src="slime/drawr_client.js"></script>
 <script type="text/javascript" src="slime/drawr.js"></script>
 <script type="text/javascript" src="slime/drawr_input.js"></script>
 <script type="text/javascript" src="slime/stampscripts/stampdrawr_map.js"></script>
@@ -221,5 +240,217 @@
 <!-- !! -->
 <script type="text/javascript" src="slime/dumb/ascii.js"></script>
 
-<script type="text/javascript" src="slime/main.js"></script>
+<script type="text/javascript">
+    
+    var DEBUG_MODE_GLOBAL = 0;
+    
+    var num_brush_boxes = 10;
+    var num_available_brush_boxes = 10;
+	var brush_box_page = 0;
+	var num_brush_box_pages = 0;
+	var brush_boxes = [];
+	var num_size_boxes = 5;
+	var size_boxes = [];
+	var current_brushes = [];
+	var brush_index = 0;
+	var brush_size_index = 2;
+	var brush_size = 8;
+	var auto_hide_ui = false;
+	var zoom = 2;
+	var stamp_zoom = 32;
+    
+    for (var i=0; i<num_brush_boxes;++i){
+        brush_boxes[i] = $("brush_box"+i);
+    }
+    for (var i=0; i<num_size_boxes;++i){
+        size_boxes[i] = $("size_box"+i);
+    }
+	//TODO:: Update this selectedIndex if we update the zoom select options
+    /*$("zoom_list").selectedIndex = 1;*/
+    
+    
+	/******* SETUP *******/
+	var brushes;
+	var drawr_client;
+	var drawr;
+	var stampdrawr;
+	
+	window.onload = function(){
+		brushes = new DrawrBrushes(function(){  // maybe we need a loading screen for this
+			//Load Brushes
+			num_brush_box_pages = Math.ceil(brushes.getBrushes().length/num_available_brush_boxes);
+			setBrushBoxes();
+		});
+    
+		drawr_client = new DrawrClient("127.0.0.1:27182");
+    
+		drawr = new KittyDrawr("kittycanvas", brushes, drawr_client, "debug");
+		drawr.addEventListener("mapmove", update_position_box);
+	
+		stampdrawr = new StampDrawr("stampcanvas", "ministampcanvas", brushes, "debug");
+		if (window.innerWidth < 32*16 || window.innerHeight < 32*16){
+			select_stamp_zoom(16);
+		}
+		
+		ui_onresize();
+	}
+    
+    var default_onresize = window.onresize || function(){};
+    window.onresize = function(){ ui_onresize(); default_onresize(); }
+    function ui_onresize(){
+        // see if the line of brush boxes wraps around. if so, hide the ones that go too far past the edge, so it stays 1 row.
+        var brush_box_row1 = $("brush_box0").offsetTop;
+        var s = brush_box_row1 + " ";
+        var count_row1_boxes = 1;
+        for (var i=1; i<num_brush_boxes;++i){
+			var thisbox_top = $("brush_box"+i).offsetTop;
+            s += thisbox_top + " ";
+            if(thisbox_top == 0 || $("brush_box"+i).style.display == "none"){
+                // block is hidden, make it visible to check where its offset would be
+                $("brush_box"+i).style.display = "block";
+                thisbox_top = $("brush_box"+i).offsetTop;
+            }
+            if(thisbox_top == brush_box_row1){
+                count_row1_boxes++;
+                $("brush_box"+i).style.display = "block";
+            }else{
+                $("brush_box"+i).style.display = "none";
+            }
+		}
+        //hide 1 more brush_box if the arrow button is moved to next line too!
+        if($("right_brush_arrow").offsetTop-1 != brush_box_row1){
+            if(count_row1_boxes > 2){ // make sure we actually have a button to hide
+                count_row1_boxes -= 1;
+                $("brush_box"+count_row1_boxes).style.display = "none";
+            }
+        }
+        
+        num_available_brush_boxes = count_row1_boxes;
+		num_brush_box_pages = Math.ceil(brushes.getBrushes().length/num_available_brush_boxes);
+		setBrushBoxes();
+		stampdrawr.resize();
+    }
+
+    function showAndroidToast(toast) {
+        Android.showToast(toast);
+    }
+	
+	/***NOT SETUP***/	
+	function prevBrushPage(){
+		brush_box_page--;
+		if (brush_box_page < 0) brush_box_page = num_brush_box_pages-1;
+		setBrushBoxes();
+	}
+	
+	function nextBrushPage(){
+		brush_box_page++;
+		if (brush_box_page >= num_brush_box_pages) brush_box_page = 0;
+		setBrushBoxes();
+	}
+	
+	$("server_url").onkeypress = function(e){
+		if (!e) e = window.event;
+		var keyCode = e.keyCode || e.which;
+		if (keyCode == '13'){
+			set_server();
+			$('connect_cover').style.display='none';
+			return false;
+		}
+	}
+	
+	$("tele_waypoint").onkeypress = function(e){
+		if (!e) e = window.event; 
+		var keyCode = e.keyCode || e.which; 
+		if (keyCode == '13'){ 
+			teleport_go(); 
+			return false; 
+		} 
+	}
+    
+    function teleport_go(){
+        var waypointstr = $("tele_waypoint").value;
+        if(waypointstr != ""){
+            var rstr_loc = hex_md5(waypointstr);
+            var hex_x = rstr_loc.substr(0,8);
+            var hex_y = rstr_loc.substr(8,8);
+            var x = parseInt(hex_x, 16) - 0xffffffff/2;
+            var y = parseInt(hex_y, 16) - 0xffffffff/2;
+            console.log(x + "," + y);
+        }else{
+            var x = 0;
+            var y = 0;
+        }
+        
+        drawr.drawr_map.setIngameOffsetX(x);
+        drawr.drawr_map.setIngameOffsetY(y);
+        drawr.loadNearbyChunks();
+    }
+
+    function update_position_box(){
+        //$("tele_waypoint").value = "";
+    }
+    
+    function set_server(){
+        var server = $("server_url").value;
+        if(!server.match(/^[^\/]*$/)){
+            server = drawr_client.server;
+            $("server_url").value = server;
+        }
+        drawr_client.stop();
+        drawr_client.server = server;
+        drawr_client.start();
+        
+        drawr.drawr_map.setOfflineMode(0);
+        drawr.refresh();
+    }
+    
+    function get_room(){
+        return $("room").value.replace(/\&/, "");
+    }
+    
+    
+    
+    
+    
+    
+    function add_one(){
+        /*url_post = get_server() + "/post?" + get_room() + "&" + makeobjo();
+        loadJSON(url_post, function(jsonObj){
+            newest_id = 1 * jsonObj;
+            debug.innerHTML += "id: " + newest_id + ",";
+        });*/
+        drawrObjects.push(makeobjo());
+    }
+    
+    var do_updatingu = 1;
+    function toggle_update(){
+        do_updatingu = !do_updatingu;
+        $("toggle_update").value = "update: " + (do_updatingu ? "on" : "off");
+    }
+    
+    function update(){
+        if(!do_updatingu) return;
+        loadJSON(get_server() + "/get?" + get_room() + "&-1", function(jsonObj){
+            debug.innerHTML = JSON.stringify(jsonObj);
+            
+            // since requesting from -1
+            drawrObjects = [];
+            for(var i=0; i<jsonObj.length; ++i){
+                drawrObjects.push(DrawrPath.fromJSON(jsonObj[i]));
+            }
+        });
+    }
+    
+    function clear_drawr(){
+        url_post = get_server() + "/clear?" + get_room();
+        loadJSON(url_post, function(jsonObj){
+            if(jsonObj*1 == 0){
+                drawrObjects = [];
+                debug.innerHTML = "";
+            }
+        });
+    }
+    
+    //////////////////////////////////////////setInterval(update, 500);
+</script>
 </html>

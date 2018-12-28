@@ -2,21 +2,21 @@ function toggleAutoHideUI(){
 	auto_hide_ui = !auto_hide_ui;
 	if ($("auto_hide_ui").className === "select_box"){
 		$("auto_hide_ui").className = "selected_box";
-		$("auto_hide_ui").style.background = "url('slime/brushes/hide.png')";
+		$("auto_hide_ui").style.background = "url('kittypaint/brushes/hide.png')";
 	}else{
 		$("auto_hide_ui").className = "select_box";
-		$("auto_hide_ui").style.background = "url('slime/brushes/unhide.png')";
+		$("auto_hide_ui").style.background = "url('kittypaint/brushes/unhide.png')";
 	}
 }
 
 function debug_toggle(){
         if(!DEBUG_MODE_GLOBAL){
             DEBUG_MODE_GLOBAL = 1;
-            $("debug_toggle").style.background = "url('slime/brushes/debug.png')";
+            $("debug_toggle").style.background = "url('kittypaint/brushes/debug.png')";
 			$("debug_toggle").className = "selected_box";
         }else{
             DEBUG_MODE_GLOBAL = 0;
-            $("debug_toggle").style.background = "url('slime/brushes/bug.png')";
+            $("debug_toggle").style.background = "url('kittypaint/brushes/bug.png')";
 			$("debug_toggle").className = "select_box";
         }
     }
@@ -195,7 +195,7 @@ function toggleStampErase(){
 		
 		$("eyedrop_box").className = "disabled_select_box";
 		$("eyedrop_box").readOnly = true;
-		$("eyedrop_box").background = "url('slime/brushes/eyedropdisabled.png')";
+		$("eyedrop_box").background = "url('kittypaint/brushes/eyedropdisabled.png')";
 	}else{
 		turnOffStampErase();
 	}

@@ -8,17 +8,21 @@ KittyDrawr.prototype.setup_mouse = function(){
     
     var self_reference = this; // weird interaction with listeners and object methods
     
-    this.addEventListener("mapmove", () => self_reference.loadNearbyChunks()); // custom event listener
+    this.addEventListener("mapmove", function(){ self_reference.loadNearbyChunks();} ); // custom event listener
     
-    var downfunc = (e) => self_reference.mousedownEvent(e);
-    var movefunc = (e) => self_reference.mousemoveEvent(e);
-    var upfunc = (e) => self_reference.mouseupEvent(e);
-    this.stage.addEventListener("mousedown", downfunc, false);
-    this.stage.addEventListener("touchstart", downfunc, false);
-    this.stage.addEventListener("mousemove", movefunc, false);
-    this.stage.addEventListener("touchmove", movefunc, false);
-    this.stage.addEventListener("mouseup", upfunc, false);
-    this.stage.addEventListener("touchend", upfunc, false);
+    // network events
+    this.drawr_client.addEventListener("onupdate", function(x,y){ self_reference.drawr_map.loadChunk(x,y); });
+    this.drawr_client.addEventListener("onchunk", function(x,y,bin){ self_reference.drawr_map.setChunk(x,y,bin); });
+    
+    var movefunc = function(e){ self_reference.mousemoveEvent(e); };
+    var downfunc = function(e){ self_reference.mousedownEvent(e); };
+    var upfunc = function(e){ self_reference.mouseupEvent(e); };
+    this.stage.addEventListener("mousemove",movefunc,false);
+    this.stage.addEventListener("touchmove",movefunc,false);
+    this.stage.addEventListener("mousedown",downfunc,false);
+    this.stage.addEventListener("touchstart",downfunc,false);
+    this.stage.addEventListener("mouseup",upfunc,false);
+    this.stage.addEventListener("touchend",upfunc,false);
     
     this.KEY_LEFT = 37;
     this.KEY_UP = 38;
@@ -31,16 +35,25 @@ KittyDrawr.prototype.setup_mouse = function(){
     window.addEventListener("keydown", keydownfunc, false);
     window.addEventListener("keyup", keyupfunc, false);
     setInterval(function(e){ self_reference.handleKeys(); }, this.frame_time);
+    
+    var default_onresize = window.onresize || function(){};
+    window.onresize = function(){ self_reference.screenResizeEvent(); default_onresize(); }
 }
 
 KittyDrawr.prototype.addEventListener = function(event, callback){
-    if (event == "mapmove") {
+    if(event == "mapmove"){
         var previous_callback = this.screenmove_callback;
         this.screenmove_callback = function(){ callback(); previous_callback(); }
-    } else if (event == "addpoint") {
+    }else if(event == "addpoint"){
         var previous_callback = this.addpoint_callback;
         this.addpoint_callback = function(){ callback(); previous_callback(); }
     }
+}
+
+
+KittyDrawr.prototype.screenResizeEvent = function(){
+    this.stage.width = window.innerWidth;
+    this.stage.height = window.innerHeight;
 }
 
 KittyDrawr.prototype.changePixelScale = function(pixel_scale){
@@ -106,34 +119,59 @@ KittyDrawr.prototype.keyUpEvent = function(e){
 }
 
 KittyDrawr.prototype.getMouseX = function(e){
-    let x = 0;
     if(e.touches){
-        const touch = e.touches[0]; //array, for multi-touches
-        if (!touch) return;
-        x = touch.pageX;
-    } else {
-        if (window.event) {
-            x = window.event.clientX;
-        }
-        x = e.pageX || e.clientX;
+        var touch = e.touches[0]; //array, for multi-touches
+        if(!touch) return;
+        return touch.pageX - this.stage.offsetLeft;
+    }else{
+        if(window.event) return window.event.clientX;
+        return e.pageX || e.clientX;
     }
-    return x - this.stage.offsetLeft;
 }
 KittyDrawr.prototype.getMouseY = function(e){
-    let y = 0;
     if(e.touches){
-        const touch = e.touches[0]; //array, for multi-touches
-        if (!touch) return;
-        y = touch.pageY;
-    } else {
-        if (window.event) {
-            y = window.event.clientY;
-        }
-        y = e.pageY || e.clientY;
+        var touch = e.touches[0]; //array, for multi-touches
+        if(!touch) return;
+        return touch.pageY - this.stage.offsetTop;
+    }else{
+        if(window.event) return window.event.clientY;
+        return e.pageY || e.clientY;
     }
-    return y - this.stage.offsetTop;
 }
 
+
+KittyDrawr.prototype.mousemoveEvent = function(e){
+    this.mouselastx = this.mousex;
+    this.mouselasty = this.mousey;
+    this.mousex = this.getMouseX(e);
+    this.mousey = this.getMouseY(e);
+    
+    if(this.isMoveKeyPressed()){
+        var dx = this.mousex - this.mouselastx;
+        var dy = this.mousey - this.mouselasty;
+        
+        this.drawr_map.moveX(dx);
+        this.drawr_map.moveY(dy);
+    }else if(e.which == 1 || e.touches && e.touches.length <= 1){
+        if(this.mousedown){
+			if (!this.eye_drop)
+				this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
+        }
+    }else if(e.which || e.touches && e.touches.length > 1){
+        var dx = this.mousex - this.mouselastx;
+        var dy = this.mousey - this.mouselasty;
+        
+        this.drawr_map.moveX(dx);
+        this.drawr_map.moveY(dy);
+        // call mapmove event callback
+        this.screenmove_callback();
+    }
+    
+    e.preventDefault(); //prevent mouse drag from trying to drag webpage
+    if (e.stopPropagation) e.stopPropagation();
+    e.cancelBubble = true;
+    return false;
+}
 
 KittyDrawr.prototype.mousedownEvent = function(e){
     this.mouselastx = this.mousex;
@@ -145,43 +183,11 @@ KittyDrawr.prototype.mousedownEvent = function(e){
 		if (auto_hide_ui) minimizeUI();
 		////editColor(); // xxxxxx
         this.mousedown = true;
-		if (!this.eye_drop) {
-            this.drawr_map.startPath(this.mousex, this.mousey);
-            this.drawr_map.addPoint(
-                this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
-        }
+		if (!this.eye_drop)
+			this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
     }
     
     e.preventDefault(); //prevent mouse drag from trying to drag webpage
-    if (e.stopPropagation) e.stopPropagation();
-    e.cancelBubble = true;
-    return false;
-}
-
-
-KittyDrawr.prototype.mousemoveEvent = function(e){
-    this.mouselastx = this.mousex;
-    this.mouselasty = this.mousey;
-    this.mousex = this.getMouseX(e);
-    this.mousey = this.getMouseY(e);
-
-    if (!this.isMoveKeyPressed() && e.which == 1 || e.touches && e.touches.length <= 1) {
-        if (this.mousedown && !this.eye_drop) {
-            this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
-        }
-    } 
-    else if (this.isMoveKeyPressed() || e.which || e.touches && e.touches.length > 1) {
-        var dx = this.mousex - this.mouselastx;
-        var dy = this.mousey - this.mouselasty;
-        
-        this.drawr_map.moveX(dx);
-        this.drawr_map.moveY(dy);
-
-        // call mapmove event callback
-        this.screenmove_callback();
-    }
-    
-    e.preventDefault(); // prevent mouse drag from trying to drag webpage
     if (e.stopPropagation) e.stopPropagation();
     e.cancelBubble = true;
     return false;
@@ -198,8 +204,7 @@ KittyDrawr.prototype.mouseupEvent = function(e){
     if(e.which == 1 || e.touches && e.touches.length <= 1){
         this.mousedown = false;
 		if (this.eye_drop){
-            this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
-            this.drawr_map.endPath();
+			this.drawr_map.addPoint(this.mousex, this.mousey, this.drawr_brushes.getBrush(), this.drawr_brushes.getBrushSize());
 			this.eye_drop = false;
 		}
     }

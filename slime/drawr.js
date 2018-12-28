@@ -1,13 +1,6 @@
-const DEFAULT_CANVAS_SIZE = {
-    width: window.innerWidth - 24,
-    height: window.innerHeight - 24,
-};
 
-function KittyDrawr(canvas_id, brushes, debug_id){
+function KittyDrawr(canvas_id, brushes, drawr_client, debug_id){
     this.stage = document.getElementById(canvas_id);
-    this.stage.width = DEFAULT_CANVAS_SIZE.width;
-    this.stage.height = DEFAULT_CANVAS_SIZE.height;
-
     this.debug_div = debug_id && document.getElementById(debug_id) || 0;
     this.ctx = this.stage.getContext("2d");
 	/*this.ctx['imageSmoothingEnabled'] = false;
@@ -18,8 +11,13 @@ function KittyDrawr(canvas_id, brushes, debug_id){
     this.ctx.fillStyle = "black";
 	this.eye_drop = false;
     
+    this.stage.width = window.innerWidth;
+    this.stage.height = window.innerHeight;
+    
+    this.drawr_client = drawr_client;
+    
     this.drawr_brushes = brushes || new DrawrBrushes();
-    this.drawr_map = new DrawrMap();
+    this.drawr_map = new DrawrMap(this.drawr_client, 1);
     
     this.setup_fps();
     this.setup_mouse();
@@ -30,19 +28,10 @@ function KittyDrawr(canvas_id, brushes, debug_id){
     
     this.loadNearbyChunks();
     
-     this.game_loop = setInterval(() => this.update(), this.frame_time);
-}
-
-KittyDrawr.prototype.screenResizeEvent = function() { }
-
-KittyDrawr.prototype.clear = function() {
-    this.ctx.fillStyle = "rgb(255,255,255)";
-    this.ctx.fillRect(0,0,this.getWidth(),this.getHeight());
-    this.drawr_map.clear();
-}
-
-KittyDrawr.prototype.drawImage = function(img) {
-    this.drawr_map.drawImage(img, 0, 0);
+    var self_reference = this;
+    this.game_loop = setInterval(function(){
+        self_reference.update();
+    }, this.frame_time);
 }
 
 KittyDrawr.prototype.togglePattern = function(){
@@ -104,16 +93,18 @@ KittyDrawr.prototype.refresh = function(){
 }
 
 KittyDrawr.prototype.loadNearbyChunks = function(){
-    // this.drawr_map.loadNearbyChunks(Math.max(this.getWidth(), this.getHeight()));
+    this.drawr_map.loadNearbyChunks(Math.max(this.getWidth(), this.getHeight()));
 }
 
 KittyDrawr.prototype.freeFarChunks = function(){
-    // this.drawr_map.freeFarChunks(Math.max(this.getWidth(), this.getHeight()));
+    this.drawr_map.freeFarChunks(Math.max(this.getWidth(), this.getHeight()));
 }
+
+
 
 KittyDrawr.prototype.update = function(){
     
-    if (this.update_lock) return; // only allow 1 instance of update to run at a time
+    if(this.update_lock) return; // only allow 1 instance of update to run at a time
     this.update_lock = true;
     
 
@@ -133,7 +124,7 @@ KittyDrawr.prototype.update = function(){
     
     // HERE! TODO: optimize this, we don't have to redrawr everything every single frame
     this.ctx.fillStyle = "rgb(255,255,255)";
-    // this.ctx.fillRect(0,0,this.getWidth(),this.getHeight());
+    this.ctx.fillRect(0,0,this.getWidth(),this.getHeight());
     
     // blit drawr_map to screen
     this.drawr_map.draw(this.ctx);
