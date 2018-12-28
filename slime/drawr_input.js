@@ -31,16 +31,25 @@ KittyDrawr.prototype.setup_mouse = function(){
     window.addEventListener("keydown", keydownfunc, false);
     window.addEventListener("keyup", keyupfunc, false);
     setInterval(function(e){ self_reference.handleKeys(); }, this.frame_time);
+    
+    var default_onresize = window.onresize || function(){};
+    window.onresize = function(){ self_reference.screenResizeEvent(); default_onresize(); }
 }
 
 KittyDrawr.prototype.addEventListener = function(event, callback){
-    if (event == "mapmove") {
+    if(event == "mapmove"){
         var previous_callback = this.screenmove_callback;
         this.screenmove_callback = function(){ callback(); previous_callback(); }
-    } else if (event == "addpoint") {
+    }else if(event == "addpoint"){
         var previous_callback = this.addpoint_callback;
         this.addpoint_callback = function(){ callback(); previous_callback(); }
     }
+}
+
+
+KittyDrawr.prototype.screenResizeEvent = function(){
+    this.stage.width = window.innerWidth;
+    this.stage.height = window.innerHeight;
 }
 
 KittyDrawr.prototype.changePixelScale = function(pixel_scale){
@@ -106,32 +115,24 @@ KittyDrawr.prototype.keyUpEvent = function(e){
 }
 
 KittyDrawr.prototype.getMouseX = function(e){
-    let x = 0;
     if(e.touches){
-        const touch = e.touches[0]; //array, for multi-touches
-        if (!touch) return;
-        x = touch.pageX;
-    } else {
-        if (window.event) {
-            x = window.event.clientX;
-        }
-        x = e.pageX || e.clientX;
+        var touch = e.touches[0]; //array, for multi-touches
+        if(!touch) return;
+        return touch.pageX - this.stage.offsetLeft;
+    }else{
+        if(window.event) return window.event.clientX;
+        return e.pageX || e.clientX;
     }
-    return x - this.stage.offsetLeft;
 }
 KittyDrawr.prototype.getMouseY = function(e){
-    let y = 0;
     if(e.touches){
-        const touch = e.touches[0]; //array, for multi-touches
-        if (!touch) return;
-        y = touch.pageY;
-    } else {
-        if (window.event) {
-            y = window.event.clientY;
-        }
-        y = e.pageY || e.clientY;
+        var touch = e.touches[0]; //array, for multi-touches
+        if(!touch) return;
+        return touch.pageY - this.stage.offsetTop;
+    }else{
+        if(window.event) return window.event.clientY;
+        return e.pageY || e.clientY;
     }
-    return y - this.stage.offsetTop;
 }
 
 

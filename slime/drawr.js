@@ -1,13 +1,6 @@
-const DEFAULT_CANVAS_SIZE = {
-    width: 640,
-    height: 480,
-};
 
 function KittyDrawr(canvas_id, brushes, debug_id){
     this.stage = document.getElementById(canvas_id);
-    this.stage.width = DEFAULT_CANVAS_SIZE.width;
-    this.stage.height = DEFAULT_CANVAS_SIZE.height;
-
     this.debug_div = debug_id && document.getElementById(debug_id) || 0;
     this.ctx = this.stage.getContext("2d");
 	/*this.ctx['imageSmoothingEnabled'] = false;
@@ -17,6 +10,9 @@ function KittyDrawr(canvas_id, brushes, debug_id){
 	this.ctx['msImageSmoothingEnabled'] = false;*/
     this.ctx.fillStyle = "black";
 	this.eye_drop = false;
+    
+    this.stage.width = window.innerWidth;
+    this.stage.height = window.innerHeight;
     
     this.drawr_brushes = brushes || new DrawrBrushes();
     this.drawr_map = new DrawrMap();
@@ -33,16 +29,10 @@ function KittyDrawr(canvas_id, brushes, debug_id){
      this.game_loop = setInterval(() => this.update(), this.frame_time);
 }
 
-KittyDrawr.prototype.screenResizeEvent = function() { }
-
 KittyDrawr.prototype.clear = function() {
     this.ctx.fillStyle = "rgb(255,255,255)";
     this.ctx.fillRect(0,0,this.getWidth(),this.getHeight());
     this.drawr_map.clear();
-}
-
-KittyDrawr.prototype.drawImage = function(img) {
-    this.drawr_map.drawImage(img, 0, 0);
 }
 
 KittyDrawr.prototype.togglePattern = function(){
@@ -113,7 +103,7 @@ KittyDrawr.prototype.freeFarChunks = function(){
 
 KittyDrawr.prototype.update = function(){
     
-    if (this.update_lock) return; // only allow 1 instance of update to run at a time
+    if(this.update_lock) return; // only allow 1 instance of update to run at a time
     this.update_lock = true;
     
 

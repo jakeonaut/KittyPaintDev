@@ -176,13 +176,6 @@ DrawrMap.prototype.addPoint = function(x, y, brush, size){
     }
 }
 
-DrawrMap.prototype.drawImage = function(img, x, y) {
-    this.paperCtx.drawImage(
-        img, x, y, 
-        img.width / this.per_pixel_scaling, 
-        img.height / this.per_pixel_scaling);
-}
-
 DrawrMap.prototype.clear = function() {
     this.paperCtx.fillStyle = "#ffffff";
     const canvasSize = this.getCanvasSize();
