@@ -1,13 +1,21 @@
 
 body {
+    background-color: grey;
     margin: 0;
-    padding: 0;
     overflow: hidden;
+    padding: 0;
 }
 #kittycanvas {
-    display: block;
-    //border:1px solid black;
+    background-color: white;
+    border:1px solid black;
     border: 0px;
+    display: block;
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
 }
 #backToCakeandturtles{
 	font-size: 10px;
@@ -35,11 +43,13 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+
+    z-index: 999;
     
-    //border-width: 0px 0px 1px 0px;
-    //top: 0px;
-    //left: 0px;
-    //right: 0px;
+    /*border-width: 0px 0px 1px 0px;
+    top: 0px;
+    left: 0px;
+    right: 0px; */
 }
 .drawr_ui:hover {
     opacity: 1.0;
