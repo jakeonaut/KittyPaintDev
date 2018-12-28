@@ -46,7 +46,7 @@ function loadStorage() {
         img.src = dataURL;
         img.onload = () => {
             console.log("successful load!");
-            drawr.ctx.drawImage(img, 0, 0);
+            drawr.drawImage(img);
             startSaving();
         }
     } else {
@@ -54,6 +54,7 @@ function loadStorage() {
     }
 }
 
+// main() 
 window.onload = () => {
     brushes = new DrawrBrushes(() => {  // maybe we need a loading screen for this
         //Load Brushes
@@ -62,7 +63,6 @@ window.onload = () => {
     });
 
     drawr = new KittyDrawr("kittycanvas", brushes, "debug");
-    drawr.addEventListener("mapmove", update_position_box);
 
     stampdrawr = new StampDrawr("stampcanvas", "ministampcanvas", brushes, "debug");
     if (window.innerWidth < 32*16 || window.innerHeight < 32*16){
@@ -73,10 +73,10 @@ window.onload = () => {
     loadStorage();
 }
 
-var default_onresize = window.onresize || function(){};
 window.onresize = function(){ 
     ui_onresize(); 
-    default_onresize(); 
+    drawr.screenResizeEvent(); 
+    stampdrawr.resize();
 }
 
 function ui_onresize(){
@@ -99,6 +99,7 @@ function ui_onresize(){
             $("brush_box"+i).style.display = "none";
         }
     }
+
     //hide 1 more brush_box if the arrow button is moved to next line too!
     if($("right_brush_arrow").offsetTop-1 != brush_box_row1){
         if(count_row1_boxes > 2){ // make sure we actually have a button to hide
@@ -110,7 +111,6 @@ function ui_onresize(){
     num_available_brush_boxes = count_row1_boxes;
     num_brush_box_pages = Math.ceil(brushes.getBrushes().length/num_available_brush_boxes);
     setBrushBoxes();
-    stampdrawr.resize();
 }
 
 function showAndroidToast(toast) {
@@ -128,36 +128,4 @@ function nextBrushPage(){
     brush_box_page++;
     if (brush_box_page >= num_brush_box_pages) brush_box_page = 0;
     setBrushBoxes();
-}
-
-$("tele_waypoint").onkeypress = function(e){
-    if (!e) e = window.event; 
-    var keyCode = e.keyCode || e.which; 
-    if (keyCode == '13'){ 
-        teleport_go(); 
-        return false; 
-    } 
-}
-
-function teleport_go(){
-    var waypointstr = $("tele_waypoint").value;
-    if(waypointstr != ""){
-        var rstr_loc = hex_md5(waypointstr);
-        var hex_x = rstr_loc.substr(0,8);
-        var hex_y = rstr_loc.substr(8,8);
-        var x = parseInt(hex_x, 16) - 0xffffffff/2;
-        var y = parseInt(hex_y, 16) - 0xffffffff/2;
-        console.log(x + "," + y);
-    }else{
-        var x = 0;
-        var y = 0;
-    }
-    
-    drawr.drawr_map.setIngameOffsetX(x);
-    drawr.drawr_map.setIngameOffsetY(y);
-    drawr.loadNearbyChunks();
-}
-
-function update_position_box(){
-    //$("tele_waypoint").value = "";
 }
