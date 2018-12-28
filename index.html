@@ -63,6 +63,27 @@
             </center></td></tr>
         </table>
     </div>
+	
+	<!--Connect to server_popup-->
+	<div id="connect_cover" style="display:none;">
+		<table border="0px" width="100%" height="100%">
+            <tr><td width="100%" height="100%"><center>
+                <div class="login_box">
+                    <center style="padding: 5px;"><b>Connect to a Server</b></center>
+					<center>
+						<input type="button" value="KittyPaint servers" onclick="login_server('kittypaint.no-ip.org:27182');$('connect_cover').style.display='none';"/>
+						<hr/>
+						<input type="button" value="localhost" onclick="login_server('127.0.0.1:27182');$('connect_cover').style.display='none';"/>
+						<hr/>
+						<input type="text" id="server_url" class="server_box" style="width:100px;" value="127.0.0.1:27182"/>
+						<input type="button" value="connect" onClick="set_server();$('connect_cover').style.display='none';"/>
+						<hr/>
+						<input type="button" value="cancel" onclick="$('connect_cover').style.display='none';"/>
+					</center>
+                </div>
+            </center></td></tr>
+        </table>
+	</div>
     
     <!-- DRAWR -->
     <center id="drawr_drawr">	
@@ -212,6 +233,7 @@
 <script type="text/javascript" src="slime/md5_crypt.js"></script>
 <script type="text/javascript" src="slime/drawr_brushes.js"></script>
 <script type="text/javascript" src="slime/drawr_map.js"></script>
+<script type="text/javascript" src="slime/drawr_client.js"></script>
 <script type="text/javascript" src="slime/drawr.js"></script>
 <script type="text/javascript" src="slime/drawr_input.js"></script>
 <script type="text/javascript" src="slime/stampscripts/stampdrawr_map.js"></script>
