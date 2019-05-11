@@ -25,7 +25,6 @@ function selectBrush(index){
 	$("minimized_brush_box").style.background = brush_boxes[index].style.background;
 	brush_index = index;
 		
-	fixBrushSize();
 	fixBrushColorEdit();
 	turnOffStampErase();
 	turnOffEyeDrop();
@@ -33,42 +32,9 @@ function selectBrush(index){
 	drawr_client.setBrush(brushes); // abstract this better maybe
 }
 
-function fixBrushSize(){
-	for (var i=0; i<size_boxes.length; ++i){
-		size_boxes[i].style.display = "block";
-	}
+function selectBrushSize(size){
 	var brush = brushes.getBrush();
-	if (brush.type == "stamp"){
-		var index = 1;
-		size_boxes[0].style.display = "none";
-		if (brush.img.width >= 8){ 
-			index = 2;
-			size_boxes[1].style.display = "none";
-		}
-		if (brush.img.width >= 16){ 
-			index = 3;
-			size_boxes[2].style.display = "none";
-		}
-		if (brush.img.width >= 32){ 
-			index = 4;
-			size_boxes[3].style.display = "none";
-		}
-	
-		if (brush_size < brush.img.width){
-			brush_size = brush.img.width;
-			brush_size_index = index;
-		}
-	}
-	selectBrushSize(brush_size_index, brush_size);
-}
-
-function selectBrushSize(index, size){
-	var brush = brushes.getBrush();
-	if (brush.type == "stamp"){
-		if (size < brush.img.width) return;
-	}
 	$("brush_size_box").innerHTML = size;
-	brush_size_index = index;
 	brush_size = size;
 	brushes.setBrushSize(size);
 }
@@ -118,7 +84,7 @@ function editColor(){
 	b > 255 && (b = 255) || b < 0 && (b = 0);
 	
 	DrawrBrushes.setBrushColor(brush, r, g, b);
-	brush_boxes[brush_index].style.background = "url('" + brush.sized_images[4].src + "') no-repeat center";
+	brush_boxes[brush_index].style.background = "url('" + brush.sized_images[5].src + "') no-repeat center";
 	$("minimized_brush_box").style.background = brush_boxes[brush_index].style.background;
 	fixBrushColorEdit();
 }
@@ -162,7 +128,7 @@ function setBrushBoxes(){
 			current_brushes.push(brush);
 			
 			if (brush.type == "brush"){
-				brush_boxes[i].style.background = "url('" + brush.sized_images[4].src + "') no-repeat center";
+				brush_boxes[i].style.background = "url('" + brush.sized_images[5].src + "') no-repeat center";
 			}else if (brush.type == "stamp"){
 				brush_boxes[i].style.background = "url('"+brush.img.src+"') no-repeat center";
 			}
@@ -173,7 +139,7 @@ function setBrushBoxes(){
 	if ($("stamp_erase_box").className !== "selected_box"){
 		fixSelectedBrush();
 		selectBrush(brush_index);
-		selectBrushSize(brush_size_index, brush_size);
+		selectBrushSize(brush_size);
 	}
 }
 

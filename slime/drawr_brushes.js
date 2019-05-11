@@ -20,7 +20,7 @@ function DrawrBrushes(onload_continuation){
 	
 	this.selected_brush = 0;
     this.brush_size = 1;
-	this.size_variations = [1, 4, 8, 16, 32];
+	this.size_variations = [1, 2, 4, 8, 16, 32];
     
     this.count_to_load = 0;
     this.count_loaded = 0;
